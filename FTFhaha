@@ -1,4 +1,4 @@
-local ver = "v0.4.23" -- FTFHAX by Xyrozzy    -----   loadstring(game:HttpGet("https://raw.githubusercontent.com/W1cked-X/FTFHAX/refs/heads/main/FTFHax.lua"))()
+local ver = "v0.4.23" -- FTFHAX by Xyrozzy    -----   loadstring(game:HttpGet("https://raw.githubusercontent.com/SarthakESP-02/FTF-HEHE/refs/heads/main/FTFhaha.lua"))()
 
 local FTFHAX = Instance.new("ScreenGui")
 local MenusTabFrame = Instance.new("Frame")
