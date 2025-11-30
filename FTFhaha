@@ -1419,5 +1419,3 @@ creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
 
 print("FTFHAX v0.3.4 • Xyrozzy Clean Theme Applied ✨")
-
-Now wait 
