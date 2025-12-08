@@ -1,4 +1,4 @@
-local ver = "v0.4.23" -- FTFHAX by Xyrozzy    -----   loadstring(game:HttpGet("https://raw.githubusercontent.com/SarthakESP-02/FTF-HEHE/refs/heads/main/FTFhaha.lua"))()
+local ver = "v0.4.23" -- FTFHAX by Xyrozzy    -----   loadstring(game:HttpGet("https://raw.githubusercontent.com/SarthakESP-02/FTF-HEHE/refs/heads/main/FTFHAX.lua"))()
 
 local FTFHAX = Instance.new("ScreenGui")
 local MenusTabFrame = Instance.new("Frame")
@@ -1447,5 +1447,6 @@ creditMain.Font = Enum.Font.Gotham
 creditMain.TextScaled = true
 creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
+
 
 print("FTFHAX v0.3.4 • Xyrozzy Clean Theme Applied ✨")
