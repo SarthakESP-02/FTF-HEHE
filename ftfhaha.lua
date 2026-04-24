@@ -163,6 +163,20 @@ PCESPButton.TextScaled = true
 PCESPButton.TextSize = 14.000
 PCESPButton.TextWrapped = true
 
+TbdButton.Name = "TbdButton"
+TbdButton.Parent = ButtonsFrame
+TbdButton.BackgroundColor3 = Color3.fromRGB(191, 0, 0)
+TbdButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
+TbdButton.BorderSizePixel = 0
+TbdButton.LayoutOrder = 5
+TbdButton.Size = UDim2.new(0, 200, 0, 50)
+TbdButton.Visible = false
+TbdButton.Text = "nothing"
+TbdButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+TbdButton.TextScaled = true
+TbdButton.TextSize = 14.000
+TbdButton.TextWrapped = true
+
 PlayerESPButton.Name = "PlayerESPButton"
 PlayerESPButton.Parent = ButtonsFrame
 PlayerESPButton.BackgroundColor3 = Color3.fromRGB(191, 0, 0)
@@ -280,7 +294,7 @@ PageTitleText.TextSize = 34.000
 PageTitleText.TextWrapped = true
 PageTitleText.TextXAlignment = Enum.TextXAlignment.Left
 
--- Toggles Variables
+-- Toggles
 local podstoggle = false
 local pctoggle = false
 local playertoggle = false
@@ -302,7 +316,7 @@ MainMenuWindow.BorderColor3 = Color3.fromRGB(0, 0, 0)
 MainMenuWindow.BorderSizePixel = 2
 MainMenuWindow.ClipsDescendants = true
 MainMenuWindow.Position = UDim2.new(0.5, 0, 0.5, -18)
-MainMenuWindow.Size = UDim2.new(0, 420, 0, 360) -- EXTENDED HEIGHT
+MainMenuWindow.Size = UDim2.new(0, 420, 0, 360)
 MainMenuWindow.SizeConstraint = Enum.SizeConstraint.RelativeYY
 MainMenuWindow.Visible = false
 
@@ -368,7 +382,7 @@ Body_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Body_2.BackgroundTransparency = 1.000
 Body_2.BorderSizePixel = 0
 Body_2.Position = UDim2.new(0.5, 0, 0, 45)
-Body_2.Size = UDim2.new(1, -10, 1, -75) -- REDUCED SIZE FOR CREDIT TEXT
+Body_2.Size = UDim2.new(1, -10, 1, -75)
 
 UIGridLayout_2.Parent = Body_2
 UIGridLayout_2.HorizontalAlignment = Enum.HorizontalAlignment.Center
@@ -441,8 +455,6 @@ KillPanelButton.MouseButton1Click:Connect(function()
 
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-        game.Players.LocalPlayer.Character.Humanoid.UseJumpPower = true
-        game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
     end
 
     for _, v in pairs(workspace:GetDescendants()) do
@@ -458,7 +470,7 @@ KillPanelButton.MouseButton1Click:Connect(function()
     FTFHAX:Destroy()
 end)
 
--- ==================== TABS: TP, PLAYER, UPCOMING ====================
+-- ==================== FIXED TP + UPCOMING TABS ====================
 local TPButton = Instance.new("ImageButton")
 TPButton.Name = "TPButton"
 TPButton.Size = UDim2.new(0, 90, 0, 90)
@@ -485,17 +497,17 @@ PlayerTabButton.Name = "PlayerTabButton"
 PlayerTabButton.Size = UDim2.new(0, 90, 0, 90)
 PlayerTabButton.Position = UDim2.new(1, -210, 1, -105)
 PlayerTabButton.BackgroundTransparency = 1
-PlayerTabButton.Image = "rbxassetid://2790264104" -- Lightning bolt icon
-PlayerTabButton.ImageColor3 = Color3.fromRGB(100, 255, 100) -- Neon green
+PlayerTabButton.Image = "rbxassetid://3926305904" -- Standard reliable backing
+PlayerTabButton.ImageColor3 = Color3.fromRGB(100, 255, 100)
 PlayerTabButton.ZIndex = 10
 PlayerTabButton.Parent = Body_2
 
 local PlayerText = Instance.new("TextLabel")
-PlayerText.Size = UDim2.new(1,0,0.4,0)
-PlayerText.Position = UDim2.new(0,0,0.6,0)
+PlayerText.Size = UDim2.new(1,0,0.5,0)
+PlayerText.Position = UDim2.new(0,0,0.5,0)
 PlayerText.BackgroundTransparency = 1
 PlayerText.Text = "Player"
-PlayerText.TextColor3 = Color3.new(1,1,1)
+PlayerText.TextColor3 = Color3.fromRGB(180, 180, 180)
 PlayerText.Font = Enum.Font.GothamBold
 PlayerText.TextScaled = true
 PlayerText.ZIndex = 11
@@ -677,20 +689,41 @@ end
 
 AddPlayerToggle("WalkSpeed (24)", function()
     speedtoggle = not speedtoggle
+    if not speedtoggle then
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = 16
+        end
+    end
     return speedtoggle
 end)
 
 AddPlayerToggle("JumpPower (50)", function()
     jumptoggle = not jumptoggle
+    if not jumptoggle then
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.JumpPower = 50
+        end
+    end
     return jumptoggle
 end)
 
 AddPlayerToggle("Noclip", function()
     nocliptoggle = not nocliptoggle
+    if not nocliptoggle then
+        local char = game.Players.LocalPlayer.Character
+        if char then
+            for _, part in pairs(char:GetChildren()) do
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                    part.CanCollide = true
+                end
+            end
+        end
+    end
     return nocliptoggle
 end)
 
--- Button routing
 trackConnection(TPButton.MouseButton1Click:Connect(function()
     if TPMenu then
         MainMenuWindow.Visible = false
@@ -708,21 +741,6 @@ trackConnection(TPMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     end
 end))
 
-trackConnection(PlayerTabButton.MouseButton1Click:Connect(function()
-    MainMenuWindow.Visible = false
-    ESPMenuWindow.Visible = false
-    ToolsMenuWindow.Visible = false
-    TPMenu.Visible = false
-    PlayerMenu.Visible = true
-end))
-
-trackConnection(PlayerMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
-    PlayerMenu.Visible = false
-    MainMenuWindow.Visible = true
-end))
-
-
--- Tools Button settings
 ToolsButton.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
 ToolsButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 ToolsButton.BorderSizePixel = 0
@@ -934,8 +952,8 @@ ViewportFrame.Visible = false
 trackConnection(CheatButton.MouseButton1Down:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
-    PlayerMenu.Visible = false
     TPMenu.Visible = false
+    PlayerMenu.Visible = false
     MainMenuWindow.Visible = not MainMenuWindow.Visible
 end))
 
@@ -954,33 +972,46 @@ end))
 trackConnection(BackButton.MouseButton1Down:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
-    PlayerMenu.Visible = false
     TPMenu.Visible = false
+    PlayerMenu.Visible = false
     MainMenuWindow.Visible = true
 end))
 
 trackConnection(BackButton_2.MouseButton1Down:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
-    PlayerMenu.Visible = false
     TPMenu.Visible = false
+    PlayerMenu.Visible = false
     MainMenuWindow.Visible = true
 end))
 
 trackConnection(ESPButton.MouseButton1Down:Connect(function()
     ESPMenuWindow.Visible = true
     ToolsMenuWindow.Visible = false
-    PlayerMenu.Visible = false
     TPMenu.Visible = false
+    PlayerMenu.Visible = false
     MainMenuWindow.Visible = false
 end))
 
 trackConnection(ToolsButton.MouseButton1Down:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = true
+    TPMenu.Visible = false
     PlayerMenu.Visible = false
+    MainMenuWindow.Visible = false
+end))
+
+trackConnection(PlayerTabButton.MouseButton1Down:Connect(function()
+    ESPMenuWindow.Visible = false
+    ToolsMenuWindow.Visible = false
     TPMenu.Visible = false
     MainMenuWindow.Visible = false
+    PlayerMenu.Visible = true
+end))
+
+trackConnection(PlayerMenu.TopBar.BackButton.MouseButton1Down:Connect(function()
+    PlayerMenu.Visible = false
+    MainMenuWindow.Visible = true
 end))
 
 -- Helper functions to fetch game data safely
@@ -1082,7 +1113,7 @@ function reloadESP()
     end
 end
 
--- Dedicated RunService Loop for ESP Colors
+-- Dedicated RunService Loop for ESP Colors (Fixes Memory Leak)
 trackConnection(game:GetService("RunService").RenderStepped:Connect(function()
     if pctoggle then
         local map = game.ReplicatedStorage:FindFirstChild("CurrentMap")
@@ -1119,36 +1150,11 @@ trackConnection(game:GetService("RunService").RenderStepped:Connect(function()
     end
 end))
 
--- Player Mods Loop
-trackConnection(game:GetService("RunService").Stepped:Connect(function()
-    local char = game.Players.LocalPlayer.Character
-    if char and char:FindFirstChild("Humanoid") then
-        local hum = char.Humanoid
-        
-        if speedtoggle then
-            hum.WalkSpeed = 24
-        end
-        
-        if jumptoggle then
-            hum.UseJumpPower = true
-            hum.JumpPower = 50
-        end
-        
-        if nocliptoggle then
-            for _, part in pairs(char:GetDescendants()) do
-                if part:IsA("BasePart") and part.CanCollide then
-                    part.CanCollide = false
-                end
-            end
-        end
-    end
-end))
-
 function reloadBeastCam()
     ViewportFrame:ClearAllChildren()
     if beastcamtoggle and game.ReplicatedStorage:FindFirstChild("CurrentMap") and game.ReplicatedStorage.CurrentMap.Value then
         local beast = getBeast()
-        local cam = Instance.new("Camera", ViewportFrame)
+        local cam = Instance.new("Camera", ViewportFrame) -- Fixed: Parented to ViewportFrame
         cam.CameraType = Enum.CameraType.Scriptable
         cam.FieldOfView = 70
         
@@ -1298,7 +1304,7 @@ task.spawn(function()
     end)
 end)
 
--- Auto Interact Dynamic Hook
+-- Auto Interact Dynamic Hook (Fixes Respawn Bug)
 local function setupAutoInteract(character)
     local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
     local screenGui = playerGui:WaitForChild("ScreenGui", 10)
@@ -1423,6 +1429,31 @@ task.spawn(function()
     end
 end)
 
+-- Player Mods Loop
+trackConnection(game:GetService("RunService").Stepped:Connect(function()
+    local char = game.Players.LocalPlayer.Character
+    if char and char:FindFirstChild("Humanoid") then
+        local hum = char.Humanoid
+        
+        if speedtoggle then
+            hum.WalkSpeed = 24
+        end
+        
+        if jumptoggle then
+            hum.UseJumpPower = true
+            hum.JumpPower = 50
+        end
+        
+        if nocliptoggle then
+            for _, part in pairs(char:GetDescendants()) do
+                if part:IsA("BasePart") and part.CanCollide then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end
+end))
+
 -- =============== CLEAN CREDIT + SELECTIVE GOTHAMBOLD ===============
 for _, obj in pairs(FTFHAX:GetDescendants()) do
     if obj:IsA("TextLabel") or obj:IsA("TextButton") then
@@ -1446,4 +1477,4 @@ creditMain.TextScaled = true
 creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
 
-print("FTFHAX v0.4.29 • Final Clean Theme Applied ✨")
+print("FTFHAX v0.4.29 • Clean Theme Applied ✨")
