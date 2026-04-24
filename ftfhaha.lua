@@ -302,7 +302,7 @@ MainMenuWindow.BorderColor3 = Color3.fromRGB(0, 0, 0)
 MainMenuWindow.BorderSizePixel = 2
 MainMenuWindow.ClipsDescendants = true
 MainMenuWindow.Position = UDim2.new(0.5, 0, 0.5, -18)
-MainMenuWindow.Size = UDim2.new(0, 420, 0, 320)
+MainMenuWindow.Size = UDim2.new(0, 420, 0, 360)
 MainMenuWindow.SizeConstraint = Enum.SizeConstraint.RelativeYY
 MainMenuWindow.Visible = false
 
@@ -368,7 +368,7 @@ Body_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Body_2.BackgroundTransparency = 1.000
 Body_2.BorderSizePixel = 0
 Body_2.Position = UDim2.new(0.5, 0, 0, 45)
-Body_2.Size = UDim2.new(1, -10, 1, -50)
+Body_2.Size = UDim2.new(1, -10, 1, -75)
 
 UIGridLayout_2.Parent = Body_2
 UIGridLayout_2.HorizontalAlignment = Enum.HorizontalAlignment.Center
