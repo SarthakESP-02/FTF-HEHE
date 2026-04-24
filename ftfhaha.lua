@@ -1,4 +1,4 @@
-local ver = "v0.4.23" -- FTFHAX by Xyrozzy
+local ver = "v0.4.29" -- FTFHAX by Xyrozzy
 
 -- Global Connection Tracker for Clean UI Destruction
 local activeConnections = {}
@@ -543,11 +543,13 @@ local function AddTP(name, func)
     end))
 end
 
+-- FIXED 10 DESTINATIONS (Model :GetPivot() fixes + accurate FTF checks)
 AddTP("Nearest PC", function()
     if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
     for _, v in pairs(workspace.CurrentMap:GetDescendants()) do
-        if v.Name == "ComputerTable" and v:FindFirstChild("ProximityPrompt") then
-            lp.Character.HumanoidRootPart.CFrame = v.CFrame + Vector3.new(0,5,0)
+        if v.Name == "ComputerTable" then
+            -- Models use :GetPivot(), not .CFrame
+            lp.Character.HumanoidRootPart.CFrame = v:GetPivot() + Vector3.new(0, 5, 0)
             break
         end
     end
@@ -557,15 +559,15 @@ AddTP("Safest PC (Best)", function()
     if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
     local best = getBestPC()
     if best and best[1] and best[1].pc then
-        lp.Character.HumanoidRootPart.CFrame = best[1].pc.CFrame + Vector3.new(0,5,0)
+        lp.Character.HumanoidRootPart.CFrame = best[1].pc:GetPivot() + Vector3.new(0, 5, 0)
     end
 end)
 
 AddTP("Nearest Pod", function()
     if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
     for _, v in pairs(workspace.CurrentMap:GetDescendants()) do
-        if v.Name == "FreezePod" and v:FindFirstChild("Seat") then
-            lp.Character.HumanoidRootPart.CFrame = v.Seat.CFrame + Vector3.new(0,5,0)
+        if v.Name == "FreezePod" then
+            lp.Character.HumanoidRootPart.CFrame = v:GetPivot() + Vector3.new(0, 5, 0)
             break
         end
     end
@@ -574,8 +576,8 @@ end)
 AddTP("Frozen Teammate", function()
     if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
     for _, v in pairs(workspace.CurrentMap:GetDescendants()) do
-        if v.Name == "FreezePod" and v:FindFirstChild("Occupant") and v.Occupant.Value then
-            lp.Character.HumanoidRootPart.CFrame = v.CFrame + Vector3.new(0,5,0)
+        if v.Name == "FreezePod" and v:FindFirstChild("Occupant") and v.Occupant.Value ~= nil then
+            lp.Character.HumanoidRootPart.CFrame = v:GetPivot() + Vector3.new(0, 5, 0)
             break
         end
     end
@@ -584,9 +586,8 @@ end)
 AddTP("Exit Door", function()
     if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
     local exit = workspace.CurrentMap:FindFirstChild("ExitDoor")
-    if exit and (exit.PrimaryPart or exit:FindFirstChild("Main")) then
-        local part = exit.PrimaryPart or exit.Main
-        lp.Character.HumanoidRootPart.CFrame = part.CFrame + Vector3.new(0,10,0)
+    if exit then
+        lp.Character.HumanoidRootPart.CFrame = exit:GetPivot() + Vector3.new(0, 5, 0)
     end
 end)
 
@@ -594,7 +595,7 @@ AddTP("TP to Beast", function()
     if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
     local beast = getBeast()
     if beast and beast.Character and beast.Character:FindFirstChild("HumanoidRootPart") then
-        lp.Character.HumanoidRootPart.CFrame = beast.Character.HumanoidRootPart.CFrame + Vector3.new(0,5,0)
+        lp.Character.HumanoidRootPart.CFrame = beast.Character.HumanoidRootPart.CFrame + Vector3.new(0, 5, 0)
     end
 end)
 
@@ -609,26 +610,24 @@ AddTP("Nearest Teammate", function()
         end
     end
     if closest and closest.Character and closest.Character:FindFirstChild("HumanoidRootPart") then
-        lp.Character.HumanoidRootPart.CFrame = closest.Character.HumanoidRootPart.CFrame + Vector3.new(5,0,0)
+        lp.Character.HumanoidRootPart.CFrame = closest.Character.HumanoidRootPart.CFrame + Vector3.new(5, 0, 0)
     end
 end)
 
 AddTP("Spawn", function()
     if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
-    local spawn = workspace:FindFirstChild("SpawnLocation") or workspace.Spawns:FindFirstChildOfClass("SpawnLocation")
+    local spawn = workspace:FindFirstChild("SpawnLocation") or workspace:FindFirstChild("Spawns") and workspace.Spawns:FindFirstChildOfClass("SpawnLocation")
     if spawn then
-        lp.Character.HumanoidRootPart.CFrame = spawn.CFrame + Vector3.new(0,10,0)
+        lp.Character.HumanoidRootPart.CFrame = spawn.CFrame + Vector3.new(0, 10, 0)
     end
 end)
 
 AddTP("Map Center", function()
     if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
-    local map = workspace.CurrentMap
-    if map.PrimaryPart then
-        lp.Character.HumanoidRootPart.CFrame = map.PrimaryPart.CFrame + Vector3.new(0,80,0)
-    else
-        local cf = map:GetBoundingBox()
-        lp.Character.HumanoidRootPart.CFrame = cf.Position + Vector3.new(0,80,0)
+    local map = workspace:FindFirstChild("CurrentMap")
+    if map and map.Value then
+        local cf = map.Value:GetBoundingBox()
+        lp.Character.HumanoidRootPart.CFrame = cf.Position + Vector3.new(0, 80, 0)
     end
 end)
 
@@ -639,8 +638,8 @@ AddTP("Random PC", function()
         if v.Name == "ComputerTable" then table.insert(pcs, v) end
     end
     if #pcs > 0 then
-        local rand = pcs[math.random(1,#pcs)]
-        lp.Character.HumanoidRootPart.CFrame = rand.CFrame + Vector3.new(0,5,0)
+        local rand = pcs[math.random(1, #pcs)]
+        lp.Character.HumanoidRootPart.CFrame = rand:GetPivot() + Vector3.new(0, 5, 0)
     end
 end)
 
