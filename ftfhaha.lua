@@ -163,20 +163,6 @@ PCESPButton.TextScaled = true
 PCESPButton.TextSize = 14.000
 PCESPButton.TextWrapped = true
 
-TbdButton.Name = "TbdButton"
-TbdButton.Parent = ButtonsFrame
-TbdButton.BackgroundColor3 = Color3.fromRGB(191, 0, 0)
-TbdButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
-TbdButton.BorderSizePixel = 0
-TbdButton.LayoutOrder = 5
-TbdButton.Size = UDim2.new(0, 200, 0, 50)
-TbdButton.Visible = false
-TbdButton.Text = "nothing"
-TbdButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-TbdButton.TextScaled = true
-TbdButton.TextSize = 14.000
-TbdButton.TextWrapped = true
-
 PlayerESPButton.Name = "PlayerESPButton"
 PlayerESPButton.Parent = ButtonsFrame
 PlayerESPButton.BackgroundColor3 = Color3.fromRGB(191, 0, 0)
@@ -294,6 +280,20 @@ PageTitleText.TextSize = 34.000
 PageTitleText.TextWrapped = true
 PageTitleText.TextXAlignment = Enum.TextXAlignment.Left
 
+-- Toggles Variables
+local podstoggle = false
+local pctoggle = false
+local playertoggle = false
+local bestpctoggle = false
+local exitstoggle = false
+local beastcamtoggle = false
+local neverfailtoggle = false
+local autointeracttoggle = false
+local autoplaytoggle = false
+local speedtoggle = false
+local jumptoggle = false
+local nocliptoggle = false
+
 MainMenuWindow.Name = "MainMenuWindow"
 MainMenuWindow.Parent = FTFHAX
 MainMenuWindow.AnchorPoint = Vector2.new(0.5, 0.5)
@@ -302,7 +302,7 @@ MainMenuWindow.BorderColor3 = Color3.fromRGB(0, 0, 0)
 MainMenuWindow.BorderSizePixel = 2
 MainMenuWindow.ClipsDescendants = true
 MainMenuWindow.Position = UDim2.new(0.5, 0, 0.5, -18)
-MainMenuWindow.Size = UDim2.new(0, 420, 0, 360)
+MainMenuWindow.Size = UDim2.new(0, 420, 0, 360) -- EXTENDED HEIGHT
 MainMenuWindow.SizeConstraint = Enum.SizeConstraint.RelativeYY
 MainMenuWindow.Visible = false
 
@@ -368,7 +368,7 @@ Body_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Body_2.BackgroundTransparency = 1.000
 Body_2.BorderSizePixel = 0
 Body_2.Position = UDim2.new(0.5, 0, 0, 45)
-Body_2.Size = UDim2.new(1, -10, 1, -75)
+Body_2.Size = UDim2.new(1, -10, 1, -75) -- REDUCED SIZE FOR CREDIT TEXT
 
 UIGridLayout_2.Parent = Body_2
 UIGridLayout_2.HorizontalAlignment = Enum.HorizontalAlignment.Center
@@ -413,17 +413,17 @@ ToolsButton.Parent = Body_2
 local KillPanelButton = Instance.new("TextButton")
 KillPanelButton.Name = "KillPanelButton"
 KillPanelButton.Size = UDim2.new(0, 132, 0, 132)
-KillPanelButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+KillPanelButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35) -- Sleek dark gray
 KillPanelButton.Text = "KILL\nPANEL"
-KillPanelButton.TextColor3 = Color3.new(1,1,1)
+KillPanelButton.TextColor3 = Color3.fromRGB(255, 80, 80) -- Soft red text
 KillPanelButton.Font = Enum.Font.GothamBold
 KillPanelButton.TextScaled = true
 KillPanelButton.Parent = Body_2
 
 Instance.new("UICorner", KillPanelButton).CornerRadius = UDim.new(0, 12)
 local stroke = Instance.new("UIStroke", KillPanelButton)
-stroke.Color = Color3.fromRGB(255, 0, 0)
-stroke.Thickness = 3
+stroke.Color = Color3.fromRGB(255, 50, 50) -- Neon red border
+stroke.Thickness = 2
 
 KillPanelButton.MouseButton1Click:Connect(function()
     neverfailtoggle = false
@@ -435,9 +435,14 @@ KillPanelButton.MouseButton1Click:Connect(function()
     beastcamtoggle = false
     autoplaytoggle = false
     autointeracttoggle = false
+    speedtoggle = false
+    jumptoggle = false
+    nocliptoggle = false
 
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        game.Players.LocalPlayer.Character.Humanoid.UseJumpPower = true
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = 50
     end
 
     for _, v in pairs(workspace:GetDescendants()) do
@@ -453,7 +458,7 @@ KillPanelButton.MouseButton1Click:Connect(function()
     FTFHAX:Destroy()
 end)
 
--- ==================== FIXED TP + UPCOMING TABS ====================
+-- ==================== TABS: TP, PLAYER, UPCOMING ====================
 local TPButton = Instance.new("ImageButton")
 TPButton.Name = "TPButton"
 TPButton.Size = UDim2.new(0, 90, 0, 90)
@@ -475,25 +480,26 @@ TPText.TextScaled = true
 TPText.ZIndex = 11
 TPText.Parent = TPButton
 
-local Upcoming1 = Instance.new("ImageButton")
-Upcoming1.Size = UDim2.new(0, 90, 0, 90)
-Upcoming1.Position = UDim2.new(1, -210, 1, -105)
-Upcoming1.BackgroundTransparency = 1
-Upcoming1.Image = "rbxassetid://3926305904"
-Upcoming1.ImageColor3 = Color3.fromRGB(120, 120, 120)
-Upcoming1.ZIndex = 10
-Upcoming1.Parent = Body_2
+local PlayerTabButton = Instance.new("ImageButton")
+PlayerTabButton.Name = "PlayerTabButton"
+PlayerTabButton.Size = UDim2.new(0, 90, 0, 90)
+PlayerTabButton.Position = UDim2.new(1, -210, 1, -105)
+PlayerTabButton.BackgroundTransparency = 1
+PlayerTabButton.Image = "rbxassetid://2790264104" -- Lightning bolt icon
+PlayerTabButton.ImageColor3 = Color3.fromRGB(100, 255, 100) -- Neon green
+PlayerTabButton.ZIndex = 10
+PlayerTabButton.Parent = Body_2
 
-local UpText1 = Instance.new("TextLabel")
-UpText1.Size = UDim2.new(1,0,0.5,0)
-UpText1.Position = UDim2.new(0,0,0.5,0)
-UpText1.BackgroundTransparency = 1
-UpText1.Text = "(upcoming)"
-UpText1.TextColor3 = Color3.fromRGB(180, 180, 180)
-UpText1.Font = Enum.Font.GothamBold
-UpText1.TextScaled = true
-UpText1.ZIndex = 11
-UpText1.Parent = Upcoming1
+local PlayerText = Instance.new("TextLabel")
+PlayerText.Size = UDim2.new(1,0,0.4,0)
+PlayerText.Position = UDim2.new(0,0,0.6,0)
+PlayerText.BackgroundTransparency = 1
+PlayerText.Text = "Player"
+PlayerText.TextColor3 = Color3.new(1,1,1)
+PlayerText.Font = Enum.Font.GothamBold
+PlayerText.TextScaled = true
+PlayerText.ZIndex = 11
+PlayerText.Parent = PlayerTabButton
 
 local Upcoming2 = Instance.new("ImageButton")
 Upcoming2.Size = UDim2.new(0, 90, 0, 90)
@@ -543,12 +549,10 @@ local function AddTP(name, func)
     end))
 end
 
--- FIXED 10 DESTINATIONS (Model :GetPivot() fixes + accurate FTF checks)
 AddTP("Nearest PC", function()
     if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
     for _, v in pairs(workspace.CurrentMap:GetDescendants()) do
         if v.Name == "ComputerTable" then
-            -- Models use :GetPivot(), not .CFrame
             lp.Character.HumanoidRootPart.CFrame = v:GetPivot() + Vector3.new(0, 5, 0)
             break
         end
@@ -643,11 +647,56 @@ AddTP("Random PC", function()
     end
 end)
 
+-- ==================== PLAYER MENU ====================
+local PlayerMenu = ESPMenuWindow:Clone()
+PlayerMenu.Name = "PlayerMenu"
+PlayerMenu.Visible = false
+PlayerMenu.Parent = FTFHAX
+PlayerMenu.Body.TitleLabel.Text = "PLAYER MODS"
+PlayerMenu.TopBar.PageTitleText.Text = "ftfhax - Player"
+
+for _, v in pairs(PlayerMenu.Body.ButtonsFrame:GetChildren()) do
+    if v:IsA("TextButton") then v:Destroy() end
+end
+
+local function AddPlayerToggle(name, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 200, 0, 50)
+    btn.BackgroundColor3 = Color3.fromRGB(191, 0, 0)
+    btn.Text = name
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.GothamBold
+    btn.TextScaled = true
+    btn.Parent = PlayerMenu.Body.ButtonsFrame
+    
+    trackConnection(btn.MouseButton1Click:Connect(function()
+        local newState = callback()
+        btn.BackgroundColor3 = newState and Color3.new(0, 0.74902, 0) or Color3.new(0.74902, 0, 0)
+    end))
+end
+
+AddPlayerToggle("WalkSpeed (24)", function()
+    speedtoggle = not speedtoggle
+    return speedtoggle
+end)
+
+AddPlayerToggle("JumpPower (50)", function()
+    jumptoggle = not jumptoggle
+    return jumptoggle
+end)
+
+AddPlayerToggle("Noclip", function()
+    nocliptoggle = not nocliptoggle
+    return nocliptoggle
+end)
+
+-- Button routing
 trackConnection(TPButton.MouseButton1Click:Connect(function()
     if TPMenu then
         MainMenuWindow.Visible = false
         ESPMenuWindow.Visible = false
         ToolsMenuWindow.Visible = false
+        PlayerMenu.Visible = false
         TPMenu.Visible = true
     end
 end))
@@ -659,6 +708,21 @@ trackConnection(TPMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     end
 end))
 
+trackConnection(PlayerTabButton.MouseButton1Click:Connect(function()
+    MainMenuWindow.Visible = false
+    ESPMenuWindow.Visible = false
+    ToolsMenuWindow.Visible = false
+    TPMenu.Visible = false
+    PlayerMenu.Visible = true
+end))
+
+trackConnection(PlayerMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
+    PlayerMenu.Visible = false
+    MainMenuWindow.Visible = true
+end))
+
+
+-- Tools Button settings
 ToolsButton.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
 ToolsButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 ToolsButton.BorderSizePixel = 0
@@ -870,6 +934,8 @@ ViewportFrame.Visible = false
 trackConnection(CheatButton.MouseButton1Down:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
+    PlayerMenu.Visible = false
+    TPMenu.Visible = false
     MainMenuWindow.Visible = not MainMenuWindow.Visible
 end))
 
@@ -888,37 +954,34 @@ end))
 trackConnection(BackButton.MouseButton1Down:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
+    PlayerMenu.Visible = false
+    TPMenu.Visible = false
     MainMenuWindow.Visible = true
 end))
 
 trackConnection(BackButton_2.MouseButton1Down:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
+    PlayerMenu.Visible = false
+    TPMenu.Visible = false
     MainMenuWindow.Visible = true
 end))
 
 trackConnection(ESPButton.MouseButton1Down:Connect(function()
     ESPMenuWindow.Visible = true
     ToolsMenuWindow.Visible = false
+    PlayerMenu.Visible = false
+    TPMenu.Visible = false
     MainMenuWindow.Visible = false
 end))
 
 trackConnection(ToolsButton.MouseButton1Down:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = true
+    PlayerMenu.Visible = false
+    TPMenu.Visible = false
     MainMenuWindow.Visible = false
 end))
-
--- Variables for Toggles
-local podstoggle = false
-local pctoggle = false
-local playertoggle = false
-local bestpctoggle = false
-local exitstoggle = false
-local beastcamtoggle = false
-local neverfailtoggle = false
-local autointeracttoggle = false
-local autoplaytoggle = false
 
 -- Helper functions to fetch game data safely
 function getBeast()
@@ -1019,7 +1082,7 @@ function reloadESP()
     end
 end
 
--- Dedicated RunService Loop for ESP Colors (Fixes Memory Leak)
+-- Dedicated RunService Loop for ESP Colors
 trackConnection(game:GetService("RunService").RenderStepped:Connect(function()
     if pctoggle then
         local map = game.ReplicatedStorage:FindFirstChild("CurrentMap")
@@ -1056,11 +1119,36 @@ trackConnection(game:GetService("RunService").RenderStepped:Connect(function()
     end
 end))
 
+-- Player Mods Loop
+trackConnection(game:GetService("RunService").Stepped:Connect(function()
+    local char = game.Players.LocalPlayer.Character
+    if char and char:FindFirstChild("Humanoid") then
+        local hum = char.Humanoid
+        
+        if speedtoggle then
+            hum.WalkSpeed = 24
+        end
+        
+        if jumptoggle then
+            hum.UseJumpPower = true
+            hum.JumpPower = 50
+        end
+        
+        if nocliptoggle then
+            for _, part in pairs(char:GetDescendants()) do
+                if part:IsA("BasePart") and part.CanCollide then
+                    part.CanCollide = false
+                end
+            end
+        end
+    end
+end))
+
 function reloadBeastCam()
     ViewportFrame:ClearAllChildren()
     if beastcamtoggle and game.ReplicatedStorage:FindFirstChild("CurrentMap") and game.ReplicatedStorage.CurrentMap.Value then
         local beast = getBeast()
-        local cam = Instance.new("Camera", ViewportFrame) -- Fixed: Parented to ViewportFrame
+        local cam = Instance.new("Camera", ViewportFrame)
         cam.CameraType = Enum.CameraType.Scriptable
         cam.FieldOfView = 70
         
@@ -1210,7 +1298,7 @@ task.spawn(function()
     end)
 end)
 
--- Auto Interact Dynamic Hook (Fixes Respawn Bug)
+-- Auto Interact Dynamic Hook
 local function setupAutoInteract(character)
     local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
     local screenGui = playerGui:WaitForChild("ScreenGui", 10)
@@ -1358,4 +1446,4 @@ creditMain.TextScaled = true
 creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
 
-print("FTFHAX v0.4.23 • Clean Theme Applied ✨")
+print("FTFHAX v0.4.29 • Final Clean Theme Applied ✨")
