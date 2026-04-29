@@ -1,4 +1,4 @@
-local ver = "v0.6.45" -- FTF admin Panel by Xyrozzy
+local ver = "v0.6.59" -- FTF admin Panel by Xyrozzy
 
 -- Global Connection Tracker for Clean UI Destruction
 local activeConnections = {}
@@ -1232,17 +1232,23 @@ function reloadESP()
     end
 end
 
--- Dedicated RunService Loop for ESP Colors
-trackConnection(game:GetService("RunService").RenderStepped:Connect(function()
+-- Dedicated RunService Loop for ESP Colors (OPTIMIZED)
+local espTick = 0
+local cachedBest = nil
+trackConnection(game:GetService("RunService").Heartbeat:Connect(function()
+    espTick = espTick + 1
+    if espTick % 10 == 0 then -- Only calculate Best PC 6 times a second instead of 60!
+        cachedBest = getBestPC()
+    end
+
     if pctoggle then
         local map = getMap()
         if map then
-            local best = getBestPC()
             for _, pc in pairs(map:GetChildren()) do
                 if pc.Name == "ComputerTable" and pc:FindFirstChild("Highlight") and pc:FindFirstChild("Screen") then
                     local a = pc.Highlight
                     a.FillColor = pc.Screen.Color
-                    if bestpctoggle and best[1] and best[1].pc == pc then
+                    if bestpctoggle and cachedBest and cachedBest[1] and cachedBest[1].pc == pc then
                         a.OutlineColor = Color3.fromRGB(200, 0, 255)
                     else
                         a.OutlineColor = Color3.fromRGB(math.clamp(a.FillColor.R*400,0,255), math.clamp(a.FillColor.G*400,0,255), math.clamp(a.FillColor.B*400,0,255))
@@ -1656,25 +1662,50 @@ AddMiscToggle("Smart ESP (150s)", function()
     return smartesptoggle
 end)
 
--- Hooking Smart ESP into RenderStepped
-trackConnection(game:GetService("RunService").RenderStepped:Connect(function()
+-- Hooking Smart ESP into Heartbeat (OPTIMIZED)
+local smartEspTick = 0
+trackConnection(game:GetService("RunService").Heartbeat:Connect(function()
+    smartEspTick = smartEspTick + 1
+    if smartEspTick % 15 ~= 0 then return end -- Only check distances 4 times a second!
+
     if smartesptoggle and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         local pos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
-        for _, v in pairs(workspace:GetDescendants()) do
-            if v:IsA("Highlight") and v.Parent and v.Parent:IsA("Model") then
-                local targetPos = v.Parent:GetPivot().Position
-                if (targetPos - pos).Magnitude > 150 then
-                    v.Enabled = false
+        
+        -- Check only players (very fast)
+        for _, p in pairs(game.Players:GetPlayers()) do
+            if p.Character and p.Character:FindFirstChild("Highlight") then
+                if (p.Character:GetPivot().Position - pos).Magnitude > 150 then
+                    p.Character.Highlight.Enabled = false
                 else
-                    v.Enabled = true
+                    p.Character.Highlight.Enabled = true
+                end
+            end
+        end
+        
+        -- Check only the map folder (no GetDescendants)
+        local map = getMap()
+        if map then
+            for _, item in pairs(map:GetChildren()) do
+                if item:FindFirstChild("Highlight") then
+                    if (item:GetPivot().Position - pos).Magnitude > 150 then
+                        item.Highlight.Enabled = false
+                    else
+                        item.Highlight.Enabled = true
+                    end
                 end
             end
         end
     else
-        -- Re-enable all if toggled off
-        for _, v in pairs(workspace:GetDescendants()) do
-            if v:IsA("Highlight") then
-                v.Enabled = true
+        -- Re-enable safely if toggled off
+        if not smartesptoggle then
+            for _, p in pairs(game.Players:GetPlayers()) do
+                if p.Character and p.Character:FindFirstChild("Highlight") then p.Character.Highlight.Enabled = true end
+            end
+            local map = getMap()
+            if map then
+                for _, item in pairs(map:GetChildren()) do
+                    if item:FindFirstChild("Highlight") then item.Highlight.Enabled = true end
+                end
             end
         end
     end
@@ -1808,4 +1839,4 @@ creditMain.TextSize = 14
 creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
 
-print("FTF admin Panel v0.6.45 • Final Assembled Script ✨")
+print("FTF admin Panel v0.6.59 • Final Assembled Script ✨")
