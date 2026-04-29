@@ -1027,7 +1027,7 @@ MiscScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
 local MiscGrid = Instance.new("UIGridLayout")
 MiscGrid.Parent = MiscScroll
-MiscGrid.FillDirection = Enum.FillDirection.Vertical
+MiscGrid.FillDirection = Enum.FillDirection.Horizontal -- FIXED THIS LINE
 MiscGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
 MiscGrid.SortOrder = Enum.SortOrder.LayoutOrder
 MiscGrid.CellPadding = UDim2.new(0, 6, 0, 6)
