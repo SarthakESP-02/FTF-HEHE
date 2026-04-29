@@ -1,10 +1,36 @@
-local ver = "v0.4.29" -- FTFHAX by Xyrozzy
+local ver = "v0.6.45" -- FTF admin Panel by Xyrozzy
 
 -- Global Connection Tracker for Clean UI Destruction
 local activeConnections = {}
 local function trackConnection(conn)
     if conn then table.insert(activeConnections, conn) end
 end
+
+-- ==================== TOGGLE VARIABLES ====================
+local podstoggle = false
+local pctoggle = false
+local playertoggle = false
+local bestpctoggle = false
+local exitstoggle = false
+local beastcamtoggle = false
+local neverfailtoggle = false
+local autointeracttoggle = false
+local autoplaytoggle = false
+local speedtoggle = false
+local jumptoggle = false
+local nocliptoggle = false
+
+local nofogtoggle = false
+local fullbrighttoggle = false
+local smartesptoggle = false
+local fovtoggle = false
+local lowgravtoggle = false
+local proximitytoggle = false
+
+-- Variables to memorize the original map lighting
+local origFogEnd, origFogStart, origAtmDensity, origAtmOffset
+local origAmbient, origOutdoorAmbient
+-- ==========================================================
 
 local FTFHAX = Instance.new("ScreenGui")
 local MenusTabFrame = Instance.new("Frame")
@@ -89,7 +115,7 @@ TextLabel.BackgroundTransparency = 1.000
 TextLabel.Position = UDim2.new(0, 0, 1, 0)
 TextLabel.Size = UDim2.new(1, 0, 0.200000003, 0)
 TextLabel.Font = Enum.Font.ArialBold
-TextLabel.Text = "ftfhax"
+TextLabel.Text = "FTF admin Panel"
 TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
 TextLabel.TextScaled = true
 TextLabel.TextSize = 12.000
@@ -269,13 +295,12 @@ CreditTotalText.AnchorPoint = Vector2.new(1, 0)
 CreditTotalText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 CreditTotalText.BackgroundTransparency = 1.000
 CreditTotalText.BorderSizePixel = 0
-CreditTotalText.Position = UDim2.new(1, -111, 0, 0)
-CreditTotalText.Size = UDim2.new(0, 120, 1, 0)
+CreditTotalText.Position = UDim2.new(1, -45, 0, 0)
+CreditTotalText.Size = UDim2.new(0, 100, 1, 0)
 CreditTotalText.ZIndex = 5
 CreditTotalText.Text = ver
 CreditTotalText.TextColor3 = Color3.fromRGB(255, 255, 0)
 CreditTotalText.TextScaled = true
-CreditTotalText.TextSize = 34.000
 CreditTotalText.TextWrapped = true
 CreditTotalText.TextXAlignment = Enum.TextXAlignment.Right
 
@@ -285,28 +310,13 @@ PageTitleText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 PageTitleText.BackgroundTransparency = 1.000
 PageTitleText.BorderSizePixel = 0
 PageTitleText.Position = UDim2.new(0, 10, 0, 0)
-PageTitleText.Size = UDim2.new(0.5, 0, 0, 40)
+PageTitleText.Size = UDim2.new(0, 200, 1, 0)
 PageTitleText.ZIndex = 5
-PageTitleText.Text = "ftfhax"
+PageTitleText.Text = "FTF admin Panel"
 PageTitleText.TextColor3 = Color3.fromRGB(255, 255, 255)
 PageTitleText.TextScaled = true
-PageTitleText.TextSize = 34.000
 PageTitleText.TextWrapped = true
 PageTitleText.TextXAlignment = Enum.TextXAlignment.Left
-
--- Toggles
-local podstoggle = false
-local pctoggle = false
-local playertoggle = false
-local bestpctoggle = false
-local exitstoggle = false
-local beastcamtoggle = false
-local neverfailtoggle = false
-local autointeracttoggle = false
-local autoplaytoggle = false
-local speedtoggle = false
-local jumptoggle = false
-local nocliptoggle = false
 
 MainMenuWindow.Name = "MainMenuWindow"
 MainMenuWindow.Parent = FTFHAX
@@ -350,13 +360,12 @@ CreditTotalText_2.AnchorPoint = Vector2.new(1, 0)
 CreditTotalText_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 CreditTotalText_2.BackgroundTransparency = 1.000
 CreditTotalText_2.BorderSizePixel = 0
-CreditTotalText_2.Position = UDim2.new(1, -111, 0, 0)
-CreditTotalText_2.Size = UDim2.new(0, 120, 1, 0)
+CreditTotalText_2.Position = UDim2.new(1, -45, 0, 0)
+CreditTotalText_2.Size = UDim2.new(0, 100, 1, 0)
 CreditTotalText_2.ZIndex = 5
 CreditTotalText_2.Text = ver
 CreditTotalText_2.TextColor3 = Color3.fromRGB(255, 255, 0)
 CreditTotalText_2.TextScaled = true
-CreditTotalText_2.TextSize = 34.000
 CreditTotalText_2.TextWrapped = true
 CreditTotalText_2.TextXAlignment = Enum.TextXAlignment.Right
 
@@ -366,12 +375,11 @@ PageTitleText_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 PageTitleText_2.BackgroundTransparency = 1.000
 PageTitleText_2.BorderSizePixel = 0
 PageTitleText_2.Position = UDim2.new(0, 10, 0, 0)
-PageTitleText_2.Size = UDim2.new(0.5, 0, 0, 40)
+PageTitleText_2.Size = UDim2.new(0, 200, 1, 0)
 PageTitleText_2.ZIndex = 5
-PageTitleText_2.Text = "ftfhax"
+PageTitleText_2.Text = "FTF admin Panel"
 PageTitleText_2.TextColor3 = Color3.fromRGB(255, 255, 255)
 PageTitleText_2.TextScaled = true
-PageTitleText_2.TextSize = 34.000
 PageTitleText_2.TextWrapped = true
 PageTitleText_2.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -390,6 +398,7 @@ UIGridLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
 UIGridLayout_2.VerticalAlignment = Enum.VerticalAlignment.Center
 UIGridLayout_2.CellSize = UDim2.new(0, 132, 0, 132)
 
+-- ==================== MATCHING MAIN MENU BUTTONS ====================
 ESPButton.Name = "ESPButton"
 ESPButton.Parent = Body_2
 ESPButton.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
@@ -407,9 +416,9 @@ BottomText.Position = UDim2.new(0, 0, 0.800000012, 0)
 BottomText.Size = UDim2.new(1, 0, 0.200000003, 0)
 BottomText.Text = "ESP"
 BottomText.TextColor3 = Color3.fromRGB(255, 255, 255)
-BottomText.TextScaled = true
-BottomText.TextSize = 14.000
-BottomText.TextWrapped = true
+BottomText.Font = Enum.Font.SourceSans
+BottomText.TextScaled = false
+BottomText.TextSize = 24.000
 
 TempIcon.Name = "TempIcon"
 TempIcon.Parent = ESPButton
@@ -419,328 +428,10 @@ TempIcon.BackgroundTransparency = 1.000
 TempIcon.Position = UDim2.new(0.5, 0, 0, 0)
 TempIcon.Size = UDim2.new(0.800000012, 0, 0.800000012, 0)
 TempIcon.Image = "rbxassetid://2594274683"
+TempIcon.ScaleType = Enum.ScaleType.Fit
 
 ToolsButton.Name = "ToolsButton"
 ToolsButton.Parent = Body_2
-
--- ==================== PERFECT KILL PANEL ====================
-local KillPanelButton = Instance.new("TextButton")
-KillPanelButton.Name = "KillPanelButton"
-KillPanelButton.Size = UDim2.new(0, 132, 0, 132)
-KillPanelButton.BackgroundColor3 = Color3.fromRGB(35, 35, 35) -- Sleek dark gray
-KillPanelButton.Text = "KILL\nPANEL"
-KillPanelButton.TextColor3 = Color3.fromRGB(255, 80, 80) -- Soft red text
-KillPanelButton.Font = Enum.Font.GothamBold
-KillPanelButton.TextScaled = true
-KillPanelButton.Parent = Body_2
-
-Instance.new("UICorner", KillPanelButton).CornerRadius = UDim.new(0, 12)
-local stroke = Instance.new("UIStroke", KillPanelButton)
-stroke.Color = Color3.fromRGB(255, 50, 50) -- Neon red border
-stroke.Thickness = 2
-
-KillPanelButton.MouseButton1Click:Connect(function()
-    neverfailtoggle = false
-    podstoggle = false
-    pctoggle = false
-    playertoggle = false
-    bestpctoggle = false
-    exitstoggle = false
-    beastcamtoggle = false
-    autoplaytoggle = false
-    autointeracttoggle = false
-    speedtoggle = false
-    jumptoggle = false
-    nocliptoggle = false
-
-    if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-    end
-
-    for _, v in pairs(workspace:GetDescendants()) do
-        if v:IsA("Highlight") then v:Destroy() end
-    end
-    
-    for _, conn in pairs(activeConnections) do
-        if conn and conn.Connected then conn:Disconnect() end
-    end
-
-    if ViewportFrame then ViewportFrame:Destroy() end
-    task.wait(0.1)
-    FTFHAX:Destroy()
-end)
-
--- ==================== FIXED TP + UPCOMING TABS ====================
-local TPButton = Instance.new("ImageButton")
-TPButton.Name = "TPButton"
-TPButton.Size = UDim2.new(0, 90, 0, 90)
-TPButton.Position = UDim2.new(1, -105, 1, -105)
-TPButton.BackgroundTransparency = 1
-TPButton.Image = "rbxassetid://2249604078"
-TPButton.ImageColor3 = Color3.fromRGB(255, 100, 100)
-TPButton.ZIndex = 10
-TPButton.Parent = Body_2
-
-local TPText = Instance.new("TextLabel")
-TPText.Size = UDim2.new(1,0,0.35,0)
-TPText.Position = UDim2.new(0,0,0.65,0)
-TPText.BackgroundTransparency = 1
-TPText.Text = "TP"
-TPText.TextColor3 = Color3.new(1,1,1)
-TPText.Font = Enum.Font.GothamBold
-TPText.TextScaled = true
-TPText.ZIndex = 11
-TPText.Parent = TPButton
-
-local PlayerTabButton = Instance.new("ImageButton")
-PlayerTabButton.Name = "PlayerTabButton"
-PlayerTabButton.Size = UDim2.new(0, 90, 0, 90)
-PlayerTabButton.Position = UDim2.new(1, -210, 1, -105)
-PlayerTabButton.BackgroundTransparency = 1
-PlayerTabButton.Image = "rbxassetid://3926305904" -- Standard reliable backing
-PlayerTabButton.ImageColor3 = Color3.fromRGB(100, 255, 100)
-PlayerTabButton.ZIndex = 10
-PlayerTabButton.Parent = Body_2
-
-local PlayerText = Instance.new("TextLabel")
-PlayerText.Size = UDim2.new(1,0,0.5,0)
-PlayerText.Position = UDim2.new(0,0,0.5,0)
-PlayerText.BackgroundTransparency = 1
-PlayerText.Text = "Player"
-PlayerText.TextColor3 = Color3.fromRGB(180, 180, 180)
-PlayerText.Font = Enum.Font.GothamBold
-PlayerText.TextScaled = true
-PlayerText.ZIndex = 11
-PlayerText.Parent = PlayerTabButton
-
-local Upcoming2 = Instance.new("ImageButton")
-Upcoming2.Size = UDim2.new(0, 90, 0, 90)
-Upcoming2.Position = UDim2.new(1, -315, 1, -105)
-Upcoming2.BackgroundTransparency = 1
-Upcoming2.Image = "rbxassetid://3926305904"
-Upcoming2.ImageColor3 = Color3.fromRGB(120, 120, 120)
-Upcoming2.ZIndex = 10
-Upcoming2.Parent = Body_2
-
-local UpText2 = Instance.new("TextLabel")
-UpText2.Size = UDim2.new(1,0,0.5,0)
-UpText2.Position = UDim2.new(0,0,0.5,0)
-UpText2.BackgroundTransparency = 1
-UpText2.Text = "(upcoming)"
-UpText2.TextColor3 = Color3.fromRGB(180, 180, 180)
-UpText2.Font = Enum.Font.GothamBold
-UpText2.TextScaled = true
-UpText2.ZIndex = 11
-UpText2.Parent = Upcoming2
-
--- ==================== FIXED TP MENU ====================
-local TPMenu = ESPMenuWindow:Clone()
-TPMenu.Name = "TPMenu"
-TPMenu.Visible = false
-TPMenu.Parent = FTFHAX
-TPMenu.Body.TitleLabel.Text = "TELEPORT"
-TPMenu.TopBar.PageTitleText.Text = "ftfhax - TP"
-
-for _, v in pairs(TPMenu.Body.ButtonsFrame:GetChildren()) do
-    if v:IsA("TextButton") then v:Destroy() end
-end
-
-local lp = game.Players.LocalPlayer
-
-local function AddTP(name, func)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 200, 0, 50)
-    btn.BackgroundColor3 = Color3.fromRGB(191, 0, 0)
-    btn.Text = name
-    btn.TextColor3 = Color3.new(1,1,1)
-    btn.Font = Enum.Font.GothamBold
-    btn.TextScaled = true
-    btn.Parent = TPMenu.Body.ButtonsFrame
-    trackConnection(btn.MouseButton1Click:Connect(function()
-        pcall(func)
-    end))
-end
-
-AddTP("Nearest PC", function()
-    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
-    for _, v in pairs(workspace.CurrentMap:GetDescendants()) do
-        if v.Name == "ComputerTable" then
-            lp.Character.HumanoidRootPart.CFrame = v:GetPivot() + Vector3.new(0, 5, 0)
-            break
-        end
-    end
-end)
-
-AddTP("Safest PC (Best)", function()
-    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
-    local best = getBestPC()
-    if best and best[1] and best[1].pc then
-        lp.Character.HumanoidRootPart.CFrame = best[1].pc:GetPivot() + Vector3.new(0, 5, 0)
-    end
-end)
-
-AddTP("Nearest Pod", function()
-    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
-    for _, v in pairs(workspace.CurrentMap:GetDescendants()) do
-        if v.Name == "FreezePod" then
-            lp.Character.HumanoidRootPart.CFrame = v:GetPivot() + Vector3.new(0, 5, 0)
-            break
-        end
-    end
-end)
-
-AddTP("Frozen Teammate", function()
-    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
-    for _, v in pairs(workspace.CurrentMap:GetDescendants()) do
-        if v.Name == "FreezePod" and v:FindFirstChild("Occupant") and v.Occupant.Value ~= nil then
-            lp.Character.HumanoidRootPart.CFrame = v:GetPivot() + Vector3.new(0, 5, 0)
-            break
-        end
-    end
-end)
-
-AddTP("Exit Door", function()
-    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
-    local exit = workspace.CurrentMap:FindFirstChild("ExitDoor")
-    if exit then
-        lp.Character.HumanoidRootPart.CFrame = exit:GetPivot() + Vector3.new(0, 5, 0)
-    end
-end)
-
-AddTP("TP to Beast", function()
-    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
-    local beast = getBeast()
-    if beast and beast.Character and beast.Character:FindFirstChild("HumanoidRootPart") then
-        lp.Character.HumanoidRootPart.CFrame = beast.Character.HumanoidRootPart.CFrame + Vector3.new(0, 5, 0)
-    end
-end)
-
-AddTP("Nearest Teammate", function()
-    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
-    local closest, dist = nil, math.huge
-    local beast = getBeast()
-    for _, p in pairs(game.Players:GetPlayers()) do
-        if p ~= lp and p ~= beast and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
-            local d = (lp.Character.HumanoidRootPart.Position - p.Character.HumanoidRootPart.Position).Magnitude
-            if d < dist then dist = d; closest = p end
-        end
-    end
-    if closest and closest.Character and closest.Character:FindFirstChild("HumanoidRootPart") then
-        lp.Character.HumanoidRootPart.CFrame = closest.Character.HumanoidRootPart.CFrame + Vector3.new(5, 0, 0)
-    end
-end)
-
-AddTP("Spawn", function()
-    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
-    local spawn = workspace:FindFirstChild("SpawnLocation") or workspace:FindFirstChild("Spawns") and workspace.Spawns:FindFirstChildOfClass("SpawnLocation")
-    if spawn then
-        lp.Character.HumanoidRootPart.CFrame = spawn.CFrame + Vector3.new(0, 10, 0)
-    end
-end)
-
-AddTP("Map Center", function()
-    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
-    local map = workspace:FindFirstChild("CurrentMap")
-    if map and map.Value then
-        local cf = map.Value:GetBoundingBox()
-        lp.Character.HumanoidRootPart.CFrame = cf.Position + Vector3.new(0, 80, 0)
-    end
-end)
-
-AddTP("Random PC", function()
-    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
-    local pcs = {}
-    for _, v in pairs(workspace.CurrentMap:GetDescendants()) do
-        if v.Name == "ComputerTable" then table.insert(pcs, v) end
-    end
-    if #pcs > 0 then
-        local rand = pcs[math.random(1, #pcs)]
-        lp.Character.HumanoidRootPart.CFrame = rand:GetPivot() + Vector3.new(0, 5, 0)
-    end
-end)
-
--- ==================== PLAYER MENU ====================
-local PlayerMenu = ESPMenuWindow:Clone()
-PlayerMenu.Name = "PlayerMenu"
-PlayerMenu.Visible = false
-PlayerMenu.Parent = FTFHAX
-PlayerMenu.Body.TitleLabel.Text = "PLAYER MODS"
-PlayerMenu.TopBar.PageTitleText.Text = "ftfhax - Player"
-
-for _, v in pairs(PlayerMenu.Body.ButtonsFrame:GetChildren()) do
-    if v:IsA("TextButton") then v:Destroy() end
-end
-
-local function AddPlayerToggle(name, callback)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 200, 0, 50)
-    btn.BackgroundColor3 = Color3.fromRGB(191, 0, 0)
-    btn.Text = name
-    btn.TextColor3 = Color3.new(1,1,1)
-    btn.Font = Enum.Font.GothamBold
-    btn.TextScaled = true
-    btn.Parent = PlayerMenu.Body.ButtonsFrame
-    
-    trackConnection(btn.MouseButton1Click:Connect(function()
-        local newState = callback()
-        btn.BackgroundColor3 = newState and Color3.new(0, 0.74902, 0) or Color3.new(0.74902, 0, 0)
-    end))
-end
-
-AddPlayerToggle("WalkSpeed (24)", function()
-    speedtoggle = not speedtoggle
-    if not speedtoggle then
-        local char = game.Players.LocalPlayer.Character
-        if char and char:FindFirstChild("Humanoid") then
-            char.Humanoid.WalkSpeed = 16
-        end
-    end
-    return speedtoggle
-end)
-
-AddPlayerToggle("JumpPower (50)", function()
-    jumptoggle = not jumptoggle
-    if not jumptoggle then
-        local char = game.Players.LocalPlayer.Character
-        if char and char:FindFirstChild("Humanoid") then
-            char.Humanoid.JumpPower = 50
-        end
-    end
-    return jumptoggle
-end)
-
-AddPlayerToggle("Noclip", function()
-    nocliptoggle = not nocliptoggle
-    if not nocliptoggle then
-        local char = game.Players.LocalPlayer.Character
-        if char then
-            for _, part in pairs(char:GetChildren()) do
-                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
-                    part.CanCollide = true
-                end
-            end
-        end
-    end
-    return nocliptoggle
-end)
-
-trackConnection(TPButton.MouseButton1Click:Connect(function()
-    if TPMenu then
-        MainMenuWindow.Visible = false
-        ESPMenuWindow.Visible = false
-        ToolsMenuWindow.Visible = false
-        PlayerMenu.Visible = false
-        TPMenu.Visible = true
-    end
-end))
-
-trackConnection(TPMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
-    if TPMenu then
-        TPMenu.Visible = false
-        MainMenuWindow.Visible = true
-    end
-end))
-
 ToolsButton.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
 ToolsButton.BorderColor3 = Color3.fromRGB(0, 0, 0)
 ToolsButton.BorderSizePixel = 0
@@ -756,9 +447,9 @@ BottomText_2.Position = UDim2.new(0, 0, 0.800000012, 0)
 BottomText_2.Size = UDim2.new(1, 0, 0.200000003, 0)
 BottomText_2.Text = "Tools"
 BottomText_2.TextColor3 = Color3.fromRGB(255, 255, 255)
-BottomText_2.TextScaled = true
-BottomText_2.TextSize = 14.000
-BottomText_2.TextWrapped = true
+BottomText_2.Font = Enum.Font.SourceSans
+BottomText_2.TextScaled = false
+BottomText_2.TextSize = 24.000
 
 TempIcon_2.Name = "TempIcon"
 TempIcon_2.Parent = ToolsButton
@@ -768,6 +459,156 @@ TempIcon_2.BackgroundTransparency = 1.000
 TempIcon_2.Position = UDim2.new(0.5, 0, 0, 0)
 TempIcon_2.Size = UDim2.new(0.800000012, 0, 0.800000012, 0)
 TempIcon_2.Image = "rbxassetid://12403104094"
+TempIcon_2.ScaleType = Enum.ScaleType.Fit
+
+local TPButton = Instance.new("ImageButton")
+TPButton.Name = "TPButton"
+TPButton.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
+TPButton.BorderSizePixel = 0
+TPButton.ZIndex = 10
+TPButton.Parent = Body_2
+
+local TPIcon = Instance.new("ImageLabel", TPButton)
+TPIcon.BackgroundTransparency = 1
+TPIcon.AnchorPoint = Vector2.new(0.5, 0)
+TPIcon.Position = UDim2.new(0.5, 0, 0, 0)
+TPIcon.Size = UDim2.new(0.800000012, 0, 0.800000012, 0)
+TPIcon.Image = "rbxassetid://2249604078"
+TPIcon.ImageColor3 = Color3.fromRGB(255, 100, 100)
+TPIcon.ScaleType = Enum.ScaleType.Fit
+TPIcon.ZIndex = 11
+
+local TPText = Instance.new("TextLabel")
+TPText.BackgroundTransparency = 1
+TPText.Position = UDim2.new(0, 0, 0.800000012, 0)
+TPText.Size = UDim2.new(1, 0, 0.200000003, 0)
+TPText.Text = "TP"
+TPText.TextColor3 = Color3.new(1,1,1)
+TPText.Font = Enum.Font.SourceSans
+TPText.TextScaled = false
+TPText.TextSize = 24.000
+TPText.ZIndex = 11
+TPText.Parent = TPButton
+
+local PlayerTabButton = Instance.new("ImageButton")
+PlayerTabButton.Name = "PlayerTabButton"
+PlayerTabButton.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
+PlayerTabButton.BorderSizePixel = 0
+PlayerTabButton.ZIndex = 10
+PlayerTabButton.Parent = Body_2
+
+local PlayerIcon = Instance.new("ImageLabel", PlayerTabButton)
+PlayerIcon.BackgroundTransparency = 1
+PlayerIcon.AnchorPoint = Vector2.new(0.5, 0)
+PlayerIcon.Position = UDim2.new(0.5, 0, 0, 0)
+PlayerIcon.Size = UDim2.new(0.800000012, 0, 0.800000012, 0)
+PlayerIcon.Image = "rbxassetid://6031265976" 
+PlayerIcon.ScaleType = Enum.ScaleType.Fit
+PlayerIcon.ZIndex = 11
+
+local PlayerText = Instance.new("TextLabel")
+PlayerText.BackgroundTransparency = 1
+PlayerText.Position = UDim2.new(0, 0, 0.800000012, 0)
+PlayerText.Size = UDim2.new(1, 0, 0.200000003, 0)
+PlayerText.Text = "Player"
+PlayerText.TextColor3 = Color3.new(1,1,1)
+PlayerText.Font = Enum.Font.SourceSans
+PlayerText.TextScaled = false
+PlayerText.TextSize = 24.000
+PlayerText.ZIndex = 11
+PlayerText.Parent = PlayerTabButton
+
+local MiscTabButton = Instance.new("ImageButton")
+MiscTabButton.Name = "MiscTabButton"
+MiscTabButton.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
+MiscTabButton.BorderSizePixel = 0
+MiscTabButton.ZIndex = 10
+MiscTabButton.Parent = Body_2
+
+local MiscIcon = Instance.new("ImageLabel", MiscTabButton)
+MiscIcon.BackgroundTransparency = 1
+MiscIcon.AnchorPoint = Vector2.new(0.5, 0)
+MiscIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
+MiscIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
+MiscIcon.Image = "rbxassetid://6031280882"
+MiscIcon.ScaleType = Enum.ScaleType.Fit
+MiscIcon.ZIndex = 11
+
+local MiscText = Instance.new("TextLabel")
+MiscText.BackgroundTransparency = 1
+MiscText.Position = UDim2.new(0, 0, 0.800000012, 0)
+MiscText.Size = UDim2.new(1, 0, 0.200000003, 0)
+MiscText.Text = "Misc"
+MiscText.TextColor3 = Color3.new(1,1,1)
+MiscText.Font = Enum.Font.SourceSans
+MiscText.TextScaled = false
+MiscText.TextSize = 24.000
+MiscText.ZIndex = 11
+MiscText.Parent = MiscTabButton
+
+local KillPanelButton = Instance.new("TextButton")
+KillPanelButton.Name = "KillPanelButton"
+KillPanelButton.Size = UDim2.new(0, 132, 0, 132)
+KillPanelButton.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+KillPanelButton.Text = "KILL\nPANEL"
+KillPanelButton.TextColor3 = Color3.new(1,1,1)
+KillPanelButton.Font = Enum.Font.SourceSans
+KillPanelButton.TextScaled = false
+KillPanelButton.TextSize = 24.000
+KillPanelButton.Parent = Body_2
+Instance.new("UICorner", KillPanelButton).CornerRadius = UDim.new(0, 12)
+
+trackConnection(KillPanelButton.MouseButton1Click:Connect(function()
+    neverfailtoggle = false
+    podstoggle = false
+    pctoggle = false
+    playertoggle = false
+    bestpctoggle = false
+    exitstoggle = false
+    beastcamtoggle = false
+    autoplaytoggle = false
+    autointeracttoggle = false
+    speedtoggle = false
+    jumptoggle = false
+    nocliptoggle = false
+    nofogtoggle = false
+    fullbrighttoggle = false
+    smartesptoggle = false
+    fovtoggle = false
+    lowgravtoggle = false
+    proximitytoggle = false
+
+    if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        game.Players.LocalPlayer.Character.Humanoid.JumpPower = 0
+    end
+
+    local lighting = game:GetService("Lighting")
+    if origFogEnd then lighting.FogEnd = origFogEnd end
+    if origFogStart then lighting.FogStart = origFogStart end
+    if origAmbient then lighting.Ambient = origAmbient end
+    if origOutdoorAmbient then lighting.OutdoorAmbient = origOutdoorAmbient end
+    local atmosphere = lighting:FindFirstChild("Atmosphere")
+    if atmosphere and origAtmDensity then
+        atmosphere.Density = origAtmDensity
+        atmosphere.Offset = origAtmOffset
+    end
+    workspace.CurrentCamera.FieldOfView = 70
+    workspace.Gravity = 196.2
+
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("Highlight") then v:Destroy() end
+    end
+    
+    for _, conn in pairs(activeConnections) do
+        if conn and conn.Connected then conn:Disconnect() end
+    end
+
+    if ViewportFrame then ViewportFrame:Destroy() end
+    task.wait(0.1)
+    FTFHAX:Destroy()
+end))
+-- ==========================================================
 
 ToolsMenuWindow.Name = "ToolsMenuWindow"
 ToolsMenuWindow.Parent = FTFHAX
@@ -914,13 +755,12 @@ CreditTotalText_3.AnchorPoint = Vector2.new(1, 0)
 CreditTotalText_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 CreditTotalText_3.BackgroundTransparency = 1.000
 CreditTotalText_3.BorderSizePixel = 0
-CreditTotalText_3.Position = UDim2.new(1, -111, 0, 0)
-CreditTotalText_3.Size = UDim2.new(0, 120, 1, 0)
+CreditTotalText_3.Position = UDim2.new(1, -45, 0, 0)
+CreditTotalText_3.Size = UDim2.new(0, 100, 1, 0)
 CreditTotalText_3.ZIndex = 5
 CreditTotalText_3.Text = ver
 CreditTotalText_3.TextColor3 = Color3.fromRGB(255, 255, 0)
 CreditTotalText_3.TextScaled = true
-CreditTotalText_3.TextSize = 34.000
 CreditTotalText_3.TextWrapped = true
 CreditTotalText_3.TextXAlignment = Enum.TextXAlignment.Right
 
@@ -930,12 +770,11 @@ PageTitleText_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 PageTitleText_3.BackgroundTransparency = 1.000
 PageTitleText_3.BorderSizePixel = 0
 PageTitleText_3.Position = UDim2.new(0, 10, 0, 0)
-PageTitleText_3.Size = UDim2.new(0.5, 0, 0, 40)
+PageTitleText_3.Size = UDim2.new(0, 200, 1, 0)
 PageTitleText_3.ZIndex = 5
-PageTitleText_3.Text = "ftfhax"
+PageTitleText_3.Text = "FTF admin Panel - Tools"
 PageTitleText_3.TextColor3 = Color3.fromRGB(255, 255, 255)
 PageTitleText_3.TextScaled = true
-PageTitleText_3.TextSize = 34.000
 PageTitleText_3.TextWrapped = true
 PageTitleText_3.TextXAlignment = Enum.TextXAlignment.Left
 
@@ -949,68 +788,348 @@ ViewportFrame.BackgroundColor3 = Color3.fromRGB(50,50,50)
 ViewportFrame.BackgroundTransparency = 0.9
 ViewportFrame.Visible = false
 
-trackConnection(CheatButton.MouseButton1Down:Connect(function()
+-- ==================== DYNAMIC MAP CHECK ====================
+local function getMap()
+    local mapFolder = game.ReplicatedStorage:FindFirstChild("CurrentMap")
+    if mapFolder and mapFolder.Value then
+        return mapFolder.Value
+    end
+    return nil
+end
+
+-- ==================== FIXED TP MENU ====================
+local TPMenu = ESPMenuWindow:Clone()
+TPMenu.Name = "TPMenu"
+TPMenu.Visible = false
+TPMenu.Parent = FTFHAX
+TPMenu.Body.TitleLabel.Text = "TELEPORT"
+TPMenu.TopBar.PageTitleText.Text = "FTF admin Panel - TP"
+
+for _, v in pairs(TPMenu.Body.ButtonsFrame:GetChildren()) do
+    if v:IsA("TextButton") then v:Destroy() end
+end
+
+local lp = game.Players.LocalPlayer
+
+local function AddTP(name, func)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 200, 0, 50)
+    btn.BackgroundColor3 = Color3.fromRGB(191, 0, 0)
+    btn.Text = name
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.SourceSans
+    btn.TextScaled = true
+    btn.Parent = TPMenu.Body.ButtonsFrame
+    trackConnection(btn.MouseButton1Click:Connect(function()
+        pcall(func)
+    end))
+end
+
+AddTP("Nearest PC", function()
+    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
+    local map = getMap()
+    if not map then return end
+    local closest, dist = nil, math.huge
+    local pos = lp.Character.HumanoidRootPart.Position
+    for _, v in pairs(map:GetDescendants()) do
+        if v.Name == "ComputerTable" then
+            local d = (v:GetPivot().Position - pos).Magnitude
+            if d < dist then dist = d; closest = v end
+        end
+    end
+    if closest then lp.Character.HumanoidRootPart.CFrame = closest:GetPivot() + Vector3.new(0, 5, 0) end
+end)
+
+AddTP("Safest PC (Best)", function()
+    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
+    local best = getBestPC()
+    if best and best[1] and best[1].pc then
+        lp.Character.HumanoidRootPart.CFrame = best[1].pc:GetPivot() + Vector3.new(0, 5, 0)
+    end
+end)
+
+AddTP("Nearest Pod", function()
+    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
+    local map = getMap()
+    if not map then return end
+    local closest, dist = nil, math.huge
+    local pos = lp.Character.HumanoidRootPart.Position
+    for _, v in pairs(map:GetDescendants()) do
+        if v.Name == "FreezePod" then
+            local d = (v:GetPivot().Position - pos).Magnitude
+            if d < dist then dist = d; closest = v end
+        end
+    end
+    if closest then lp.Character.HumanoidRootPart.CFrame = closest:GetPivot() + Vector3.new(0, 5, 0) end
+end)
+
+AddTP("Frozen Teammate", function()
+    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
+    local map = getMap()
+    if not map then return end
+    for _, v in pairs(map:GetDescendants()) do
+        if v.Name == "FreezePod" and v:FindFirstChild("Occupant") and v.Occupant.Value ~= nil then
+            lp.Character.HumanoidRootPart.CFrame = v:GetPivot() + Vector3.new(0, 5, 0)
+            break
+        end
+    end
+end)
+
+AddTP("Exit Door", function()
+    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
+    local map = getMap()
+    if not map then return end
+    for _, v in pairs(map:GetDescendants()) do
+        if v.Name == "ExitDoor" then
+            lp.Character.HumanoidRootPart.CFrame = v:GetPivot() + Vector3.new(0, 5, 0)
+            break
+        end
+    end
+end)
+
+AddTP("TP to Beast", function()
+    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
+    local beast = getBeast()
+    if beast and beast.Character and beast.Character:FindFirstChild("HumanoidRootPart") then
+        lp.Character.HumanoidRootPart.CFrame = beast.Character.HumanoidRootPart.CFrame + Vector3.new(0, 5, 0)
+    end
+end)
+
+AddTP("Nearest Teammate", function()
+    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
+    local closest, dist = nil, math.huge
+    local beast = getBeast()
+    for _, p in pairs(game.Players:GetPlayers()) do
+        if p ~= lp and p ~= beast and p.Character and p.Character:FindFirstChild("HumanoidRootPart") then
+            local d = (lp.Character.HumanoidRootPart.Position - p.Character.HumanoidRootPart.Position).Magnitude
+            if d < dist then dist = d; closest = p end
+        end
+    end
+    if closest and closest.Character and closest.Character:FindFirstChild("HumanoidRootPart") then
+        lp.Character.HumanoidRootPart.CFrame = closest.Character.HumanoidRootPart.CFrame + Vector3.new(5, 0, 0)
+    end
+end)
+
+AddTP("Spawn", function()
+    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
+    local spawn = workspace:FindFirstChild("SpawnLocation") or workspace:FindFirstChild("Spawns") and workspace.Spawns:FindFirstChildOfClass("SpawnLocation")
+    if spawn then
+        lp.Character.HumanoidRootPart.CFrame = spawn.CFrame + Vector3.new(0, 10, 0)
+    end
+end)
+
+AddTP("Map Center", function()
+    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
+    local map = getMap()
+    if map then
+        local cf = map:GetBoundingBox()
+        lp.Character.HumanoidRootPart.CFrame = cf.Position + Vector3.new(0, 80, 0)
+    end
+end)
+
+AddTP("Random PC", function()
+    if not lp.Character or not lp.Character:FindFirstChild("HumanoidRootPart") then return end
+    local map = getMap()
+    if not map then return end
+    local pcs = {}
+    for _, v in pairs(map:GetDescendants()) do
+        if v.Name == "ComputerTable" then table.insert(pcs, v) end
+    end
+    if #pcs > 0 then
+        local rand = pcs[math.random(1, #pcs)]
+        lp.Character.HumanoidRootPart.CFrame = rand:GetPivot() + Vector3.new(0, 5, 0)
+    end
+end)
+
+-- ==================== PLAYER MENU ====================
+local PlayerMenu = ESPMenuWindow:Clone()
+PlayerMenu.Name = "PlayerMenu"
+PlayerMenu.Visible = false
+PlayerMenu.Parent = FTFHAX
+PlayerMenu.Body.TitleLabel.Text = "PLAYER MODS"
+PlayerMenu.TopBar.PageTitleText.Text = "FTF admin Panel - Player"
+
+for _, v in pairs(PlayerMenu.Body.ButtonsFrame:GetChildren()) do
+    if v:IsA("TextButton") then v:Destroy() end
+end
+
+local function AddPlayerToggle(name, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 200, 0, 50)
+    btn.BackgroundColor3 = Color3.fromRGB(191, 0, 0)
+    btn.Text = name
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.SourceSans
+    btn.TextScaled = true
+    btn.Parent = PlayerMenu.Body.ButtonsFrame
+    
+    trackConnection(btn.MouseButton1Click:Connect(function()
+        local newState = callback()
+        btn.BackgroundColor3 = newState and Color3.new(0, 0.74902, 0) or Color3.new(0.74902, 0, 0)
+    end))
+end
+
+AddPlayerToggle("WalkSpeed (24)", function()
+    speedtoggle = not speedtoggle
+    if not speedtoggle then
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.WalkSpeed = 16
+        end
+    end
+    return speedtoggle
+end)
+
+AddPlayerToggle("JumpPower (50)", function()
+    jumptoggle = not jumptoggle
+    if not jumptoggle then
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("Humanoid") then
+            char.Humanoid.JumpPower = 0 -- Reset to 0 since players can't jump in FTF!
+        end
+    end
+    return jumptoggle
+end)
+
+AddPlayerToggle("Noclip", function()
+    nocliptoggle = not nocliptoggle
+    if not nocliptoggle then
+        local char = game.Players.LocalPlayer.Character
+        if char then
+            for _, part in pairs(char:GetChildren()) do
+                if part:IsA("BasePart") and part.Name ~= "HumanoidRootPart" then
+                    part.CanCollide = true
+                end
+            end
+        end
+    end
+    return nocliptoggle
+end)
+
+-- ==================== MISC MENU ====================
+local MiscMenu = ESPMenuWindow:Clone()
+MiscMenu.Name = "MiscMenu"
+MiscMenu.Visible = false
+MiscMenu.Parent = FTFHAX
+MiscMenu.Body.TitleLabel.Text = "MISC MODS"
+MiscMenu.TopBar.PageTitleText.Text = "FTF admin Panel - Misc"
+
+MiscMenu.Body.ButtonsFrame:Destroy()
+
+local MiscScroll = Instance.new("ScrollingFrame")
+MiscScroll.Name = "ButtonsFrame"
+MiscScroll.Parent = MiscMenu.Body
+MiscScroll.BackgroundTransparency = 1
+MiscScroll.Position = UDim2.new(0, 5, 0, 45)
+MiscScroll.Size = UDim2.new(1, -10, 1, -55)
+MiscScroll.ScrollBarThickness = 4
+MiscScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+local MiscGrid = Instance.new("UIGridLayout")
+MiscGrid.Parent = MiscScroll
+MiscGrid.FillDirection = Enum.FillDirection.Vertical
+MiscGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+MiscGrid.SortOrder = Enum.SortOrder.LayoutOrder
+MiscGrid.CellPadding = UDim2.new(0, 6, 0, 6)
+MiscGrid.CellSize = UDim2.new(0, 152, 0, 39)
+
+-- ==================== CLICK ROUTING ====================
+trackConnection(CheatButton.MouseButton1Click:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
     TPMenu.Visible = false
     PlayerMenu.Visible = false
+    if MiscMenu then MiscMenu.Visible = false end
     MainMenuWindow.Visible = not MainMenuWindow.Visible
 end))
 
-trackConnection(CloseButton_2.MouseButton1Down:Connect(function()
+trackConnection(CloseButton_2.MouseButton1Click:Connect(function()
     MainMenuWindow.Visible = false
 end))
 
-trackConnection(CloseButton.MouseButton1Down:Connect(function()
+trackConnection(CloseButton.MouseButton1Click:Connect(function()
     ESPMenuWindow.Visible = false
 end))
 
-trackConnection(CloseButton_3.MouseButton1Down:Connect(function()
+trackConnection(CloseButton_3.MouseButton1Click:Connect(function()
     ToolsMenuWindow.Visible = false
 end))
 
-trackConnection(BackButton.MouseButton1Down:Connect(function()
-    ESPMenuWindow.Visible = false
-    ToolsMenuWindow.Visible = false
-    TPMenu.Visible = false
-    PlayerMenu.Visible = false
-    MainMenuWindow.Visible = true
-end))
-
-trackConnection(BackButton_2.MouseButton1Down:Connect(function()
+trackConnection(BackButton.MouseButton1Click:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
     TPMenu.Visible = false
     PlayerMenu.Visible = false
+    if MiscMenu then MiscMenu.Visible = false end
     MainMenuWindow.Visible = true
 end))
 
-trackConnection(ESPButton.MouseButton1Down:Connect(function()
+trackConnection(BackButton_2.MouseButton1Click:Connect(function()
+    ESPMenuWindow.Visible = false
+    ToolsMenuWindow.Visible = false
+    TPMenu.Visible = false
+    PlayerMenu.Visible = false
+    if MiscMenu then MiscMenu.Visible = false end
+    MainMenuWindow.Visible = true
+end))
+
+trackConnection(ESPButton.MouseButton1Click:Connect(function()
     ESPMenuWindow.Visible = true
     ToolsMenuWindow.Visible = false
     TPMenu.Visible = false
     PlayerMenu.Visible = false
+    if MiscMenu then MiscMenu.Visible = false end
     MainMenuWindow.Visible = false
 end))
 
-trackConnection(ToolsButton.MouseButton1Down:Connect(function()
+trackConnection(ToolsButton.MouseButton1Click:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = true
     TPMenu.Visible = false
     PlayerMenu.Visible = false
+    if MiscMenu then MiscMenu.Visible = false end
     MainMenuWindow.Visible = false
 end))
 
-trackConnection(PlayerTabButton.MouseButton1Down:Connect(function()
+trackConnection(TPButton.MouseButton1Click:Connect(function()
+    ESPMenuWindow.Visible = false
+    ToolsMenuWindow.Visible = false
+    PlayerMenu.Visible = false
+    if MiscMenu then MiscMenu.Visible = false end
+    MainMenuWindow.Visible = false
+    TPMenu.Visible = true
+end))
+
+trackConnection(PlayerTabButton.MouseButton1Click:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
     TPMenu.Visible = false
+    if MiscMenu then MiscMenu.Visible = false end
     MainMenuWindow.Visible = false
     PlayerMenu.Visible = true
 end))
 
-trackConnection(PlayerMenu.TopBar.BackButton.MouseButton1Down:Connect(function()
+trackConnection(MiscTabButton.MouseButton1Click:Connect(function()
+    ESPMenuWindow.Visible = false
+    ToolsMenuWindow.Visible = false
+    TPMenu.Visible = false
     PlayerMenu.Visible = false
+    MainMenuWindow.Visible = false
+    MiscMenu.Visible = true
+end))
+
+trackConnection(TPMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
+    TPMenu.Visible = false
+    MainMenuWindow.Visible = true
+end))
+
+trackConnection(PlayerMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
+    PlayerMenu.Visible = false
+    MainMenuWindow.Visible = true
+end))
+
+trackConnection(MiscMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
+    MiscMenu.Visible = false
     MainMenuWindow.Visible = true
 end))
 
@@ -1034,10 +1153,10 @@ end
 function getBestPC()
     local beast = getBeast()
     local pcs = {}
-    local map = game.ReplicatedStorage:FindFirstChild("CurrentMap")
+    local map = getMap()
     
-    if map and map.Value then
-        for _, pc in pairs(map.Value:GetChildren()) do
+    if map then
+        for _, pc in pairs(map:GetChildren()) do
             if pc.Name == "ComputerTable" and pc:FindFirstChild("Screen") and pc.Screen.BrickColor ~= BrickColor.new("Dark green") then
                 local magnitude = math.huge
                 if beast and beast.Character and beast.Character:FindFirstChild("HumanoidRootPart") then
@@ -1065,9 +1184,9 @@ end
 
 -- ESP Highlight Applier
 function reloadESP()
-    local map = game.ReplicatedStorage:FindFirstChild("CurrentMap")
-    if map and map.Value then
-        local mapstuff = map.Value:GetChildren()
+    local map = getMap()
+    if map then
+        local mapstuff = map:GetChildren()
         for i=1,#mapstuff do
             local item = mapstuff[i]
             if item.Name == "ComputerTable" then
@@ -1113,13 +1232,13 @@ function reloadESP()
     end
 end
 
--- Dedicated RunService Loop for ESP Colors (Fixes Memory Leak)
+-- Dedicated RunService Loop for ESP Colors
 trackConnection(game:GetService("RunService").RenderStepped:Connect(function()
     if pctoggle then
-        local map = game.ReplicatedStorage:FindFirstChild("CurrentMap")
-        if map and map.Value then
+        local map = getMap()
+        if map then
             local best = getBestPC()
-            for _, pc in pairs(map.Value:GetChildren()) do
+            for _, pc in pairs(map:GetChildren()) do
                 if pc.Name == "ComputerTable" and pc:FindFirstChild("Highlight") and pc:FindFirstChild("Screen") then
                     local a = pc.Highlight
                     a.FillColor = pc.Screen.Color
@@ -1154,7 +1273,7 @@ function reloadBeastCam()
     ViewportFrame:ClearAllChildren()
     if beastcamtoggle and game.ReplicatedStorage:FindFirstChild("CurrentMap") and game.ReplicatedStorage.CurrentMap.Value then
         local beast = getBeast()
-        local cam = Instance.new("Camera", ViewportFrame) -- Fixed: Parented to ViewportFrame
+        local cam = Instance.new("Camera", ViewportFrame)
         cam.CameraType = Enum.CameraType.Scriptable
         cam.FieldOfView = 70
         
@@ -1216,47 +1335,47 @@ function reloadBeastCam()
 end
 
 -- Button Listeners
-trackConnection(PodsESPButton.MouseButton1Down:Connect(function()
+trackConnection(PodsESPButton.MouseButton1Click:Connect(function()
     podstoggle = not podstoggle
     PodsESPButton.BackgroundColor3 = podstoggle and Color3.new(0, 0.74902, 0) or Color3.new(0.74902, 0, 0)
     reloadESP()
 end))
 
-trackConnection(PCESPButton.MouseButton1Down:Connect(function()
+trackConnection(PCESPButton.MouseButton1Click:Connect(function()
     pctoggle = not pctoggle
     PCESPButton.BackgroundColor3 = pctoggle and Color3.new(0, 0.74902, 0) or Color3.new(0.74902, 0, 0)
     reloadESP()
 end))
 
-trackConnection(PlayerESPButton.MouseButton1Down:Connect(function()
+trackConnection(PlayerESPButton.MouseButton1Click:Connect(function()
     playertoggle = not playertoggle
     PlayerESPButton.BackgroundColor3 = playertoggle and Color3.new(0, 0.74902, 0) or Color3.new(0.74902, 0, 0)
     reloadESP()
 end))
 
-trackConnection(BestPCESPButton.MouseButton1Down:Connect(function()
+trackConnection(BestPCESPButton.MouseButton1Click:Connect(function()
     bestpctoggle = not bestpctoggle
     BestPCESPButton.BackgroundColor3 = bestpctoggle and Color3.new(0, 0.74902, 0) or Color3.new(0.74902, 0, 0)
     reloadESP()
 end))
 
-trackConnection(ExitsESPButton.MouseButton1Down:Connect(function()
+trackConnection(ExitsESPButton.MouseButton1Click:Connect(function()
     exitstoggle = not exitstoggle
     ExitsESPButton.BackgroundColor3 = exitstoggle and Color3.new(0, 0.74902, 0) or Color3.new(0.74902, 0, 0)
     reloadESP()
 end))
 
-trackConnection(NeverFailButton.MouseButton1Down:Connect(function()
+trackConnection(NeverFailButton.MouseButton1Click:Connect(function()
     neverfailtoggle = not neverfailtoggle
     NeverFailButton.BackgroundColor3 = neverfailtoggle and Color3.new(0, 0.74902, 0) or Color3.new(0.74902, 0, 0)
 end))
 
-trackConnection(AutoInteractButton.MouseButton1Down:Connect(function()
+trackConnection(AutoInteractButton.MouseButton1Click:Connect(function()
     autointeracttoggle = not autointeracttoggle
     AutoInteractButton.BackgroundColor3 = autointeracttoggle and Color3.new(0, 0.74902, 0) or Color3.new(0.74902, 0, 0)
 end))
 
-trackConnection(BeastCamButton.MouseButton1Down:Connect(function()
+trackConnection(BeastCamButton.MouseButton1Click:Connect(function()
     beastcamtoggle = not beastcamtoggle
     BeastCamButton.BackgroundColor3 = beastcamtoggle and Color3.new(0, 0.74902, 0) or Color3.new(0.74902, 0, 0)
     if beastcamtoggle then
@@ -1268,7 +1387,7 @@ trackConnection(BeastCamButton.MouseButton1Down:Connect(function()
     end
 end))
 
-trackConnection(AutoPlayButton.MouseButton1Down:Connect(function()
+trackConnection(AutoPlayButton.MouseButton1Click:Connect(function()
     autoplaytoggle = not autoplaytoggle
     AutoPlayButton.BackgroundColor3 = autoplaytoggle and Color3.new(0, 0.74902, 0) or Color3.new(0.74902, 0, 0)
 end))
@@ -1454,16 +1573,227 @@ trackConnection(game:GetService("RunService").Stepped:Connect(function()
     end
 end))
 
--- =============== CLEAN CREDIT + SELECTIVE GOTHAMBOLD ===============
-for _, obj in pairs(FTFHAX:GetDescendants()) do
-    if obj:IsA("TextLabel") or obj:IsA("TextButton") then
-        if obj.Name:find("Title") or obj.Name:find("PageTitle") or obj.Name:find("CreditTotal") or obj.Size.X.Offset > 150 then
-            obj.Font = Enum.Font.GothamBold  
-        else
-            obj.Font = Enum.Font.Gotham      
+-- ==================== MISC MENU FEATURES ====================
+local function AddMiscButton(name, func)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 200, 0, 50)
+    btn.BackgroundColor3 = Color3.fromRGB(191, 0, 0)
+    btn.Text = name
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.SourceSans
+    btn.TextScaled = true
+    btn.Parent = MiscMenu.Body.ButtonsFrame
+    trackConnection(btn.MouseButton1Click:Connect(function()
+        pcall(func)
+    end))
+end
+
+local function AddMiscToggle(name, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 200, 0, 50)
+    btn.BackgroundColor3 = Color3.fromRGB(191, 0, 0)
+    btn.Text = name
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.SourceSans
+    btn.TextScaled = true
+    btn.Parent = MiscMenu.Body.ButtonsFrame
+    
+    trackConnection(btn.MouseButton1Click:Connect(function()
+        local newState = callback()
+        btn.BackgroundColor3 = newState and Color3.new(0, 0.74902, 0) or Color3.new(0.74902, 0, 0)
+    end))
+end
+
+-- 1. Perfectly Reversible No Fog
+AddMiscToggle("No Fog", function()
+    nofogtoggle = not nofogtoggle
+    local lighting = game:GetService("Lighting")
+    local atmosphere = lighting:FindFirstChild("Atmosphere")
+    
+    if nofogtoggle then
+        -- Memorize the map's original fog
+        origFogEnd = lighting.FogEnd
+        origFogStart = lighting.FogStart
+        if atmosphere then
+            origAtmDensity = atmosphere.Density
+            origAtmOffset = atmosphere.Offset
+        end
+        
+        -- Apply No Fog
+        lighting.FogEnd = 100000
+        lighting.FogStart = 100000
+        if atmosphere then
+            atmosphere.Density = 0
+            atmosphere.Offset = 0
+        end
+    else
+        -- Restore the exact original map fog
+        if origFogEnd then lighting.FogEnd = origFogEnd end
+        if origFogStart then lighting.FogStart = origFogStart end
+        if atmosphere and origAtmDensity then
+            atmosphere.Density = origAtmDensity
+            atmosphere.Offset = origAtmOffset
         end
     end
-end
+    return nofogtoggle
+end)
+
+-- 2. FPS Booster (Potato Mode)
+AddMiscButton("FPS Booster", function()
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("BasePart") then
+            v.Material = Enum.Material.SmoothPlastic
+        elseif v:IsA("Texture") or v:IsA("Decal") then
+            v:Destroy()
+        end
+    end
+    game.Lighting.GlobalShadows = false
+end)
+
+-- 3. Smart ESP Render Distance (150 Studs)
+AddMiscToggle("Smart ESP (150s)", function()
+    smartesptoggle = not smartesptoggle
+    return smartesptoggle
+end)
+
+-- Hooking Smart ESP into RenderStepped
+trackConnection(game:GetService("RunService").RenderStepped:Connect(function()
+    if smartesptoggle and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local pos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("Highlight") and v.Parent and v.Parent:IsA("Model") then
+                local targetPos = v.Parent:GetPivot().Position
+                if (targetPos - pos).Magnitude > 150 then
+                    v.Enabled = false
+                else
+                    v.Enabled = true
+                end
+            end
+        end
+    else
+        -- Re-enable all if toggled off
+        for _, v in pairs(workspace:GetDescendants()) do
+            if v:IsA("Highlight") then
+                v.Enabled = true
+            end
+        end
+    end
+end))
+
+-- 4. Perfectly Reversible Fullbright
+AddMiscToggle("Fullbright", function()
+    fullbrighttoggle = not fullbrighttoggle
+    local lighting = game:GetService("Lighting")
+    
+    if fullbrighttoggle then
+        -- Memorize original lighting
+        origAmbient = lighting.Ambient
+        origOutdoorAmbient = lighting.OutdoorAmbient
+        
+        -- Make it bright
+        lighting.Ambient = Color3.new(1, 1, 1)
+        lighting.OutdoorAmbient = Color3.new(1, 1, 1)
+    else
+        -- Restore original lighting
+        if origAmbient then lighting.Ambient = origAmbient end
+        if origOutdoorAmbient then lighting.OutdoorAmbient = origOutdoorAmbient end
+    end
+    return fullbrighttoggle
+end)
+
+-- 5. Anti-AFK
+AddMiscButton("Anti-AFK", function()
+    local vu = game:GetService("VirtualUser")
+    game:GetService("Players").LocalPlayer.Idled:Connect(function()
+        vu:Button2Down(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+        task.wait(1)
+        vu:Button2Up(Vector2.new(0,0),workspace.CurrentCamera.CFrame)
+    end)
+end)
+
+-- 6. Delete Doors
+AddMiscButton("Delete Doors", function()
+    local map = getMap()
+    if map then
+        for _, v in pairs(map:GetDescendants()) do
+            if v.Name == "SingleDoor" or v.Name == "DoubleDoor" then
+                v:Destroy()
+            end
+        end
+    end
+end)
+
+-- 7. Custom FOV (120)
+AddMiscToggle("FOV 120", function()
+    fovtoggle = not fovtoggle
+    if fovtoggle then
+        workspace.CurrentCamera.FieldOfView = 120
+    else
+        workspace.CurrentCamera.FieldOfView = 70
+    end
+    return fovtoggle
+end)
+
+-- 8. Remove Invisible Walls
+AddMiscButton("Remove Invis Walls", function()
+    local map = getMap()
+    if map then
+        for _, v in pairs(map:GetDescendants()) do
+            if v:IsA("BasePart") and v.Transparency >= 1 and v.CanCollide then
+                v.CanCollide = false
+            end
+        end
+    end
+end)
+
+-- 9. Low Gravity
+AddMiscToggle("Low Gravity", function()
+    lowgravtoggle = not lowgravtoggle
+    if lowgravtoggle then
+        workspace.Gravity = 50
+    else
+        workspace.Gravity = 196.2
+    end
+    return lowgravtoggle
+end)
+
+-- 10. Beast Proximity Alert
+local AlertLabel = Instance.new("TextLabel")
+AlertLabel.Size = UDim2.new(0, 400, 0, 50)
+AlertLabel.Position = UDim2.new(0.5, -200, 0.8, 0)
+AlertLabel.BackgroundTransparency = 1
+AlertLabel.Text = "⚠️ BEAST NEARBY ⚠️"
+AlertLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+AlertLabel.TextStrokeTransparency = 0
+AlertLabel.Font = Enum.Font.SourceSansBold
+AlertLabel.TextScaled = true
+AlertLabel.Visible = false
+AlertLabel.ZIndex = 100
+AlertLabel.Parent = FTFHAX
+
+AddMiscToggle("Beast Alert", function()
+    proximitytoggle = not proximitytoggle
+    if not proximitytoggle then
+        AlertLabel.Visible = false
+    end
+    return proximitytoggle
+end)
+
+trackConnection(game:GetService("RunService").RenderStepped:Connect(function()
+    if proximitytoggle and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local beast = getBeast()
+        if beast and beast.Character and beast.Character:FindFirstChild("HumanoidRootPart") then
+            local dist = (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - beast.Character.HumanoidRootPart.Position).Magnitude
+            if dist <= 45 then
+                AlertLabel.Visible = true
+            else
+                AlertLabel.Visible = false
+            end
+        else
+            AlertLabel.Visible = false
+        end
+    end
+end))
 
 local creditMain = Instance.new("TextLabel")
 creditMain.Name = "XyrozzyCredit"
@@ -1471,10 +1801,11 @@ creditMain.Size = UDim2.new(1, 0, 0, 25)
 creditMain.Position = UDim2.new(0, 0, 1, -25)
 creditMain.BackgroundTransparency = 1
 creditMain.Text = "Made by Xyrozzy"
-creditMain.TextColor3 = Color3.fromRGB(220, 220, 220)
-creditMain.Font = Enum.Font.Gotham
-creditMain.TextScaled = true
+creditMain.TextColor3 = Color3.fromRGB(200, 200, 200)
+creditMain.Font = Enum.Font.SourceSans
+creditMain.TextScaled = false
+creditMain.TextSize = 14
 creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
 
-print("FTFHAX v0.4.29 • Clean Theme Applied ✨")
+print("FTF admin Panel v0.6.45 • Final Assembled Script ✨")
