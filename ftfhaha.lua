@@ -1,4 +1,4 @@
-local ver = "v0.6.69" -- FTF admin Panel by Xyrozzy
+local ver = "v0.6.79" -- FTF admin Panel by Xyrozzy
 
 -- Global Connection Tracker for Clean UI Destruction
 local activeConnections = {}
@@ -1757,16 +1757,30 @@ AddMiscToggle("No Fog", function()
     return nofogtoggle
 end)
 
--- 2. FPS Booster (Potato Mode)
+-- 2. Nuke FPS Booster (Fixes Beast Lag)
 AddMiscButton("FPS Booster", function()
+    local lighting = game:GetService("Lighting")
+    
+    -- Deletes the Beast's heartbeat screen blur and lighting overhead
+    lighting.GlobalShadows = false
+    for _, v in pairs(lighting:GetChildren()) do
+        if v:IsA("PostEffect") or v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") or v:IsA("ColorCorrectionEffect") then
+            v:Destroy()
+        end
+    end
+
+    -- Deletes physics overhead from moving particles
     for _, v in pairs(workspace:GetDescendants()) do
         if v:IsA("BasePart") then
             v.Material = Enum.Material.SmoothPlastic
+        elseif v:IsA("PointLight") or v:IsA("SpotLight") or v:IsA("SurfaceLight") then
+            v:Destroy()
+        elseif v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Trail") or v:IsA("Beam") then
+            v:Destroy()
         elseif v:IsA("Texture") or v:IsA("Decal") then
             v:Destroy()
         end
     end
-    game.Lighting.GlobalShadows = false
 end)
 
 -- 3. Smart ESP Render Distance (150 Studs)
@@ -1952,4 +1966,4 @@ creditMain.TextSize = 14
 creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
 
-print("FTF admin Panel v0.6.69 • Final Assembled Script ✨")
+print("FTF admin Panel v0.6.79 • Final Assembled Script ✨")
