@@ -1,4 +1,4 @@
-local ver = "v0.6.79" -- FTF admin Panel by Xyrozzy
+local ver = "v0.6.45" -- FTF admin Panel by Xyrozzy
 
 -- Global Connection Tracker for Clean UI Destruction
 local activeConnections = {}
@@ -1757,28 +1757,29 @@ AddMiscToggle("No Fog", function()
     return nofogtoggle
 end)
 
--- 2. Nuke FPS Booster (Fixes Beast Lag)
+-- 2. Nuke FPS Booster (Fixes Beast Lag & Spectate Bug)
 AddMiscButton("FPS Booster", function()
     local lighting = game:GetService("Lighting")
     
-    -- Deletes the Beast's heartbeat screen blur and lighting overhead
+    -- Disables effects instead of destroying them so FTF scripts don't crash
     lighting.GlobalShadows = false
     for _, v in pairs(lighting:GetChildren()) do
         if v:IsA("PostEffect") or v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") or v:IsA("ColorCorrectionEffect") then
-            v:Destroy()
+            v.Enabled = false
         end
     end
 
-    -- Deletes physics overhead from moving particles
+    -- Disables particles, lights, and textures safely
     for _, v in pairs(workspace:GetDescendants()) do
         if v:IsA("BasePart") then
             v.Material = Enum.Material.SmoothPlastic
+            v.CastShadow = false
         elseif v:IsA("PointLight") or v:IsA("SpotLight") or v:IsA("SurfaceLight") then
-            v:Destroy()
+            v.Enabled = false
         elseif v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Trail") or v:IsA("Beam") then
-            v:Destroy()
+            v.Enabled = false
         elseif v:IsA("Texture") or v:IsA("Decal") then
-            v:Destroy()
+            v.Transparency = 1
         end
     end
 end)
@@ -1966,4 +1967,4 @@ creditMain.TextSize = 14
 creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
 
-print("FTF admin Panel v0.6.79 • Final Assembled Script ✨")
+print("FTF admin Panel v0.6.45 • Final Assembled Script ✨")
