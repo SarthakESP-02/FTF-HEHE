@@ -1,4 +1,4 @@
-local ver = "v0.6.59" -- FTF admin Panel by Xyrozzy
+local ver = "v0.6.69" -- FTF admin Panel by Xyrozzy
 
 -- Global Connection Tracker for Clean UI Destruction
 local activeConnections = {}
@@ -57,7 +57,7 @@ local TopBar_2 = Instance.new("Frame")
 local CloseButton_2 = Instance.new("TextButton")
 local CreditTotalText_2 = Instance.new("TextLabel")
 local PageTitleText_2 = Instance.new("TextLabel")
-local Body_2 = Instance.new("Frame")
+local Body_2 = Instance.new("ScrollingFrame")
 local UIGridLayout_2 = Instance.new("UIGridLayout")
 local ESPButton = Instance.new("ImageButton")
 local BottomText = Instance.new("TextLabel")
@@ -391,11 +391,13 @@ Body_2.BackgroundTransparency = 1.000
 Body_2.BorderSizePixel = 0
 Body_2.Position = UDim2.new(0.5, 0, 0, 45)
 Body_2.Size = UDim2.new(1, -10, 1, -75)
+Body_2.ScrollBarThickness = 0 -- Hides the scrollbar so it still looks clean
+Body_2.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
 UIGridLayout_2.Parent = Body_2
 UIGridLayout_2.HorizontalAlignment = Enum.HorizontalAlignment.Center
 UIGridLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
-UIGridLayout_2.VerticalAlignment = Enum.VerticalAlignment.Center
+UIGridLayout_2.VerticalAlignment = Enum.VerticalAlignment.Top -- Pushes items up so scrolling works perfectly
 UIGridLayout_2.CellSize = UDim2.new(0, 132, 0, 132)
 
 -- ==================== MATCHING MAIN MENU BUTTONS ====================
@@ -545,6 +547,34 @@ MiscText.TextScaled = false
 MiscText.TextSize = 24.000
 MiscText.ZIndex = 11
 MiscText.Parent = MiscTabButton
+
+local RiskTabButton = Instance.new("ImageButton")
+RiskTabButton.Name = "RiskTabButton"
+RiskTabButton.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
+RiskTabButton.BorderSizePixel = 0
+RiskTabButton.ZIndex = 10
+RiskTabButton.Parent = Body_2
+
+local RiskIcon = Instance.new("ImageLabel", RiskTabButton)
+RiskIcon.BackgroundTransparency = 1
+RiskIcon.AnchorPoint = Vector2.new(0.5, 0)
+RiskIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
+RiskIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
+RiskIcon.Image = "rbxassetid://6031268673" -- Warning/Shield Icon
+RiskIcon.ScaleType = Enum.ScaleType.Fit
+RiskIcon.ZIndex = 11
+
+local RiskText = Instance.new("TextLabel")
+RiskText.BackgroundTransparency = 1
+RiskText.Position = UDim2.new(0, 0, 0.800000012, 0)
+RiskText.Size = UDim2.new(1, 0, 0.200000003, 0)
+RiskText.Text = "Risk Lvl"
+RiskText.TextColor3 = Color3.new(1,1,1)
+RiskText.Font = Enum.Font.SourceSans
+RiskText.TextScaled = false
+RiskText.TextSize = 24.000
+RiskText.ZIndex = 11
+RiskText.Parent = RiskTabButton
 
 local KillPanelButton = Instance.new("TextButton")
 KillPanelButton.Name = "KillPanelButton"
@@ -1006,6 +1036,66 @@ AddPlayerToggle("Noclip", function()
     return nocliptoggle
 end)
 
+-- ==================== RISK LEVEL MENU ====================
+local RiskMenu = ESPMenuWindow:Clone()
+RiskMenu.Name = "RiskMenu"
+RiskMenu.Visible = false
+RiskMenu.Parent = FTFHAX
+RiskMenu.Body.TitleLabel.Text = "RISK LEVELS"
+RiskMenu.TopBar.PageTitleText.Text = "FTF admin Panel - Risk"
+
+RiskMenu.Body.ButtonsFrame:Destroy()
+
+local RiskScroll = Instance.new("ScrollingFrame")
+RiskScroll.Name = "ButtonsFrame"
+RiskScroll.Parent = RiskMenu.Body
+RiskScroll.BackgroundTransparency = 1
+RiskScroll.Position = UDim2.new(0, 5, 0, 45)
+RiskScroll.Size = UDim2.new(1, -10, 1, -55)
+RiskScroll.ScrollBarThickness = 4
+RiskScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+local RiskList = Instance.new("UIListLayout")
+RiskList.Parent = RiskScroll
+RiskList.SortOrder = Enum.SortOrder.LayoutOrder
+RiskList.Padding = UDim.new(0, 5)
+
+local function AddRiskItem(title, desc, color)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, -10, 0, 75)
+    frame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    frame.BorderSizePixel = 0
+    frame.Parent = RiskScroll
+    
+    local titleLbl = Instance.new("TextLabel")
+    titleLbl.Size = UDim2.new(1, -10, 0.35, 0)
+    titleLbl.Position = UDim2.new(0, 5, 0, 5)
+    titleLbl.BackgroundTransparency = 1
+    titleLbl.Text = title
+    titleLbl.TextColor3 = color
+    titleLbl.TextXAlignment = Enum.TextXAlignment.Left
+    titleLbl.Font = Enum.Font.SourceSansBold
+    titleLbl.TextSize = 18
+    titleLbl.Parent = frame
+    
+    local descLbl = Instance.new("TextLabel")
+    descLbl.Size = UDim2.new(1, -10, 0.6, 0)
+    descLbl.Position = UDim2.new(0, 5, 0.35, 2)
+    descLbl.BackgroundTransparency = 1
+    descLbl.Text = desc
+    descLbl.TextColor3 = Color3.new(0.9, 0.9, 0.9)
+    descLbl.TextXAlignment = Enum.TextXAlignment.Left
+    descLbl.TextYAlignment = Enum.TextYAlignment.Top
+    descLbl.TextWrapped = true
+    descLbl.Font = Enum.Font.SourceSans
+    descLbl.TextSize = 15
+    descLbl.Parent = frame
+end
+
+AddRiskItem("🟢 SAFE (Undetectable)", "All ESPs, No Fog, Fullbright, Beast Alert, Beast Cam, Custom FOV, Delete Doors, Invis Walls.", Color3.fromRGB(100, 255, 100))
+AddRiskItem("🟡 MODERATE (Use Caution)", "Smart ESP (obvious tracking), WalkSpeed 24 (sneaky), Low Gravity, Jump Power 50, Anti-AFK.", Color3.fromRGB(255, 255, 100))
+AddRiskItem("🔴 HIGH RISK (Ban Chance)", "Noclip (flags part-clipping checks), Fixed TP (Anti-cheat trigger), Auto-Play, Auto-Interact.", Color3.fromRGB(255, 100, 100))
+
 -- ==================== MISC MENU ====================
 local MiscMenu = ESPMenuWindow:Clone()
 MiscMenu.Name = "MiscMenu"
@@ -1040,6 +1130,7 @@ trackConnection(CheatButton.MouseButton1Click:Connect(function()
     TPMenu.Visible = false
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
+    if RiskMenu then RiskMenu.Visible = false end
     MainMenuWindow.Visible = not MainMenuWindow.Visible
 end))
 
@@ -1061,6 +1152,7 @@ trackConnection(BackButton.MouseButton1Click:Connect(function()
     TPMenu.Visible = false
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
+    if RiskMenu then RiskMenu.Visible = false end
     MainMenuWindow.Visible = true
 end))
 
@@ -1070,6 +1162,7 @@ trackConnection(BackButton_2.MouseButton1Click:Connect(function()
     TPMenu.Visible = false
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
+    if RiskMenu then RiskMenu.Visible = false end
     MainMenuWindow.Visible = true
 end))
 
@@ -1079,6 +1172,7 @@ trackConnection(ESPButton.MouseButton1Click:Connect(function()
     TPMenu.Visible = false
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
+    if RiskMenu then RiskMenu.Visible = false end
     MainMenuWindow.Visible = false
 end))
 
@@ -1088,6 +1182,7 @@ trackConnection(ToolsButton.MouseButton1Click:Connect(function()
     TPMenu.Visible = false
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
+    if RiskMenu then RiskMenu.Visible = false end
     MainMenuWindow.Visible = false
 end))
 
@@ -1096,6 +1191,7 @@ trackConnection(TPButton.MouseButton1Click:Connect(function()
     ToolsMenuWindow.Visible = false
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
+    if RiskMenu then RiskMenu.Visible = false end
     MainMenuWindow.Visible = false
     TPMenu.Visible = true
 end))
@@ -1105,6 +1201,7 @@ trackConnection(PlayerTabButton.MouseButton1Click:Connect(function()
     ToolsMenuWindow.Visible = false
     TPMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
+    if RiskMenu then RiskMenu.Visible = false end
     MainMenuWindow.Visible = false
     PlayerMenu.Visible = true
 end))
@@ -1114,8 +1211,19 @@ trackConnection(MiscTabButton.MouseButton1Click:Connect(function()
     ToolsMenuWindow.Visible = false
     TPMenu.Visible = false
     PlayerMenu.Visible = false
+    if RiskMenu then RiskMenu.Visible = false end
     MainMenuWindow.Visible = false
     MiscMenu.Visible = true
+end))
+
+trackConnection(RiskTabButton.MouseButton1Click:Connect(function()
+    ESPMenuWindow.Visible = false
+    ToolsMenuWindow.Visible = false
+    TPMenu.Visible = false
+    PlayerMenu.Visible = false
+    if MiscMenu then MiscMenu.Visible = false end
+    MainMenuWindow.Visible = false
+    RiskMenu.Visible = true
 end))
 
 trackConnection(TPMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
@@ -1130,6 +1238,11 @@ end))
 
 trackConnection(MiscMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     MiscMenu.Visible = false
+    MainMenuWindow.Visible = true
+end))
+
+trackConnection(RiskMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
+    RiskMenu.Visible = false
     MainMenuWindow.Visible = true
 end))
 
@@ -1839,4 +1952,4 @@ creditMain.TextSize = 14
 creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
 
-print("FTF admin Panel v0.6.59 • Final Assembled Script ✨")
+print("FTF admin Panel v0.6.69 • Final Assembled Script ✨")
