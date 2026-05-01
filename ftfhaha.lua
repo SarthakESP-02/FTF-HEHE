@@ -29,6 +29,7 @@ local proximitytoggle = false
 
 local autostruggletoggle = false
 local radartoggle = false
+local hitboxtoggle = false -- Adds the hitbox memory
 
 -- Variables to memorize the original map lighting
 local origFogEnd, origFogStart, origAtmDensity, origAtmOffset
@@ -591,7 +592,7 @@ UnfairIcon.BackgroundTransparency = 1
 UnfairIcon.AnchorPoint = Vector2.new(0.5, 0)
 UnfairIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
 UnfairIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
-UnfairIcon.Image = "rbxassetid://11131102173"
+UnfairIcon.Image = "rbxassetid://6031290369" -- Verified Fire Icon
 UnfairIcon.ScaleType = Enum.ScaleType.Fit
 UnfairIcon.ZIndex = 11
 
@@ -640,6 +641,7 @@ trackConnection(KillPanelButton.MouseButton1Click:Connect(function()
     proximitytoggle = false
     autostruggletoggle = false
     radartoggle = false
+    hitboxtoggle = false
     
     if FreecamUI then FreecamUI.Visible = false end
 
@@ -1127,9 +1129,10 @@ local function AddRiskItem(title, desc, color)
     descLbl.Parent = frame
 end
 
-AddRiskItem("🟢 SAFE (Undetectable)", "All ESPs, No Fog, Fullbright, Beast Alert, Beast Cam, Custom FOV, Delete Doors, Invis Walls.", Color3.fromRGB(100, 255, 100))
-AddRiskItem("🟡 MODERATE (Use Caution)", "Smart ESP (obvious tracking), WalkSpeed 24 (sneaky), Low Gravity, Jump Power 50, Anti-AFK.", Color3.fromRGB(255, 255, 100))
-AddRiskItem("🔴 HIGH RISK (Ban Chance)", "Noclip (flags part-clipping checks), Fixed TP (Anti-cheat trigger), Auto-Play, Auto-Interact.", Color3.fromRGB(255, 100, 100))
+AddRiskItem("🟢 SAFE (Undetectable)", "Ghost Drone, Live Radar, All ESPs, No Fog, Fullbright, Beast Cam, Custom FOV, Delete Doors, Invis Walls.", Color3.fromRGB(100, 255, 100))
+AddRiskItem("🟡 MODERATE (Use Caution)", "Auto-Struggle (Remote spam), Smart ESP, WalkSpeed 24, Low Gravity, Jump Power 50, Anti-AFK.", Color3.fromRGB(255, 255, 100))
+AddRiskItem("🔴 HIGH RISK (Ban Chance)", "Noclip (flags part-clipping), Fixed TP (Anti-cheat trigger), Auto-Play, Auto-Interact.", Color3.fromRGB(255, 100, 100))
+
 
 -- ==================== UNFAIR MENU ====================
 local UnfairMenu = ESPMenuWindow:Clone()
@@ -1193,6 +1196,39 @@ task.spawn(function()
         end
     end
 end)
+
+-- 4. Subtle Hitbox Extender (Beast Mode)
+AddUnfairToggle("Expand Hitboxes", function()
+    hitboxtoggle = not hitboxtoggle
+    
+    -- If turned off, instantly reset everyone's hitboxes back to normal
+    if not hitboxtoggle then
+        for _, plr in pairs(game.Players:GetPlayers()) do
+            if plr ~= game.Players.LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                plr.Character.HumanoidRootPart.Size = Vector3.new(2, 2, 1)
+                plr.Character.HumanoidRootPart.Transparency = 1
+            end
+        end
+    end
+    
+    return hitboxtoggle
+end)
+
+-- Hitbox Extender Loop
+trackConnection(game:GetService("RunService").Heartbeat:Connect(function()
+    if hitboxtoggle then
+        for _, plr in pairs(game.Players:GetPlayers()) do
+            -- Only expand OTHER players, not yourself
+            if plr ~= game.Players.LocalPlayer and plr.Character and plr.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = plr.Character.HumanoidRootPart
+                hrp.Size = Vector3.new(4, 4, 4) -- Subtle extension
+                hrp.Transparency = 0.8 -- Makes it faintly visible so you know exactly where to swing
+                hrp.BrickColor = BrickColor.new("Bright red")
+                hrp.CanCollide = false -- Prevents them from getting stuck in doors
+            end
+        end
+    end
+end))
 
 -- 2. Live Radar & Anti-Camp UI
 local LiveRadarLabel = Instance.new("TextLabel")
@@ -2224,4 +2260,10 @@ creditMain.Position = UDim2.new(0, 0, 1, -25)
 creditMain.BackgroundTransparency = 1
 creditMain.Text = "Made by ScriptedChaosLIVE"
 creditMain.TextColor3 = Color3.fromRGB(200, 200, 200)
-creditMain.Font = Enum
+creditMain.Font = Enum.Font.SourceSans
+creditMain.TextScaled = false
+creditMain.TextSize = 14
+creditMain.TextStrokeTransparency = 0.9
+creditMain.Parent = MainMenuWindow
+
+print("FTF admin Panel v0.7.54 • Maximum Arsenal Active ✨")
