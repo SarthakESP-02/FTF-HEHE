@@ -1,4 +1,4 @@
-local ver = "v0.7.52" -- FTF admin Panel by Xyrozzy
+local ver = "v0.7.53" -- FTF admin Panel by Xyrozzy
 
 -- Global Connection Tracker for Clean UI Destruction
 local activeConnections = {}
@@ -391,13 +391,13 @@ Body_2.BackgroundTransparency = 1.000
 Body_2.BorderSizePixel = 0
 Body_2.Position = UDim2.new(0.5, 0, 0, 45)
 Body_2.Size = UDim2.new(1, -10, 1, -75)
-Body_2.ScrollBarThickness = 0 -- Hides the scrollbar so it still looks clean
+Body_2.ScrollBarThickness = 0
 Body_2.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
 UIGridLayout_2.Parent = Body_2
 UIGridLayout_2.HorizontalAlignment = Enum.HorizontalAlignment.Center
 UIGridLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
-UIGridLayout_2.VerticalAlignment = Enum.VerticalAlignment.Top -- Pushes items up so scrolling works perfectly
+UIGridLayout_2.VerticalAlignment = Enum.VerticalAlignment.Top
 UIGridLayout_2.CellSize = UDim2.new(0, 132, 0, 132)
 
 -- ==================== MATCHING MAIN MENU BUTTONS ====================
@@ -560,7 +560,7 @@ RiskIcon.BackgroundTransparency = 1
 RiskIcon.AnchorPoint = Vector2.new(0.5, 0)
 RiskIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
 RiskIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
-RiskIcon.Image = "rbxassetid://6031268673" -- Warning/Shield Icon
+RiskIcon.Image = "rbxassetid://6031268673" 
 RiskIcon.ScaleType = Enum.ScaleType.Fit
 RiskIcon.ZIndex = 11
 
@@ -575,6 +575,36 @@ RiskText.TextScaled = false
 RiskText.TextSize = 24.000
 RiskText.ZIndex = 11
 RiskText.Parent = RiskTabButton
+
+-- [NEW] MISSING UNFAIR TAB BUTTON INJECTED HERE
+local UnfairTabButton = Instance.new("ImageButton")
+UnfairTabButton.Name = "UnfairTabButton"
+UnfairTabButton.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
+UnfairTabButton.BorderSizePixel = 0
+UnfairTabButton.ZIndex = 10
+UnfairTabButton.Parent = Body_2
+
+local UnfairIcon = Instance.new("ImageLabel", UnfairTabButton)
+UnfairIcon.BackgroundTransparency = 1
+UnfairIcon.AnchorPoint = Vector2.new(0.5, 0)
+UnfairIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
+UnfairIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
+UnfairIcon.Image = "rbxassetid://11131102173" -- Skull/Hacker Icon
+UnfairIcon.ScaleType = Enum.ScaleType.Fit
+UnfairIcon.ZIndex = 11
+
+local UnfairText = Instance.new("TextLabel")
+UnfairText.BackgroundTransparency = 1
+UnfairText.Position = UDim2.new(0, 0, 0.800000012, 0)
+UnfairText.Size = UDim2.new(1, 0, 0.200000003, 0)
+UnfairText.Text = "Unfair"
+UnfairText.TextColor3 = Color3.new(1, 0.2, 0.2)
+UnfairText.Font = Enum.Font.SourceSansBold
+UnfairText.TextScaled = false
+UnfairText.TextSize = 24.000
+UnfairText.ZIndex = 11
+UnfairText.Parent = UnfairTabButton
+-- ===============================================
 
 local KillPanelButton = Instance.new("TextButton")
 KillPanelButton.Name = "KillPanelButton"
@@ -607,6 +637,9 @@ trackConnection(KillPanelButton.MouseButton1Click:Connect(function()
     fovtoggle = false
     lowgravtoggle = false
     proximitytoggle = false
+    
+    -- Also turn off freecam cleanly
+    if FreecamUI then FreecamUI.Visible = false end
 
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
@@ -1015,7 +1048,7 @@ AddPlayerToggle("JumpPower (50)", function()
     if not jumptoggle then
         local char = game.Players.LocalPlayer.Character
         if char and char:FindFirstChild("Humanoid") then
-            char.Humanoid.JumpPower = 0 -- Reset to 0 since players can't jump in FTF!
+            char.Humanoid.JumpPower = 0 
         end
     end
     return jumptoggle
@@ -1162,7 +1195,7 @@ local function createCamBtn(id, text, pos)
     btn.TextColor3 = Color3.new(1,1,1)
     btn.Font = Enum.Font.SourceSansBold
     btn.TextSize = 18
-    Instance.new("UICorner", btn).CornerRadius = UDim.new(1, 0) -- Makes them smooth circles
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(1, 0)
     btn.Parent = FreecamUI
     
     btn.InputBegan:Connect(function(input)
@@ -1177,13 +1210,13 @@ local function createCamBtn(id, text, pos)
     end)
 end
 
--- D-Pad Left Side (Forward, Back, Left, Right)
+-- D-Pad Left Side
 createCamBtn("W", "FWD", UDim2.new(0.15, 0, 0.5, 0))
 createCamBtn("S", "BACK", UDim2.new(0.15, 0, 0.7, 0))
 createCamBtn("A", "LEFT", UDim2.new(0.07, 0, 0.6, 0))
 createCamBtn("D", "RIGHT", UDim2.new(0.23, 0, 0.6, 0))
 
--- Elevators Right Side (Up, Down)
+-- Elevators Right Side
 createCamBtn("Up", "UP", UDim2.new(0.85, 0, 0.5, 0))
 createCamBtn("Dn", "DOWN", UDim2.new(0.85, 0, 0.7, 0))
 
@@ -1203,7 +1236,6 @@ AddUnfairToggle("Ghost Drone", function()
             char.HumanoidRootPart.Anchored = true
         end
         
-        -- Create the Invisible Drone Target
         freecamPart = Instance.new("Part")
         freecamPart.Size = Vector3.new(1,1,1)
         freecamPart.Transparency = 1
@@ -1214,7 +1246,7 @@ AddUnfairToggle("Ghost Drone", function()
         cam.CameraSubject = freecamPart
         
         camConnection = game:GetService("RunService").RenderStepped:Connect(function()
-            local speed = 2 -- Flight Speed
+            local speed = 2 
             local vec = Vector3.new(0,0,0)
             
             if moving.W then vec = vec + cam.CFrame.LookVector end
@@ -1265,13 +1297,13 @@ MiscScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
 local MiscGrid = Instance.new("UIGridLayout")
 MiscGrid.Parent = MiscScroll
-MiscGrid.FillDirection = Enum.FillDirection.Horizontal -- FIXED THIS LINE
+MiscGrid.FillDirection = Enum.FillDirection.Horizontal 
 MiscGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
 MiscGrid.SortOrder = Enum.SortOrder.LayoutOrder
 MiscGrid.CellPadding = UDim2.new(0, 6, 0, 6)
 MiscGrid.CellSize = UDim2.new(0, 152, 0, 39)
 
--- ==================== CLICK ROUTING ====================
+-- ==================== CLICK ROUTING [FIXED] ====================
 trackConnection(CheatButton.MouseButton1Click:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
@@ -1279,6 +1311,7 @@ trackConnection(CheatButton.MouseButton1Click:Connect(function()
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
+    if UnfairMenu then UnfairMenu.Visible = false end
     MainMenuWindow.Visible = not MainMenuWindow.Visible
 end))
 
@@ -1301,6 +1334,7 @@ trackConnection(BackButton.MouseButton1Click:Connect(function()
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
+    if UnfairMenu then UnfairMenu.Visible = false end
     MainMenuWindow.Visible = true
 end))
 
@@ -1311,6 +1345,7 @@ trackConnection(BackButton_2.MouseButton1Click:Connect(function()
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
+    if UnfairMenu then UnfairMenu.Visible = false end
     MainMenuWindow.Visible = true
 end))
 
@@ -1321,6 +1356,7 @@ trackConnection(ESPButton.MouseButton1Click:Connect(function()
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
+    if UnfairMenu then UnfairMenu.Visible = false end
     MainMenuWindow.Visible = false
 end))
 
@@ -1331,6 +1367,7 @@ trackConnection(ToolsButton.MouseButton1Click:Connect(function()
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
+    if UnfairMenu then UnfairMenu.Visible = false end
     MainMenuWindow.Visible = false
 end))
 
@@ -1340,6 +1377,7 @@ trackConnection(TPButton.MouseButton1Click:Connect(function()
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
+    if UnfairMenu then UnfairMenu.Visible = false end
     MainMenuWindow.Visible = false
     TPMenu.Visible = true
 end))
@@ -1350,6 +1388,7 @@ trackConnection(PlayerTabButton.MouseButton1Click:Connect(function()
     TPMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
+    if UnfairMenu then UnfairMenu.Visible = false end
     MainMenuWindow.Visible = false
     PlayerMenu.Visible = true
 end))
@@ -1360,6 +1399,7 @@ trackConnection(MiscTabButton.MouseButton1Click:Connect(function()
     TPMenu.Visible = false
     PlayerMenu.Visible = false
     if RiskMenu then RiskMenu.Visible = false end
+    if UnfairMenu then UnfairMenu.Visible = false end
     MainMenuWindow.Visible = false
     MiscMenu.Visible = true
 end))
@@ -1370,8 +1410,21 @@ trackConnection(RiskTabButton.MouseButton1Click:Connect(function()
     TPMenu.Visible = false
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
+    if UnfairMenu then UnfairMenu.Visible = false end
     MainMenuWindow.Visible = false
     RiskMenu.Visible = true
+end))
+
+-- [NEW] UNFAIR TAB CLICK LISTENER
+trackConnection(UnfairTabButton.MouseButton1Click:Connect(function()
+    ESPMenuWindow.Visible = false
+    ToolsMenuWindow.Visible = false
+    TPMenu.Visible = false
+    PlayerMenu.Visible = false
+    if MiscMenu then MiscMenu.Visible = false end
+    if RiskMenu then RiskMenu.Visible = false end
+    MainMenuWindow.Visible = false
+    UnfairMenu.Visible = true
 end))
 
 trackConnection(TPMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
@@ -1391,6 +1444,12 @@ end))
 
 trackConnection(RiskMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     RiskMenu.Visible = false
+    MainMenuWindow.Visible = true
+end))
+
+-- [NEW] UNFAIR MENU BACK BUTTON LISTENER
+trackConnection(UnfairMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
+    UnfairMenu.Visible = false
     MainMenuWindow.Visible = true
 end))
 
@@ -1493,12 +1552,12 @@ function reloadESP()
     end
 end
 
--- Dedicated RunService Loop for ESP Colors (OPTIMIZED)
+-- Dedicated RunService Loop for ESP Colors
 local espTick = 0
 local cachedBest = nil
 trackConnection(game:GetService("RunService").Heartbeat:Connect(function()
     espTick = espTick + 1
-    if espTick % 10 == 0 then -- Only calculate Best PC 6 times a second instead of 60!
+    if espTick % 10 == 0 then
         cachedBest = getBestPC()
     end
 
@@ -1690,7 +1749,7 @@ task.spawn(function()
     end)
 end)
 
--- Auto Interact Dynamic Hook (Fixes Respawn Bug)
+-- Auto Interact
 local function setupAutoInteract(character)
     local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
     local screenGui = playerGui:WaitForChild("ScreenGui", 10)
@@ -1756,8 +1815,6 @@ task.spawn(function()
                 local beastNearby = beast and beast.Character and beast.Character:FindFirstChild("HumanoidRootPart") and 
                                     ((Root.Position - beast.Character.HumanoidRootPart.Position).Magnitude < 50)
                 
-                if beastNearby then print("beast nearby") end
-
                 for _, pcData in ipairs(pcs) do
                     if isPlayerTyping() and not beastNearby then break end
                     
@@ -1770,12 +1827,6 @@ task.spawn(function()
                         if path.Status == Enum.PathStatus.Success then
                             local waypoints = path:GetWaypoints()
                             for i, waypoint in ipairs(waypoints) do
-                                local ray = Ray.new(waypoint.Position, Vector3.new(0, 1, 0) * 3)
-                                local part = workspace:FindPartOnRay(ray)
-                                if part and part.CanCollide then
-                                    print("need to crouch :)")
-                                end
-
                                 Humanoid:MoveTo(waypoint.Position)
                                 if waypoint.Action == Enum.PathWaypointAction.Jump then
                                     Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
@@ -1878,7 +1929,6 @@ AddMiscToggle("No Fog", function()
     local atmosphere = lighting:FindFirstChild("Atmosphere")
     
     if nofogtoggle then
-        -- Memorize the map's original fog
         origFogEnd = lighting.FogEnd
         origFogStart = lighting.FogStart
         if atmosphere then
@@ -1886,7 +1936,6 @@ AddMiscToggle("No Fog", function()
             origAtmOffset = atmosphere.Offset
         end
         
-        -- Apply No Fog
         lighting.FogEnd = 100000
         lighting.FogStart = 100000
         if atmosphere then
@@ -1894,7 +1943,6 @@ AddMiscToggle("No Fog", function()
             atmosphere.Offset = 0
         end
     else
-        -- Restore the exact original map fog
         if origFogEnd then lighting.FogEnd = origFogEnd end
         if origFogStart then lighting.FogStart = origFogStart end
         if atmosphere and origAtmDensity then
@@ -1905,11 +1953,10 @@ AddMiscToggle("No Fog", function()
     return nofogtoggle
 end)
 
--- 2. Nuke FPS Booster (Fixes Beast Lag & Spectate Bug)
+-- 2. Nuke FPS Booster
 AddMiscButton("FPS Booster", function()
     local lighting = game:GetService("Lighting")
     
-    -- Disables effects instead of destroying them so FTF scripts don't crash
     lighting.GlobalShadows = false
     for _, v in pairs(lighting:GetChildren()) do
         if v:IsA("PostEffect") or v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") or v:IsA("ColorCorrectionEffect") then
@@ -1917,7 +1964,6 @@ AddMiscButton("FPS Booster", function()
         end
     end
 
-    -- Disables particles, lights, and textures safely
     for _, v in pairs(workspace:GetDescendants()) do
         if v:IsA("BasePart") then
             v.Material = Enum.Material.SmoothPlastic
@@ -1932,22 +1978,20 @@ AddMiscButton("FPS Booster", function()
     end
 end)
 
--- 3. Smart ESP Render Distance (150 Studs)
+-- 3. Smart ESP Render Distance
 AddMiscToggle("Smart ESP (150s)", function()
     smartesptoggle = not smartesptoggle
     return smartesptoggle
 end)
 
--- Hooking Smart ESP into Heartbeat (OPTIMIZED)
 local smartEspTick = 0
 trackConnection(game:GetService("RunService").Heartbeat:Connect(function()
     smartEspTick = smartEspTick + 1
-    if smartEspTick % 15 ~= 0 then return end -- Only check distances 4 times a second!
+    if smartEspTick % 15 ~= 0 then return end
 
     if smartesptoggle and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
         local pos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
         
-        -- Check only players (very fast)
         for _, p in pairs(game.Players:GetPlayers()) do
             if p.Character and p.Character:FindFirstChild("Highlight") then
                 if (p.Character:GetPivot().Position - pos).Magnitude > 150 then
@@ -1958,7 +2002,6 @@ trackConnection(game:GetService("RunService").Heartbeat:Connect(function()
             end
         end
         
-        -- Check only the map folder (no GetDescendants)
         local map = getMap()
         if map then
             for _, item in pairs(map:GetChildren()) do
@@ -1972,7 +2015,6 @@ trackConnection(game:GetService("RunService").Heartbeat:Connect(function()
             end
         end
     else
-        -- Re-enable safely if toggled off
         if not smartesptoggle then
             for _, p in pairs(game.Players:GetPlayers()) do
                 if p.Character and p.Character:FindFirstChild("Highlight") then p.Character.Highlight.Enabled = true end
@@ -1993,15 +2035,11 @@ AddMiscToggle("Fullbright", function()
     local lighting = game:GetService("Lighting")
     
     if fullbrighttoggle then
-        -- Memorize original lighting
         origAmbient = lighting.Ambient
         origOutdoorAmbient = lighting.OutdoorAmbient
-        
-        -- Make it bright
         lighting.Ambient = Color3.new(1, 1, 1)
         lighting.OutdoorAmbient = Color3.new(1, 1, 1)
     else
-        -- Restore original lighting
         if origAmbient then lighting.Ambient = origAmbient end
         if origOutdoorAmbient then lighting.OutdoorAmbient = origOutdoorAmbient end
     end
@@ -2115,4 +2153,4 @@ creditMain.TextSize = 14
 creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
 
-print("FTF admin Panel v0.7.52 • Final Assembled Script ✨")
+print("FTF admin Panel v0.7.53 • Ghost Drone Deployed ✨")
