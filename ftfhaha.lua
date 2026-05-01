@@ -1096,6 +1096,154 @@ AddRiskItem("🟢 SAFE (Undetectable)", "All ESPs, No Fog, Fullbright, Beast Ale
 AddRiskItem("🟡 MODERATE (Use Caution)", "Smart ESP (obvious tracking), WalkSpeed 24 (sneaky), Low Gravity, Jump Power 50, Anti-AFK.", Color3.fromRGB(255, 255, 100))
 AddRiskItem("🔴 HIGH RISK (Ban Chance)", "Noclip (flags part-clipping checks), Fixed TP (Anti-cheat trigger), Auto-Play, Auto-Interact.", Color3.fromRGB(255, 100, 100))
 
+-- ==================== UNFAIR MENU ====================
+local UnfairMenu = ESPMenuWindow:Clone()
+UnfairMenu.Name = "UnfairMenu"
+UnfairMenu.Visible = false
+UnfairMenu.Parent = FTFHAX
+UnfairMenu.Body.TitleLabel.Text = "UNFAIR ADVANTAGE"
+UnfairMenu.Body.TitleLabel.TextColor3 = Color3.new(1, 0.2, 0.2)
+UnfairMenu.TopBar.PageTitleText.Text = "FTF admin Panel - Unfair"
+
+UnfairMenu.Body.ButtonsFrame:Destroy()
+
+local UnfairScroll = Instance.new("ScrollingFrame")
+UnfairScroll.Name = "ButtonsFrame"
+UnfairScroll.Parent = UnfairMenu.Body
+UnfairScroll.BackgroundTransparency = 1
+UnfairScroll.Position = UDim2.new(0, 5, 0, 45)
+UnfairScroll.Size = UDim2.new(1, -10, 1, -55)
+UnfairScroll.ScrollBarThickness = 4
+UnfairScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+local UnfairGrid = Instance.new("UIGridLayout")
+UnfairGrid.Parent = UnfairScroll
+UnfairGrid.FillDirection = Enum.FillDirection.Horizontal
+UnfairGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+UnfairGrid.SortOrder = Enum.SortOrder.LayoutOrder
+UnfairGrid.CellPadding = UDim2.new(0, 6, 0, 6)
+UnfairGrid.CellSize = UDim2.new(0, 152, 0, 39)
+
+local function AddUnfairToggle(name, callback)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 200, 0, 50)
+    btn.BackgroundColor3 = Color3.fromRGB(150, 0, 0)
+    btn.Text = name
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.SourceSansBold
+    btn.TextScaled = true
+    btn.Parent = UnfairScroll
+    
+    trackConnection(btn.MouseButton1Click:Connect(function()
+        local newState = callback()
+        btn.BackgroundColor3 = newState and Color3.new(0, 0.74902, 0) or Color3.fromRGB(150, 0, 0)
+    end))
+end
+
+-- Mobile Freecam UI Overlay
+local FreecamUI = Instance.new("Frame")
+FreecamUI.Name = "FreecamControls"
+FreecamUI.Parent = FTFHAX
+FreecamUI.Size = UDim2.new(1, 0, 1, 0)
+FreecamUI.BackgroundTransparency = 1
+FreecamUI.Visible = false
+FreecamUI.ZIndex = 50
+
+local moving = {W=false, A=false, S=false, D=false, Up=false, Dn=false}
+
+local function createCamBtn(id, text, pos)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 60, 0, 60)
+    btn.Position = pos
+    btn.AnchorPoint = Vector2.new(0.5, 0.5)
+    btn.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    btn.BackgroundTransparency = 0.5
+    btn.Text = text
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.SourceSansBold
+    btn.TextSize = 18
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(1, 0) -- Makes them smooth circles
+    btn.Parent = FreecamUI
+    
+    btn.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            moving[id] = true
+        end
+    end)
+    btn.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            moving[id] = false
+        end
+    end)
+end
+
+-- D-Pad Left Side (Forward, Back, Left, Right)
+createCamBtn("W", "FWD", UDim2.new(0.15, 0, 0.5, 0))
+createCamBtn("S", "BACK", UDim2.new(0.15, 0, 0.7, 0))
+createCamBtn("A", "LEFT", UDim2.new(0.07, 0, 0.6, 0))
+createCamBtn("D", "RIGHT", UDim2.new(0.23, 0, 0.6, 0))
+
+-- Elevators Right Side (Up, Down)
+createCamBtn("Up", "UP", UDim2.new(0.85, 0, 0.5, 0))
+createCamBtn("Dn", "DOWN", UDim2.new(0.85, 0, 0.7, 0))
+
+-- Freecam Logic
+local dronetoggle = false
+local camConnection
+local freecamPart
+
+AddUnfairToggle("Ghost Drone", function()
+    dronetoggle = not dronetoggle
+    local char = game.Players.LocalPlayer.Character
+    local cam = workspace.CurrentCamera
+    
+    if dronetoggle then
+        FreecamUI.Visible = true
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            char.HumanoidRootPart.Anchored = true
+        end
+        
+        -- Create the Invisible Drone Target
+        freecamPart = Instance.new("Part")
+        freecamPart.Size = Vector3.new(1,1,1)
+        freecamPart.Transparency = 1
+        freecamPart.Anchored = true
+        freecamPart.CanCollide = false
+        freecamPart.CFrame = cam.CFrame
+        freecamPart.Parent = workspace
+        cam.CameraSubject = freecamPart
+        
+        camConnection = game:GetService("RunService").RenderStepped:Connect(function()
+            local speed = 2 -- Flight Speed
+            local vec = Vector3.new(0,0,0)
+            
+            if moving.W then vec = vec + cam.CFrame.LookVector end
+            if moving.S then vec = vec - cam.CFrame.LookVector end
+            if moving.A then vec = vec - cam.CFrame.RightVector end
+            if moving.D then vec = vec + cam.CFrame.RightVector end
+            if moving.Up then vec = vec + Vector3.new(0,1,0) end
+            if moving.Dn then vec = vec - Vector3.new(0,1,0) end
+            
+            if vec.Magnitude > 0 then
+                vec = vec.Unit * speed
+                freecamPart.CFrame = freecamPart.CFrame + vec
+            end
+        end)
+    else
+        FreecamUI.Visible = false
+        for k, _ in pairs(moving) do moving[k] = false end
+        
+        if freecamPart then freecamPart:Destroy() end
+        if camConnection then camConnection:Disconnect() end
+        
+        if char and char:FindFirstChild("HumanoidRootPart") and char:FindFirstChild("Humanoid") then
+            char.HumanoidRootPart.Anchored = false
+            cam.CameraSubject = char.Humanoid
+        end
+    end
+    return dronetoggle
+end)
+
 -- ==================== MISC MENU ====================
 local MiscMenu = ESPMenuWindow:Clone()
 MiscMenu.Name = "MiscMenu"
