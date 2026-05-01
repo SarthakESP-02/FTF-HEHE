@@ -1,4 +1,4 @@
-local ver = "v0.6.45" -- FTF admin Panel by Xyrozzy
+local ver = "v0.7.52" -- FTF admin Panel by Xyrozzy
 
 -- Global Connection Tracker for Clean UI Destruction
 local activeConnections = {}
@@ -2107,7 +2107,7 @@ creditMain.Name = "XyrozzyCredit"
 creditMain.Size = UDim2.new(1, 0, 0, 25)
 creditMain.Position = UDim2.new(0, 0, 1, -25)
 creditMain.BackgroundTransparency = 1
-creditMain.Text = "Made by Xyrozzy"
+creditMain.Text = "Made by ScriptedChaosLIVE"
 creditMain.TextColor3 = Color3.fromRGB(200, 200, 200)
 creditMain.Font = Enum.Font.SourceSans
 creditMain.TextScaled = false
@@ -2115,4 +2115,4 @@ creditMain.TextSize = 14
 creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
 
-print("FTF admin Panel v0.6.45 • Final Assembled Script ✨")
+print("FTF admin Panel v0.7.52 • Final Assembled Script ✨")
