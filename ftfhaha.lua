@@ -1,4 +1,4 @@
-local ver = "v0.7.53" -- FTF admin Panel by Xyrozzy
+local ver = "v0.7.54" -- FTF admin Panel by Xyrozzy
 
 -- Global Connection Tracker for Clean UI Destruction
 local activeConnections = {}
@@ -26,6 +26,9 @@ local smartesptoggle = false
 local fovtoggle = false
 local lowgravtoggle = false
 local proximitytoggle = false
+
+local autostruggletoggle = false
+local radartoggle = false
 
 -- Variables to memorize the original map lighting
 local origFogEnd, origFogStart, origAtmDensity, origAtmOffset
@@ -576,7 +579,6 @@ RiskText.TextSize = 24.000
 RiskText.ZIndex = 11
 RiskText.Parent = RiskTabButton
 
--- [NEW] MISSING UNFAIR TAB BUTTON INJECTED HERE
 local UnfairTabButton = Instance.new("ImageButton")
 UnfairTabButton.Name = "UnfairTabButton"
 UnfairTabButton.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
@@ -589,7 +591,7 @@ UnfairIcon.BackgroundTransparency = 1
 UnfairIcon.AnchorPoint = Vector2.new(0.5, 0)
 UnfairIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
 UnfairIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
-UnfairIcon.Image = "rbxassetid://11131102173" -- Skull/Hacker Icon
+UnfairIcon.Image = "rbxassetid://11131102173"
 UnfairIcon.ScaleType = Enum.ScaleType.Fit
 UnfairIcon.ZIndex = 11
 
@@ -604,7 +606,6 @@ UnfairText.TextScaled = false
 UnfairText.TextSize = 24.000
 UnfairText.ZIndex = 11
 UnfairText.Parent = UnfairTabButton
--- ===============================================
 
 local KillPanelButton = Instance.new("TextButton")
 KillPanelButton.Name = "KillPanelButton"
@@ -637,8 +638,9 @@ trackConnection(KillPanelButton.MouseButton1Click:Connect(function()
     fovtoggle = false
     lowgravtoggle = false
     proximitytoggle = false
+    autostruggletoggle = false
+    radartoggle = false
     
-    -- Also turn off freecam cleanly
     if FreecamUI then FreecamUI.Visible = false end
 
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
@@ -1173,7 +1175,84 @@ local function AddUnfairToggle(name, callback)
     end))
 end
 
--- Mobile Freecam UI Overlay
+-- 1. Auto Struggle Logic
+AddUnfairToggle("Auto-Struggle", function()
+    autostruggletoggle = not autostruggletoggle
+    return autostruggletoggle
+end)
+
+task.spawn(function()
+    while true do
+        task.wait(0.1)
+        if autostruggletoggle then
+            local gui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+            local screenGui = gui:FindFirstChild("ScreenGui")
+            if screenGui and screenGui:FindFirstChild("StruggleBox") and screenGui.StruggleBox.Visible then
+                game.ReplicatedStorage.RemoteEvent:FireServer("Input", "Action", true)
+            end
+        end
+    end
+end)
+
+-- 2. Live Radar & Anti-Camp UI
+local LiveRadarLabel = Instance.new("TextLabel")
+LiveRadarLabel.Size = UDim2.new(0, 300, 0, 50)
+LiveRadarLabel.Position = UDim2.new(0.5, -150, 0.85, 0)
+LiveRadarLabel.BackgroundTransparency = 0.5
+LiveRadarLabel.BackgroundColor3 = Color3.new(0,0,0)
+LiveRadarLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+LiveRadarLabel.Font = Enum.Font.SourceSansBold
+LiveRadarLabel.TextScaled = true
+LiveRadarLabel.Visible = false
+LiveRadarLabel.ZIndex = 100
+LiveRadarLabel.Parent = FTFHAX
+Instance.new("UICorner", LiveRadarLabel).CornerRadius = UDim.new(0, 8)
+
+AddUnfairToggle("Live Radar", function()
+    radartoggle = not radartoggle
+    LiveRadarLabel.Visible = radartoggle
+    return radartoggle
+end)
+
+trackConnection(game:GetService("RunService").Heartbeat:Connect(function()
+    if radartoggle and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart") then
+        local beast = getBeast()
+        local map = getMap()
+        if beast and beast.Character and beast.Character:FindFirstChild("HumanoidRootPart") then
+            local myPos = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
+            local beastPos = beast.Character.HumanoidRootPart.Position
+            local dist = (myPos - beastPos).Magnitude
+            
+            local radarText = "BEAST: " .. math.floor(dist) .. " STUDS"
+            
+            -- Anti-Camp Check
+            local isCamping = false
+            if map then
+                for _, pod in pairs(map:GetChildren()) do
+                    if pod.Name == "FreezePod" and pod:FindFirstChild("Occupant") and pod.Occupant.Value ~= nil then
+                        if (beastPos - pod:GetPivot().Position).Magnitude < 30 then
+                            isCamping = true
+                            break
+                        end
+                    end
+                end
+            end
+            
+            if isCamping then
+                LiveRadarLabel.Text = radarText .. "\n⚠️ CAMPING POD ⚠️"
+                LiveRadarLabel.TextColor3 = Color3.new(1, 0.2, 0.2)
+            else
+                LiveRadarLabel.Text = radarText
+                LiveRadarLabel.TextColor3 = Color3.new(1, 1, 1)
+            end
+        else
+            LiveRadarLabel.Text = "SEARCHING FOR BEAST..."
+            LiveRadarLabel.TextColor3 = Color3.new(0.8, 0.8, 0.8)
+        end
+    end
+end))
+
+-- 3. Mobile Freecam UI Overlay
 local FreecamUI = Instance.new("Frame")
 FreecamUI.Name = "FreecamControls"
 FreecamUI.Parent = FTFHAX
@@ -1303,7 +1382,7 @@ MiscGrid.SortOrder = Enum.SortOrder.LayoutOrder
 MiscGrid.CellPadding = UDim2.new(0, 6, 0, 6)
 MiscGrid.CellSize = UDim2.new(0, 152, 0, 39)
 
--- ==================== CLICK ROUTING [FIXED] ====================
+-- ==================== CLICK ROUTING ====================
 trackConnection(CheatButton.MouseButton1Click:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
@@ -1415,7 +1494,6 @@ trackConnection(RiskTabButton.MouseButton1Click:Connect(function()
     RiskMenu.Visible = true
 end))
 
--- [NEW] UNFAIR TAB CLICK LISTENER
 trackConnection(UnfairTabButton.MouseButton1Click:Connect(function()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
@@ -1447,7 +1525,6 @@ trackConnection(RiskMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     MainMenuWindow.Visible = true
 end))
 
--- [NEW] UNFAIR MENU BACK BUTTON LISTENER
 trackConnection(UnfairMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     UnfairMenu.Visible = false
     MainMenuWindow.Visible = true
@@ -2147,10 +2224,4 @@ creditMain.Position = UDim2.new(0, 0, 1, -25)
 creditMain.BackgroundTransparency = 1
 creditMain.Text = "Made by ScriptedChaosLIVE"
 creditMain.TextColor3 = Color3.fromRGB(200, 200, 200)
-creditMain.Font = Enum.Font.SourceSans
-creditMain.TextScaled = false
-creditMain.TextSize = 14
-creditMain.TextStrokeTransparency = 0.9
-creditMain.Parent = MainMenuWindow
-
-print("FTF admin Panel v0.7.53 • Ghost Drone Deployed ✨")
+creditMain.Font = Enum
