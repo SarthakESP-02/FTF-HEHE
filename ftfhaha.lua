@@ -1,4 +1,4 @@
-local ver = "v0.7.54" -- FTF admin Panel by Xyrozzy
+local ver = "v0.7.55" -- FTF admin Panel by Xyrozzy
 
 -- Global Connection Tracker for Clean UI Destruction
 local activeConnections = {}
@@ -608,6 +608,35 @@ UnfairText.TextSize = 24.000
 UnfairText.ZIndex = 11
 UnfairText.Parent = UnfairTabButton
 
+-- [NEW] UPDATE LOG TAB BUTTON
+local UpdateLogTabButton = Instance.new("ImageButton")
+UpdateLogTabButton.Name = "UpdateLogTabButton"
+UpdateLogTabButton.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
+UpdateLogTabButton.BorderSizePixel = 0
+UpdateLogTabButton.ZIndex = 10
+UpdateLogTabButton.Parent = Body_2
+
+local UpdateLogIcon = Instance.new("ImageLabel", UpdateLogTabButton)
+UpdateLogIcon.BackgroundTransparency = 1
+UpdateLogIcon.AnchorPoint = Vector2.new(0.5, 0)
+UpdateLogIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
+UpdateLogIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
+UpdateLogIcon.Image = "rbxassetid://11293981586" -- Scroll/Document Icon
+UpdateLogIcon.ScaleType = Enum.ScaleType.Fit
+UpdateLogIcon.ZIndex = 11
+
+local UpdateLogText = Instance.new("TextLabel")
+UpdateLogText.BackgroundTransparency = 1
+UpdateLogText.Position = UDim2.new(0, 0, 0.800000012, 0)
+UpdateLogText.Size = UDim2.new(1, 0, 0.200000003, 0)
+UpdateLogText.Text = "Logs"
+UpdateLogText.TextColor3 = Color3.new(1, 1, 1)
+UpdateLogText.Font = Enum.Font.SourceSans
+UpdateLogText.TextScaled = false
+UpdateLogText.TextSize = 24.000
+UpdateLogText.ZIndex = 11
+UpdateLogText.Parent = UpdateLogTabButton
+
 local KillPanelButton = Instance.new("TextButton")
 KillPanelButton.Name = "KillPanelButton"
 KillPanelButton.Size = UDim2.new(0, 132, 0, 132)
@@ -644,6 +673,7 @@ trackConnection(KillPanelButton.MouseButton1Click:Connect(function()
     hitboxtoggle = false
     
     if FreecamUI then FreecamUI.Visible = false end
+    if UpdateLogMenu then UpdateLogMenu.Visible = false end
 
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
@@ -1391,6 +1421,78 @@ AddUnfairToggle("Ghost Drone", function()
     return dronetoggle
 end)
 
+-- ==================== UPDATE LOG MENU ====================
+local UpdateLogMenu = ESPMenuWindow:Clone()
+UpdateLogMenu.Name = "UpdateLogMenu"
+UpdateLogMenu.Visible = false
+UpdateLogMenu.Parent = FTFHAX
+UpdateLogMenu.Body.TitleLabel.Text = "UPDATE LOG"
+UpdateLogMenu.Body.TitleLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+UpdateLogMenu.TopBar.PageTitleText.Text = "FTF admin Panel - Logs"
+
+UpdateLogMenu.Body.ButtonsFrame:Destroy()
+
+local LogScroll = Instance.new("ScrollingFrame")
+LogScroll.Name = "LogScroll"
+LogScroll.Parent = UpdateLogMenu.Body
+LogScroll.BackgroundTransparency = 1
+LogScroll.Position = UDim2.new(0, 10, 0, 45)
+LogScroll.Size = UDim2.new(1, -20, 1, -55)
+LogScroll.ScrollBarThickness = 4
+LogScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+local LogListLayout = Instance.new("UIListLayout")
+LogListLayout.Parent = LogScroll
+LogListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+LogListLayout.Padding = UDim.new(0, 10)
+
+local function AddLogEntry(version, text)
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, -10, 0, 0) -- Height will auto-adjust
+    frame.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+    frame.BorderSizePixel = 0
+    frame.Parent = LogScroll
+    frame.AutomaticSize = Enum.AutomaticSize.Y
+    
+    local padding = Instance.new("UIPadding")
+    padding.PaddingTop = UDim.new(0, 5)
+    padding.PaddingBottom = UDim.new(0, 5)
+    padding.PaddingLeft = UDim.new(0, 5)
+    padding.PaddingRight = UDim.new(0, 5)
+    padding.Parent = frame
+    
+    local titleLbl = Instance.new("TextLabel")
+    titleLbl.Size = UDim2.new(1, 0, 0, 20)
+    titleLbl.BackgroundTransparency = 1
+    titleLbl.Text = version
+    titleLbl.TextColor3 = Color3.fromRGB(150, 255, 150)
+    titleLbl.TextXAlignment = Enum.TextXAlignment.Left
+    titleLbl.Font = Enum.Font.SourceSansBold
+    titleLbl.TextSize = 16
+    titleLbl.Parent = frame
+    
+    local descLbl = Instance.new("TextLabel")
+    descLbl.Size = UDim2.new(1, 0, 0, 0)
+    descLbl.Position = UDim2.new(0, 0, 0, 22)
+    descLbl.BackgroundTransparency = 1
+    descLbl.Text = text
+    descLbl.TextColor3 = Color3.new(0.9, 0.9, 0.9)
+    descLbl.TextXAlignment = Enum.TextXAlignment.Left
+    descLbl.TextYAlignment = Enum.TextYAlignment.Top
+    descLbl.TextWrapped = true
+    descLbl.Font = Enum.Font.SourceSans
+    descLbl.TextSize = 14
+    descLbl.AutomaticSize = Enum.AutomaticSize.Y
+    descLbl.Parent = frame
+    
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 6)
+end
+
+-- Your Actual Update Logs
+AddLogEntry("v0.7.54 [LATEST]", "- Added Unfair Menu\n- Added Ghost Drone (Mobile D-Pad)\n- Added Live Beast Radar\n- Added Auto-Struggle\n- Added Subtle Beast Hitbox Extender (4x4)\n- Fixed Menu Click Routing")
+AddLogEntry("v0.7.53", "- Added Risk Level Chart\n- Optimized Smart ESP rendering distance\n- Improved Mobile UI Grid Layout")
+AddLogEntry("v0.7.52", "- Added Kill Panel (Emergency Shutoff)\n- Added Nuke FPS Booster\n- Added Reversible No Fog & Fullbright")
+
 -- ==================== MISC MENU ====================
 local MiscMenu = ESPMenuWindow:Clone()
 MiscMenu.Name = "MiscMenu"
@@ -1427,6 +1529,7 @@ trackConnection(CheatButton.MouseButton1Click:Connect(function()
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
+    if UpdateLogMenu then UpdateLogMenu.Visible = false end
     MainMenuWindow.Visible = not MainMenuWindow.Visible
 end))
 
@@ -1450,6 +1553,7 @@ trackConnection(BackButton.MouseButton1Click:Connect(function()
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
+    if UpdateLogMenu then UpdateLogMenu.Visible = false end
     MainMenuWindow.Visible = true
 end))
 
@@ -1461,6 +1565,7 @@ trackConnection(BackButton_2.MouseButton1Click:Connect(function()
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
+    if UpdateLogMenu then UpdateLogMenu.Visible = false end
     MainMenuWindow.Visible = true
 end))
 
@@ -1472,6 +1577,7 @@ trackConnection(ESPButton.MouseButton1Click:Connect(function()
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
+    if UpdateLogMenu then UpdateLogMenu.Visible = false end
     MainMenuWindow.Visible = false
 end))
 
@@ -1483,6 +1589,7 @@ trackConnection(ToolsButton.MouseButton1Click:Connect(function()
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
+    if UpdateLogMenu then UpdateLogMenu.Visible = false end
     MainMenuWindow.Visible = false
 end))
 
@@ -1493,6 +1600,7 @@ trackConnection(TPButton.MouseButton1Click:Connect(function()
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
+    if UpdateLogMenu then UpdateLogMenu.Visible = false end
     MainMenuWindow.Visible = false
     TPMenu.Visible = true
 end))
@@ -1504,6 +1612,7 @@ trackConnection(PlayerTabButton.MouseButton1Click:Connect(function()
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
+    if UpdateLogMenu then UpdateLogMenu.Visible = false end
     MainMenuWindow.Visible = false
     PlayerMenu.Visible = true
 end))
@@ -1515,6 +1624,7 @@ trackConnection(MiscTabButton.MouseButton1Click:Connect(function()
     PlayerMenu.Visible = false
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
+    if UpdateLogMenu then UpdateLogMenu.Visible = false end
     MainMenuWindow.Visible = false
     MiscMenu.Visible = true
 end))
@@ -1526,6 +1636,7 @@ trackConnection(RiskTabButton.MouseButton1Click:Connect(function()
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
+    if UpdateLogMenu then UpdateLogMenu.Visible = false end
     MainMenuWindow.Visible = false
     RiskMenu.Visible = true
 end))
@@ -1537,8 +1648,21 @@ trackConnection(UnfairTabButton.MouseButton1Click:Connect(function()
     PlayerMenu.Visible = false
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
+    if UpdateLogMenu then UpdateLogMenu.Visible = false end
     MainMenuWindow.Visible = false
     UnfairMenu.Visible = true
+end))
+
+trackConnection(UpdateLogTabButton.MouseButton1Click:Connect(function()
+    ESPMenuWindow.Visible = false
+    ToolsMenuWindow.Visible = false
+    TPMenu.Visible = false
+    PlayerMenu.Visible = false
+    if MiscMenu then MiscMenu.Visible = false end
+    if RiskMenu then RiskMenu.Visible = false end
+    if UnfairMenu then UnfairMenu.Visible = false end
+    MainMenuWindow.Visible = false
+    UpdateLogMenu.Visible = true
 end))
 
 trackConnection(TPMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
@@ -1563,6 +1687,11 @@ end))
 
 trackConnection(UnfairMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     UnfairMenu.Visible = false
+    MainMenuWindow.Visible = true
+end))
+
+trackConnection(UpdateLogMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
+    UpdateLogMenu.Visible = false
     MainMenuWindow.Visible = true
 end))
 
@@ -2266,4 +2395,4 @@ creditMain.TextSize = 14
 creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
 
-print("FTF admin Panel v0.7.54 • Maximum Arsenal Active ✨")
+print("FTF admin Panel v0.7.55 • Update Log Added")
