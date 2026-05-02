@@ -1136,14 +1136,17 @@ AddPlayerToggle("Flashy Crouch", function()
         Instance.new("UICorner", CustomCrouchBtn).CornerRadius = UDim.new(0, 8)
         CustomCrouchBtn.Parent = FTFHAX
         
-        -- Animation & Action Hook
+        -- Animation & Native Key Hook
         trackConnection(CustomCrouchBtn.MouseButton1Click:Connect(function()
             -- Instant visual flash
             CustomCrouchBtn.BackgroundTransparency = 0.1
             task.delay(0.1, function() CustomCrouchBtn.BackgroundTransparency = 0.5 end)
             
-            -- Fire the actual FTF crouch remote
-            game.ReplicatedStorage.RemoteEvent:FireServer("Input", "Crouch", true)
+            -- Fake a native PC keypress so FTF's own local script handles everything perfectly!
+            local vim = game:GetService("VirtualInputManager")
+            vim:SendKeyEvent(true, Enum.KeyCode.LeftShift, false, game)
+            task.wait(0.05)
+            vim:SendKeyEvent(false, Enum.KeyCode.LeftShift, false, game)
         end))
         
     else
@@ -1449,7 +1452,7 @@ AddUnfairToggle("Ghost Drone", function()
         cam.CameraSubject = freecamPart
         
         camConnection = game:GetService("RunService").RenderStepped:Connect(function()
-            local speed = 0.4
+            local speed = 0.26
             local vec = Vector3.new(0,0,0)
             
             if moving.W then vec = vec + cam.CFrame.LookVector end
