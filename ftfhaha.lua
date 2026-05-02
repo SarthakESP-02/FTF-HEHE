@@ -7,6 +7,7 @@ local function trackConnection(conn)
 end
 
 -- ==================== TOGGLE VARIABLES ====================
+local flashycrouchtoggle = false
 local podstoggle = false
 local pctoggle = false
 local playertoggle = false
@@ -672,6 +673,9 @@ trackConnection(KillPanelButton.MouseButton1Click:Connect(function()
     radartoggle = false
     hitboxtoggle = false
     
+    flashycrouchtoggle = false
+if CustomCrouchBtn then CustomCrouchBtn:Destroy() end
+
     if FreecamUI then FreecamUI.Visible = false end
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
 
@@ -1082,7 +1086,8 @@ AddPlayerToggle("JumpPower (50)", function()
     if not jumptoggle then
         local char = game.Players.LocalPlayer.Character
         if char and char:FindFirstChild("Humanoid") then
-            char.Humanoid.JumpPower = 0 
+            -- Instead of 0, we just turn off the override so the button stays alive
+            char.Humanoid.UseJumpPower = false 
         end
     end
     return jumptoggle
@@ -1101,6 +1106,59 @@ AddPlayerToggle("Noclip", function()
         end
     end
     return nocliptoggle
+end)
+
+local CustomCrouchBtn = nil
+
+AddPlayerToggle("Flashy Crouch", function()
+    flashycrouchtoggle = not flashycrouchtoggle
+    local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    
+    if flashycrouchtoggle then
+        -- Hunt down and hide the chunky FTF crouch button
+        for _, v in pairs(playerGui:GetDescendants()) do
+            if (v:IsA("ImageButton") or v:IsA("TextButton")) and string.find(string.lower(v.Name), "crouch") then
+                v.Visible = false
+            end
+        end
+        
+        -- Spawn the new Flashy Crouch button
+        CustomCrouchBtn = Instance.new("TextButton")
+        CustomCrouchBtn.Name = "FlashyCrouchUI"
+        CustomCrouchBtn.Size = UDim2.new(0, 65, 0, 65)
+        CustomCrouchBtn.Position = UDim2.new(0.85, -30, 0.75, -30) -- Snaps to bottom right corner
+        CustomCrouchBtn.BackgroundColor3 = Color3.fromRGB(149, 255, 237)
+        CustomCrouchBtn.BackgroundTransparency = 0.5
+        CustomCrouchBtn.Text = "CROUCH"
+        CustomCrouchBtn.Font = Enum.Font.SourceSansBold
+        CustomCrouchBtn.TextSize = 14
+        CustomCrouchBtn.TextColor3 = Color3.new(1, 1, 1)
+        Instance.new("UICorner", CustomCrouchBtn).CornerRadius = UDim.new(0, 8)
+        CustomCrouchBtn.Parent = FTFHAX
+        
+        -- Animation & Action Hook
+        trackConnection(CustomCrouchBtn.MouseButton1Click:Connect(function()
+            -- Instant visual flash
+            CustomCrouchBtn.BackgroundTransparency = 0.1
+            task.delay(0.1, function() CustomCrouchBtn.BackgroundTransparency = 0.5 end)
+            
+            -- Fire the actual FTF crouch remote
+            game.ReplicatedStorage.RemoteEvent:FireServer("Input", "Crouch", true)
+        end))
+        
+    else
+        -- Destroy our flashy button
+        if CustomCrouchBtn then CustomCrouchBtn:Destroy() end
+        
+        -- Bring back the chunky original button
+        for _, v in pairs(playerGui:GetDescendants()) do
+            if (v:IsA("ImageButton") or v:IsA("TextButton")) and string.find(string.lower(v.Name), "crouch") then
+                v.Visible = true
+            end
+        end
+    end
+    
+    return flashycrouchtoggle
 end)
 
 -- ==================== RISK LEVEL MENU ====================
