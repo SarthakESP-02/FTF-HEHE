@@ -299,7 +299,7 @@ CreditTotalText.AnchorPoint = Vector2.new(1, 0)
 CreditTotalText.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 CreditTotalText.BackgroundTransparency = 1.000
 CreditTotalText.BorderSizePixel = 0
-CreditTotalText.Position = UDim2.new(1, -45, 0, 0)
+CreditTotalText.Position = UDim2.new(1, -85, 0, 0)
 CreditTotalText.Size = UDim2.new(0, 100, 1, 0)
 CreditTotalText.ZIndex = 5
 CreditTotalText.Text = ver
@@ -852,7 +852,7 @@ CreditTotalText_3.AnchorPoint = Vector2.new(1, 0)
 CreditTotalText_3.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 CreditTotalText_3.BackgroundTransparency = 1.000
 CreditTotalText_3.BorderSizePixel = 0
-CreditTotalText_3.Position = UDim2.new(1, -45, 0, 0)
+CreditTotalText_3.Position = UDim2.new(1, -85, 0, 0)
 CreditTotalText_3.Size = UDim2.new(0, 100, 1, 0)
 CreditTotalText_3.ZIndex = 5
 CreditTotalText_3.Text = ver
@@ -1693,6 +1693,30 @@ end))
 trackConnection(UpdateLogMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     UpdateLogMenu.Visible = false
     MainMenuWindow.Visible = true
+end))
+
+trackConnection(TPMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
+    TPMenu.Visible = false
+end))
+
+trackConnection(PlayerMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
+    PlayerMenu.Visible = false
+end))
+
+trackConnection(MiscMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
+    MiscMenu.Visible = false
+end))
+
+trackConnection(RiskMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
+    RiskMenu.Visible = false
+end))
+
+trackConnection(UnfairMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
+    UnfairMenu.Visible = false
+end))
+
+trackConnection(UpdateLogMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
+    UpdateLogMenu.Visible = false
 end))
 
 -- Helper functions to fetch game data safely
