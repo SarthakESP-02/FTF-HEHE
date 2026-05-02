@@ -1449,7 +1449,7 @@ AddUnfairToggle("Ghost Drone", function()
         cam.CameraSubject = freecamPart
         
         camConnection = game:GetService("RunService").RenderStepped:Connect(function()
-            local speed = 2 
+            local speed = 0.4
             local vec = Vector3.new(0,0,0)
             
             if moving.W then vec = vec + cam.CFrame.LookVector end
