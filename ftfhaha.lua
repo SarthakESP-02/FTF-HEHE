@@ -1109,6 +1109,7 @@ AddPlayerToggle("Noclip", function()
 end)
 
 local CustomCrouchBtn = nil
+local isCrouchedLocally = false
 
 AddPlayerToggle("Flashy Crouch", function()
     flashycrouchtoggle = not flashycrouchtoggle
@@ -1151,23 +1152,31 @@ AddPlayerToggle("Flashy Crouch", function()
             CustomCrouchBtn.TextColor3 = Color3.new(1, 1, 1)
         end
         
-        -- 4. TAP TOGGLE LOGIC & INPUT BLOCKER
-        local vim = game:GetService("VirtualInputManager")
-        
+        -- 4. REMOTE EVENT TOGGLE (No PC Key spoofing!)
+        isCrouchedLocally = false
         trackConnection(CustomCrouchBtn.MouseButton1Click:Connect(function()
-            -- Visual click feedback
-            CustomCrouchBtn.BackgroundTransparency = 0.1
-            task.delay(0.1, function() CustomCrouchBtn.BackgroundTransparency = 0.5 end)
+            isCrouchedLocally = not isCrouchedLocally -- Flip the toggle
             
-            -- Fake a rapid PC key tap to match FTF's native system
-            vim:SendKeyEvent(true, Enum.KeyCode.LeftShift, false, game)
-            task.wait(0.05)
-            vim:SendKeyEvent(false, Enum.KeyCode.LeftShift, false, game)
+            if isCrouchedLocally then
+                -- Toggle ON (Stay crouched to vent)
+                CustomCrouchBtn.BackgroundTransparency = 0.1
+                game.ReplicatedStorage.RemoteEvent:FireServer("Input", "Crouch", true)
+            else
+                -- Toggle OFF (Stand back up)
+                CustomCrouchBtn.BackgroundTransparency = 0.5
+                game.ReplicatedStorage.RemoteEvent:FireServer("Input", "Crouch", false)
+            end
         end))
         
     else
-        -- Turn OFF - Destroy flashy overlay, exposing normal button underneath
+        -- Turn OFF - Destroy flashy overlay
         if CustomCrouchBtn then CustomCrouchBtn:Destroy() end
+        
+        -- Safely uncrouch the player if they turn the exploit off while still crawling
+        if isCrouchedLocally then
+            game.ReplicatedStorage.RemoteEvent:FireServer("Input", "Crouch", false)
+            isCrouchedLocally = false
+        end
     end
     
     return flashycrouchtoggle
