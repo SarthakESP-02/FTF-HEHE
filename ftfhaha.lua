@@ -1109,6 +1109,7 @@ AddPlayerToggle("Noclip", function()
 end)
 
 local CustomCrouchBtn = nil
+local origCrouchPos = nil -- Memory for where the button was
 
 AddPlayerToggle("Flashy Crouch", function()
     flashycrouchtoggle = not flashycrouchtoggle
@@ -1116,49 +1117,57 @@ AddPlayerToggle("Flashy Crouch", function()
     local screenGui = playerGui:FindFirstChild("ScreenGui")
     
     if flashycrouchtoggle then
-        -- Strictly target ONLY the actual FTF Crouch Button
-        if screenGui and screenGui:FindFirstChild("CrouchButton") then
-            screenGui.CrouchButton.Visible = false
-        end
-        
         -- Spawn the new Flashy Crouch button
         CustomCrouchBtn = Instance.new("TextButton")
         CustomCrouchBtn.Name = "FlashyCrouchUI"
-        CustomCrouchBtn.Size = UDim2.new(0, 65, 0, 65)
-        CustomCrouchBtn.Position = UDim2.new(0.85, -30, 0.75, -30)
         CustomCrouchBtn.BackgroundColor3 = Color3.fromRGB(149, 255, 237)
         CustomCrouchBtn.BackgroundTransparency = 0.5
         CustomCrouchBtn.Text = "CROUCH"
         CustomCrouchBtn.Font = Enum.Font.SourceSansBold
         CustomCrouchBtn.TextSize = 14
         CustomCrouchBtn.TextColor3 = Color3.new(1, 1, 1)
-        Instance.new("UICorner", CustomCrouchBtn).CornerRadius = UDim.new(0, 8)
+        CustomCrouchBtn.ZIndex = 100
+        Instance.new("UICorner", CustomCrouchBtn).CornerRadius = UDim.new(0, 12) -- Sleek square-rounded look
         CustomCrouchBtn.Parent = FTFHAX
+
+        -- Safely hide old button by moving it off-screen, AND copy its exact position!
+        if screenGui and screenGui:FindFirstChild("CrouchButton") then
+            origCrouchPos = screenGui.CrouchButton.Position
+            CustomCrouchBtn.AnchorPoint = screenGui.CrouchButton.AnchorPoint
+            CustomCrouchBtn.Size = screenGui.CrouchButton.Size
+            CustomCrouchBtn.Position = origCrouchPos
+            -- Yeet original off screen so it doesn't break the joystick layout
+            screenGui.CrouchButton.Position = UDim2.new(10, 0, 10, 0) 
+        else
+            -- Fallback just in case
+            CustomCrouchBtn.AnchorPoint = Vector2.new(0.5, 0.5)
+            CustomCrouchBtn.Position = UDim2.new(1, -240, 1, -110)
+            CustomCrouchBtn.Size = UDim2.new(0, 60, 0, 60)
+        end
         
-        -- HOLD TO CROUCH LOGIC (Just like PC)
+        -- HOLD TO CROUCH LOGIC (Native VIM Hook)
         local vim = game:GetService("VirtualInputManager")
         
         trackConnection(CustomCrouchBtn.InputBegan:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
                 CustomCrouchBtn.BackgroundTransparency = 0.1
-                vim:SendKeyEvent(true, Enum.KeyCode.LeftShift, false, game) -- Key Down
+                vim:SendKeyEvent(true, Enum.KeyCode.LeftShift, false, game)
             end
         end))
         
         trackConnection(CustomCrouchBtn.InputEnded:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
                 CustomCrouchBtn.BackgroundTransparency = 0.5
-                vim:SendKeyEvent(false, Enum.KeyCode.LeftShift, false, game) -- Key Up
+                vim:SendKeyEvent(false, Enum.KeyCode.LeftShift, false, game)
             end
         end))
         
     else
-        -- Destroy our flashy button
         if CustomCrouchBtn then CustomCrouchBtn:Destroy() end
         
-        -- Safely restore the original button
-        if screenGui and screenGui:FindFirstChild("CrouchButton") then
-            screenGui.CrouchButton.Visible = true
+        -- Bring original button back exactly where it belongs
+        if screenGui and screenGui:FindFirstChild("CrouchButton") and origCrouchPos then
+            screenGui.CrouchButton.Position = origCrouchPos
         end
     end
     
