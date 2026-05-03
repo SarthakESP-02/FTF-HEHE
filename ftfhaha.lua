@@ -1104,24 +1104,42 @@ AddPlayerToggle("Noclip", function()
     return nocliptoggle
 end)
 
--- 1. MOBILE SHIFT-LOCK (Custom Icon)
+-- ==========================================
+-- 1. MOBILE SHIFT-LOCK (Custom Icon Swapper)
+-- ==========================================
 local shiftlocktoggle = false
 local shiftLockUI = nil
+local icon = nil
 local isShiftLocked = false
 local slConnection = nil
+
+-- The two Decal IDs you provided, formatted for the rbxthumb bypass!
+local iconWhite = "rbxthumb://type=Asset&id=83349936062601&w=150&h=150"
+local iconBlue = "rbxthumb://type=Asset&id=72173899346121&w=150&h=150"
 
 AddPlayerToggle("Mobile Shift-Lock", function()
     shiftlocktoggle = not shiftlocktoggle
     
     if shiftlocktoggle then
-        -- Spawn the on-screen Shift Lock Button using your custom asset ID
-        shiftLockUI = Instance.new("ImageButton")
+        -- Spawn the on-screen Shift Lock Button
+        shiftLockUI = Instance.new("TextButton")
         shiftLockUI.Name = "MobileShiftLockBtn"
         shiftLockUI.Size = UDim2.new(0, 50, 0, 50)
         shiftLockUI.Position = UDim2.new(0.8, -10, 0.6, 0) -- Safe spot on the right side
-        shiftLockUI.BackgroundTransparency = 1
-        shiftLockUI.Image = "rbxassetid://83349936062601"
+        shiftLockUI.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+        shiftLockUI.BackgroundTransparency = 0.5
+        shiftLockUI.ZIndex = 99999
+        shiftLockUI.Text = "" -- Keep it blank so your custom icon shines
+        Instance.new("UICorner", shiftLockUI).CornerRadius = UDim.new(1, 0) -- Perfect circle
         shiftLockUI.Parent = FTFHAX
+        
+        -- Load your custom WHITE image as the default state
+        icon = Instance.new("ImageLabel", shiftLockUI)
+        icon.Size = UDim2.new(0.7, 0, 0.7, 0)
+        icon.AnchorPoint = Vector2.new(0.5, 0.5)
+        icon.Position = UDim2.new(0.5, 0, 0.5, 0)
+        icon.BackgroundTransparency = 1
+        icon.Image = iconWhite
         
         -- On-Screen Button Logic
         trackConnection(shiftLockUI.MouseButton1Click:Connect(function()
@@ -1131,7 +1149,10 @@ AddPlayerToggle("Mobile Shift-Lock", function()
             local hrp = char and char:FindFirstChild("HumanoidRootPart")
             
             if isShiftLocked then
-                shiftLockUI.ImageColor3 = Color3.fromRGB(100, 255, 100) -- Turns green when active
+                -- TOGGLED ON: Swap to Blue Icon!
+                icon.Image = iconBlue 
+                shiftLockUI.BackgroundColor3 = Color3.fromRGB(0, 50, 150) -- Subtle dark blue glow
+                
                 if hum then 
                     hum.CameraOffset = Vector3.new(1.75, 0, 0) -- Shoulder cam
                     hum.AutoRotate = false -- Stop default mobile rotation
@@ -1148,7 +1169,10 @@ AddPlayerToggle("Mobile Shift-Lock", function()
                     end)
                 end
             else
-                shiftLockUI.ImageColor3 = Color3.fromRGB(255, 255, 255) -- White when inactive
+                -- TOGGLED OFF: Swap back to White Icon!
+                icon.Image = iconWhite 
+                shiftLockUI.BackgroundColor3 = Color3.fromRGB(0, 0, 0) -- Back to black
+                
                 if hum then 
                     hum.CameraOffset = Vector3.new(0, 0, 0)
                     hum.AutoRotate = true
@@ -1160,7 +1184,7 @@ AddPlayerToggle("Mobile Shift-Lock", function()
             end
         end))
     else
-        -- Clean up if turned off from the panel
+        -- Clean up if turned off from the main admin panel
         isShiftLocked = false
         if shiftLockUI then shiftLockUI:Destroy() end
         if slConnection then slConnection:Disconnect() slConnection = nil end
