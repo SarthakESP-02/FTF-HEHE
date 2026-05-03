@@ -1109,15 +1109,23 @@ AddPlayerToggle("Noclip", function()
 end)
 
 local CustomCrouchBtn = nil
-local origCrouchPos = nil -- Memory for where the button was
+local targetCrouchBtn = nil
+local origTrans = {}
 
 AddPlayerToggle("Flashy Crouch", function()
     flashycrouchtoggle = not flashycrouchtoggle
     local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-    local screenGui = playerGui:FindFirstChild("ScreenGui")
     
     if flashycrouchtoggle then
-        -- Spawn the new Flashy Crouch button
+        -- 1. Aggressively hunt down the exact FTF Crouch Button
+        for _, v in pairs(playerGui:GetDescendants()) do
+            if (v:IsA("ImageButton") or v:IsA("TextButton")) and string.find(string.lower(v.Name), "crouch") then
+                targetCrouchBtn = v
+                break
+            end
+        end
+
+        -- 2. Spawn the new Flashy Crouch button
         CustomCrouchBtn = Instance.new("TextButton")
         CustomCrouchBtn.Name = "FlashyCrouchUI"
         CustomCrouchBtn.BackgroundColor3 = Color3.fromRGB(149, 255, 237)
@@ -1127,47 +1135,62 @@ AddPlayerToggle("Flashy Crouch", function()
         CustomCrouchBtn.TextSize = 14
         CustomCrouchBtn.TextColor3 = Color3.new(1, 1, 1)
         CustomCrouchBtn.ZIndex = 100
-        Instance.new("UICorner", CustomCrouchBtn).CornerRadius = UDim.new(0, 12) -- Sleek square-rounded look
-        CustomCrouchBtn.Parent = FTFHAX
+        Instance.new("UICorner", CustomCrouchBtn).CornerRadius = UDim.new(0, 12)
+        
+        -- 3. The Ghost Method: Parent it to the original button and make the original invisible!
+        if targetCrouchBtn then
+            -- Save original transparencies
+            if targetCrouchBtn:IsA("ImageButton") then
+                origTrans.Image = targetCrouchBtn.ImageTransparency
+                targetCrouchBtn.ImageTransparency = 1 -- Ghost it
+            end
+            origTrans.Bg = targetCrouchBtn.BackgroundTransparency
+            targetCrouchBtn.BackgroundTransparency = 1 -- Ghost it
+            if targetCrouchBtn:IsA("TextButton") then 
+                origTrans.Text = targetCrouchBtn.TextTransparency
+                targetCrouchBtn.TextTransparency = 1 -- Ghost it
+            end
 
-        -- Safely hide old button by moving it off-screen, AND copy its exact position!
-        if screenGui and screenGui:FindFirstChild("CrouchButton") then
-            origCrouchPos = screenGui.CrouchButton.Position
-            CustomCrouchBtn.AnchorPoint = screenGui.CrouchButton.AnchorPoint
-            CustomCrouchBtn.Size = screenGui.CrouchButton.Size
-            CustomCrouchBtn.Position = origCrouchPos
-            -- Yeet original off screen so it doesn't break the joystick layout
-            screenGui.CrouchButton.Position = UDim2.new(10, 0, 10, 0) 
+            -- Snap to exact size and position by parenting directly to it
+            CustomCrouchBtn.Parent = targetCrouchBtn
+            CustomCrouchBtn.Size = UDim2.new(1, 0, 1, 0)
+            CustomCrouchBtn.Position = UDim2.new(0, 0, 0, 0)
+            CustomCrouchBtn.AnchorPoint = Vector2.new(0, 0)
         else
-            -- Fallback just in case
+            -- Extreme fallback just in case
+            CustomCrouchBtn.Parent = FTFHAX
             CustomCrouchBtn.AnchorPoint = Vector2.new(0.5, 0.5)
-            CustomCrouchBtn.Position = UDim2.new(1, -240, 1, -110)
-            CustomCrouchBtn.Size = UDim2.new(0, 60, 0, 60)
+            CustomCrouchBtn.Position = UDim2.new(0.85, -30, 0.75, -30)
+            CustomCrouchBtn.Size = UDim2.new(0, 65, 0, 65)
         end
         
-        -- HOLD TO CROUCH LOGIC (Native VIM Hook)
+        -- 4. TAP TOGGLE LOGIC (Native VIM Hook)
         local vim = game:GetService("VirtualInputManager")
         
-        trackConnection(CustomCrouchBtn.InputBegan:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-                CustomCrouchBtn.BackgroundTransparency = 0.1
-                vim:SendKeyEvent(true, Enum.KeyCode.LeftShift, false, game)
-            end
-        end))
-        
-        trackConnection(CustomCrouchBtn.InputEnded:Connect(function(input)
-            if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
-                CustomCrouchBtn.BackgroundTransparency = 0.5
-                vim:SendKeyEvent(false, Enum.KeyCode.LeftShift, false, game)
-            end
+        trackConnection(CustomCrouchBtn.MouseButton1Click:Connect(function()
+            -- Visual click feedback
+            CustomCrouchBtn.BackgroundTransparency = 0.1
+            task.delay(0.1, function() CustomCrouchBtn.BackgroundTransparency = 0.5 end)
+            
+            -- Fake a rapid PC key tap to match FTF's toggle system
+            vim:SendKeyEvent(true, Enum.KeyCode.LeftShift, false, game)
+            task.wait(0.05)
+            vim:SendKeyEvent(false, Enum.KeyCode.LeftShift, false, game)
         end))
         
     else
+        -- Turn OFF - Destroy flashy button
         if CustomCrouchBtn then CustomCrouchBtn:Destroy() end
         
-        -- Bring original button back exactly where it belongs
-        if screenGui and screenGui:FindFirstChild("CrouchButton") and origCrouchPos then
-            screenGui.CrouchButton.Position = origCrouchPos
+        -- Unghost the original FTF button
+        if targetCrouchBtn then
+            if targetCrouchBtn:IsA("ImageButton") and origTrans.Image then
+                targetCrouchBtn.ImageTransparency = origTrans.Image
+            end
+            if origTrans.Bg then targetCrouchBtn.BackgroundTransparency = origTrans.Bg end
+            if targetCrouchBtn:IsA("TextButton") and origTrans.Text then 
+                targetCrouchBtn.TextTransparency = origTrans.Text 
+            end
         end
     end
     
