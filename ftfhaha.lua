@@ -6,8 +6,7 @@ local function trackConnection(conn)
     if conn then table.insert(activeConnections, conn) end
 end
 
--- ==================== TOGGLE VARIABLES ====================
-local flashycrouchtoggle = false
+-- ==================== TOGGLE VARIABLES ===================
 local podstoggle = false
 local pctoggle = false
 local playertoggle = false
@@ -673,9 +672,6 @@ trackConnection(KillPanelButton.MouseButton1Click:Connect(function()
     radartoggle = false
     hitboxtoggle = false
     
-    flashycrouchtoggle = false
-if CustomCrouchBtn then CustomCrouchBtn:Destroy() end
-
     if FreecamUI then FreecamUI.Visible = false end
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
 
@@ -1108,79 +1104,100 @@ AddPlayerToggle("Noclip", function()
     return nocliptoggle
 end)
 
-local CustomCrouchBtn = nil
-local isCrouchedLocally = false
+-- 1. MOBILE SHIFT-LOCK (Custom Icon)
+local shiftlocktoggle = false
+local shiftLockUI = nil
+local isShiftLocked = false
+local slConnection = nil
 
-AddPlayerToggle("Flashy Crouch", function()
-    flashycrouchtoggle = not flashycrouchtoggle
-    local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+AddPlayerToggle("Mobile Shift-Lock", function()
+    shiftlocktoggle = not shiftlocktoggle
     
-    if flashycrouchtoggle then
-        -- 1. Find the chunky FTF Crouch button
-        local targetCrouchBtn = nil
-        for _, v in pairs(playerGui:GetDescendants()) do
-            if (v:IsA("ImageButton") or v:IsA("TextButton")) and string.find(string.lower(v.Name), "crouch") then
-                targetCrouchBtn = v
-                break
-            end
-        end
+    if shiftlocktoggle then
+        -- Spawn the on-screen Shift Lock Button using your custom asset ID
+        shiftLockUI = Instance.new("ImageButton")
+        shiftLockUI.Name = "MobileShiftLockBtn"
+        shiftLockUI.Size = UDim2.new(0, 50, 0, 50)
+        shiftLockUI.Position = UDim2.new(0.8, -10, 0.6, 0) -- Safe spot on the right side
+        shiftLockUI.BackgroundTransparency = 1
+        shiftLockUI.Image = "rbxassetid://83349936062601"
+        shiftLockUI.Parent = FTFHAX
         
-        -- 2. Spawn the new Flashy Crouch Overlay button
-        CustomCrouchBtn = Instance.new("TextButton")
-        CustomCrouchBtn.Name = "FlashyCrouchUI"
-        CustomCrouchBtn.BackgroundColor3 = Color3.fromRGB(149, 255, 237)
-        CustomCrouchBtn.BackgroundTransparency = 0.5
-        CustomCrouchBtn.Text = "" -- Blank so the original "C" shows through!
-        CustomCrouchBtn.ZIndex = 99999 -- Force it to be the absolute TOP layer to block clicks
-        Instance.new("UICorner", CustomCrouchBtn).CornerRadius = UDim.new(0, 12)
-        CustomCrouchBtn.Parent = FTFHAX
-        
-        -- 3. PERFECT OVERLAY LOGIC (Do NOT touch the original button!)
-        if targetCrouchBtn then
-            -- Match exact screen coordinates and size of the original button
-            CustomCrouchBtn.AnchorPoint = Vector2.new(0, 0)
-            CustomCrouchBtn.Size = UDim2.new(0, targetCrouchBtn.AbsoluteSize.X, 0, targetCrouchBtn.AbsoluteSize.Y)
-            CustomCrouchBtn.Position = UDim2.new(0, targetCrouchBtn.AbsolutePosition.X, 0, targetCrouchBtn.AbsolutePosition.Y)
-        else
-            -- Fallback if FTF button isn't found
-            CustomCrouchBtn.AnchorPoint = Vector2.new(0.5, 0.5)
-            CustomCrouchBtn.Position = UDim2.new(0.85, -30, 0.75, -30)
-            CustomCrouchBtn.Size = UDim2.new(0, 65, 0, 65)
-            CustomCrouchBtn.Text = "CROUCH"
-            CustomCrouchBtn.Font = Enum.Font.SourceSansBold
-            CustomCrouchBtn.TextSize = 14
-            CustomCrouchBtn.TextColor3 = Color3.new(1, 1, 1)
-        end
-        
-        -- 4. REMOTE EVENT TOGGLE (No PC Key spoofing!)
-        isCrouchedLocally = false
-        trackConnection(CustomCrouchBtn.MouseButton1Click:Connect(function()
-            isCrouchedLocally = not isCrouchedLocally -- Flip the toggle
+        -- On-Screen Button Logic
+        trackConnection(shiftLockUI.MouseButton1Click:Connect(function()
+            isShiftLocked = not isShiftLocked
+            local char = game.Players.LocalPlayer.Character
+            local hum = char and char:FindFirstChild("Humanoid")
+            local hrp = char and char:FindFirstChild("HumanoidRootPart")
             
-            if isCrouchedLocally then
-                -- Toggle ON (Stay crouched to vent)
-                CustomCrouchBtn.BackgroundTransparency = 0.1
-                game.ReplicatedStorage.RemoteEvent:FireServer("Input", "Crouch", true)
+            if isShiftLocked then
+                shiftLockUI.ImageColor3 = Color3.fromRGB(100, 255, 100) -- Turns green when active
+                if hum then 
+                    hum.CameraOffset = Vector3.new(1.75, 0, 0) -- Shoulder cam
+                    hum.AutoRotate = false -- Stop default mobile rotation
+                end
+                
+                if not slConnection then
+                    slConnection = game:GetService("RunService").RenderStepped:Connect(function()
+                        if char and hrp and hum and hum.Health > 0 then
+                            local cam = workspace.CurrentCamera
+                            local look = cam.CFrame.LookVector
+                            -- Lock character rotation to the camera
+                            hrp.CFrame = CFrame.lookAt(hrp.Position, hrp.Position + Vector3.new(look.X, 0, look.Z))
+                        end
+                    end)
+                end
             else
-                -- Toggle OFF (Stand back up)
-                CustomCrouchBtn.BackgroundTransparency = 0.5
-                game.ReplicatedStorage.RemoteEvent:FireServer("Input", "Crouch", false)
+                shiftLockUI.ImageColor3 = Color3.fromRGB(255, 255, 255) -- White when inactive
+                if hum then 
+                    hum.CameraOffset = Vector3.new(0, 0, 0)
+                    hum.AutoRotate = true
+                end
+                if slConnection then
+                    slConnection:Disconnect()
+                    slConnection = nil
+                end
             end
         end))
-        
     else
-        -- Turn OFF - Destroy flashy overlay
-        if CustomCrouchBtn then CustomCrouchBtn:Destroy() end
+        -- Clean up if turned off from the panel
+        isShiftLocked = false
+        if shiftLockUI then shiftLockUI:Destroy() end
+        if slConnection then slConnection:Disconnect() slConnection = nil end
         
-        -- Safely uncrouch the player if they turn the exploit off while still crawling
-        if isCrouchedLocally then
-            game.ReplicatedStorage.RemoteEvent:FireServer("Input", "Crouch", false)
-            isCrouchedLocally = false
+        local char = game.Players.LocalPlayer.Character
+        local hum = char and char:FindFirstChild("Humanoid")
+        if hum then
+            hum.CameraOffset = Vector3.new(0, 0, 0)
+            hum.AutoRotate = true
         end
     end
     
-    return flashycrouchtoggle
+    return shiftlocktoggle
 end)
+
+-- 2. NINJA MODE (Footstep Silencer)
+local ninjatoggle = false
+
+AddPlayerToggle("Ninja Mode", function()
+    ninjatoggle = not ninjatoggle
+    return ninjatoggle
+end)
+
+-- Loop to continuously silence the footstep emitters
+trackConnection(game:GetService("RunService").Heartbeat:Connect(function()
+    if ninjatoggle then
+        local char = game.Players.LocalPlayer.Character
+        if char and char:FindFirstChild("HumanoidRootPart") then
+            -- Mute all sounds coming from the RootPart (where footsteps are stored)
+            for _, sound in pairs(char.HumanoidRootPart:GetChildren()) do
+                if sound:IsA("Sound") then
+                    sound.Volume = 0
+                end
+            end
+        end
+    end
+end))
 
 -- ==================== RISK LEVEL MENU ====================
 local RiskMenu = ESPMenuWindow:Clone()
