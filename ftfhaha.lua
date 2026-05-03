@@ -1,4 +1,4 @@
-local ver = "v0.7.55" -- FTF admin Panel by Xyrozzy
+local ver = "v0.7.57" -- FTF admin Panel by Xyrozzy
 
 -- Global Connection Tracker for Clean UI Destruction
 local activeConnections = {}
@@ -1113,20 +1113,19 @@ local CustomCrouchBtn = nil
 AddPlayerToggle("Flashy Crouch", function()
     flashycrouchtoggle = not flashycrouchtoggle
     local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    local screenGui = playerGui:FindFirstChild("ScreenGui")
     
     if flashycrouchtoggle then
-        -- Hunt down and hide the chunky FTF crouch button
-        for _, v in pairs(playerGui:GetDescendants()) do
-            if (v:IsA("ImageButton") or v:IsA("TextButton")) and string.find(string.lower(v.Name), "crouch") then
-                v.Visible = false
-            end
+        -- Strictly target ONLY the actual FTF Crouch Button
+        if screenGui and screenGui:FindFirstChild("CrouchButton") then
+            screenGui.CrouchButton.Visible = false
         end
         
         -- Spawn the new Flashy Crouch button
         CustomCrouchBtn = Instance.new("TextButton")
         CustomCrouchBtn.Name = "FlashyCrouchUI"
         CustomCrouchBtn.Size = UDim2.new(0, 65, 0, 65)
-        CustomCrouchBtn.Position = UDim2.new(0.85, -30, 0.75, -30) -- Snaps to bottom right corner
+        CustomCrouchBtn.Position = UDim2.new(0.85, -30, 0.75, -30)
         CustomCrouchBtn.BackgroundColor3 = Color3.fromRGB(149, 255, 237)
         CustomCrouchBtn.BackgroundTransparency = 0.5
         CustomCrouchBtn.Text = "CROUCH"
@@ -1136,28 +1135,30 @@ AddPlayerToggle("Flashy Crouch", function()
         Instance.new("UICorner", CustomCrouchBtn).CornerRadius = UDim.new(0, 8)
         CustomCrouchBtn.Parent = FTFHAX
         
-        -- Animation & Native Key Hook
-        trackConnection(CustomCrouchBtn.MouseButton1Click:Connect(function()
-            -- Instant visual flash
-            CustomCrouchBtn.BackgroundTransparency = 0.1
-            task.delay(0.1, function() CustomCrouchBtn.BackgroundTransparency = 0.5 end)
-            
-            -- Fake a native PC keypress so FTF's own local script handles everything perfectly!
-            local vim = game:GetService("VirtualInputManager")
-            vim:SendKeyEvent(true, Enum.KeyCode.LeftShift, false, game)
-            task.wait(0.05)
-            vim:SendKeyEvent(false, Enum.KeyCode.LeftShift, false, game)
+        -- HOLD TO CROUCH LOGIC (Just like PC)
+        local vim = game:GetService("VirtualInputManager")
+        
+        trackConnection(CustomCrouchBtn.InputBegan:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+                CustomCrouchBtn.BackgroundTransparency = 0.1
+                vim:SendKeyEvent(true, Enum.KeyCode.LeftShift, false, game) -- Key Down
+            end
+        end))
+        
+        trackConnection(CustomCrouchBtn.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.Touch or input.UserInputType == Enum.UserInputType.MouseButton1 then
+                CustomCrouchBtn.BackgroundTransparency = 0.5
+                vim:SendKeyEvent(false, Enum.KeyCode.LeftShift, false, game) -- Key Up
+            end
         end))
         
     else
         -- Destroy our flashy button
         if CustomCrouchBtn then CustomCrouchBtn:Destroy() end
         
-        -- Bring back the chunky original button
-        for _, v in pairs(playerGui:GetDescendants()) do
-            if (v:IsA("ImageButton") or v:IsA("TextButton")) and string.find(string.lower(v.Name), "crouch") then
-                v.Visible = true
-            end
+        -- Safely restore the original button
+        if screenGui and screenGui:FindFirstChild("CrouchButton") then
+            screenGui.CrouchButton.Visible = true
         end
     end
     
@@ -1879,48 +1880,53 @@ function reloadESP()
     end
 end
 
--- Dedicated RunService Loop for ESP Colors
+-- Dedicated RunService Loop for ESP Colors (OPTIMIZED FOR MOBILE)
 local espTick = 0
 local cachedBest = nil
+local cachedBeast = nil
+
 trackConnection(game:GetService("RunService").Heartbeat:Connect(function()
     espTick = espTick + 1
-    if espTick % 10 == 0 then
+    
+    -- The Magic Fix: We only run the heavy calculations 4 times a second instead of 60!
+    if espTick % 15 == 0 then
         cachedBest = getBestPC()
-    end
+        cachedBeast = getBeast()
 
-    if pctoggle then
-        local map = getMap()
-        if map then
-            for _, pc in pairs(map:GetChildren()) do
-                if pc.Name == "ComputerTable" and pc:FindFirstChild("Highlight") and pc:FindFirstChild("Screen") then
-                    local a = pc.Highlight
-                    a.FillColor = pc.Screen.Color
-                    if bestpctoggle and cachedBest and cachedBest[1] and cachedBest[1].pc == pc then
-                        a.OutlineColor = Color3.fromRGB(200, 0, 255)
+        if pctoggle then
+            local map = getMap()
+            if map then
+                for _, pc in pairs(map:GetChildren()) do
+                    if pc.Name == "ComputerTable" and pc:FindFirstChild("Highlight") and pc:FindFirstChild("Screen") then
+                        local a = pc.Highlight
+                        a.FillColor = pc.Screen.Color
+                        if bestpctoggle and cachedBest and cachedBest[1] and cachedBest[1].pc == pc then
+                            a.OutlineColor = Color3.fromRGB(200, 0, 255)
+                        else
+                            a.OutlineColor = Color3.fromRGB(math.clamp(a.FillColor.R*400,0,255), math.clamp(a.FillColor.G*400,0,255), math.clamp(a.FillColor.B*400,0,255))
+                        end
+                    end
+                end
+            end
+        end
+
+        if playertoggle then
+            for _, plr in pairs(game.Players:GetPlayers()) do
+                if plr ~= game.Players.LocalPlayer and plr.Character and plr.Character:FindFirstChild("Highlight") then
+                    local a = plr.Character.Highlight
+                    if plr == cachedBeast then
+                        a.FillColor = Color3.fromRGB(255,0,0)
+                        a.OutlineColor = Color3.fromRGB(255,127,127)
                     else
-                        a.OutlineColor = Color3.fromRGB(math.clamp(a.FillColor.R*400,0,255), math.clamp(a.FillColor.G*400,0,255), math.clamp(a.FillColor.B*400,0,255))
+                        a.FillColor = Color3.fromRGB(0,255,0)
+                        a.OutlineColor = Color3.fromRGB(127,255,127)
                     end
                 end
             end
         end
     end
-
-    if playertoggle then
-        local beast = getBeast()
-        for _, plr in pairs(game.Players:GetPlayers()) do
-            if plr ~= game.Players.LocalPlayer and plr.Character and plr.Character:FindFirstChild("Highlight") then
-                local a = plr.Character.Highlight
-                if plr == beast then
-                    a.FillColor = Color3.fromRGB(255,0,0)
-                    a.OutlineColor = Color3.fromRGB(255,127,127)
-                else
-                    a.FillColor = Color3.fromRGB(0,255,0)
-                    a.OutlineColor = Color3.fromRGB(127,255,127)
-                end
-            end
-        end
-    end
 end))
+
 
 function reloadBeastCam()
     ViewportFrame:ClearAllChildren()
@@ -2097,13 +2103,14 @@ if game.Players.LocalPlayer.Character then
     setupAutoInteract(game.Players.LocalPlayer.Character)
 end
 
--- Auto Play Loop
+-- Auto Play Loop (Fixed Pathing & Death-Loop Prevention)
 task.spawn(function()
     while true do
-        task.wait(3)
+        task.wait(1) -- Check more frequently
         if autoplaytoggle then        
             local beast = getBeast()
-            local map = game.ReplicatedStorage.CurrentMap.Value
+            local map = game.ReplicatedStorage:FindFirstChild("CurrentMap") and game.ReplicatedStorage.CurrentMap.Value
+            
             if map then
                 for _, item in pairs(map:GetChildren()) do
                     if item.Name == "SingleDoor" or item.Name == "DoubleDoor" then
@@ -2126,6 +2133,7 @@ task.spawn(function()
             local pcs = getBestPC()
             local PathfindingService = game:GetService("PathfindingService")
             local char = game.Players.LocalPlayer.Character
+            
             if char and char:FindFirstChild("Humanoid") and char:FindFirstChild("HumanoidRootPart") then
                 local Humanoid = char.Humanoid
                 local Root = char.HumanoidRootPart
@@ -2143,17 +2151,22 @@ task.spawn(function()
                                     ((Root.Position - beast.Character.HumanoidRootPart.Position).Magnitude < 50)
                 
                 for _, pcData in ipairs(pcs) do
-                    if isPlayerTyping() and not beastNearby then break end
+                    if isPlayerTyping() or beastNearby or not autoplaytoggle then break end
                     
                     local pc = pcData.pc
                     if pc and pc:FindFirstChild("ComputerTrigger1") then
                         local goal = pc.ComputerTrigger1.Position
                         local path = PathfindingService:CreatePath(agentParams)
-                        path:ComputeAsync(Root.Position, goal)
+                        pcall(function() path:ComputeAsync(Root.Position, goal) end)
                         
                         if path.Status == Enum.PathStatus.Success then
                             local waypoints = path:GetWaypoints()
                             for i, waypoint in ipairs(waypoints) do
+                                -- INSTANT OVERRIDE: If you turn the toggle off mid-walk, it stops immediately!
+                                if not autoplaytoggle or (beast and beast.Character and beast.Character:FindFirstChild("HumanoidRootPart") and (Root.Position - beast.Character.HumanoidRootPart.Position).Magnitude < 50) then 
+                                    break 
+                                end
+
                                 Humanoid:MoveTo(waypoint.Position)
                                 if waypoint.Action == Enum.PathWaypointAction.Jump then
                                     Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
@@ -2162,12 +2175,13 @@ task.spawn(function()
                                 local a = Instance.new("Part", workspace)
                                 a.Shape = Enum.PartType.Ball
                                 a.Position = waypoint.Position
-                                a.BrickColor = BrickColor.new("Pink")
-                                a.Material = Enum.Material.Neon
-                                a.Size = Vector3.new(2,2,2)
+                                a.Transparency = 1 -- Hide the ugly pathfinding balls
+                                a.Size = Vector3.new(3,3,3) -- Make it easier to touch
                                 a.Anchored = true
                                 a.CanCollide = false
+                                
                                 local touch = false
+                                local timeout = tick() + 2.5 -- TIMEOUT PREVENTS DEATH LOOPS
 
                                 task.spawn(function()
                                     local conn
@@ -2178,13 +2192,14 @@ task.spawn(function()
                                             a:Destroy()
                                         end
                                     end)
-                                    task.wait(10)
+                                    task.wait(3)
                                     if a.Parent then a:Destroy() touch = true end
                                 end)
                                 
-                                repeat task.wait(0.05) until touch
+                                -- The Loop Fix: It will break if you touch it, if you turn the toggle off, OR if it takes longer than 2.5 seconds!
+                                repeat task.wait(0.05) until touch or not autoplaytoggle or tick() > timeout
                             end
-                            break
+                            break -- Move to next PC
                         end
                     end
                 end
@@ -2280,29 +2295,32 @@ AddMiscToggle("No Fog", function()
     return nofogtoggle
 end)
 
--- 2. Nuke FPS Booster
+-- 2. Nuke FPS Booster (Optimized for Mobile GPU)
 AddMiscButton("FPS Booster", function()
     local lighting = game:GetService("Lighting")
     
+    -- 1. Instantly kill global lighting math
     lighting.GlobalShadows = false
+    lighting.EnvironmentDiffuseScale = 0
+    lighting.EnvironmentSpecularScale = 0
+    
     for _, v in pairs(lighting:GetChildren()) do
-        if v:IsA("PostEffect") or v:IsA("BlurEffect") or v:IsA("SunRaysEffect") or v:IsA("BloomEffect") or v:IsA("DepthOfFieldEffect") or v:IsA("ColorCorrectionEffect") then
+        if v:IsA("PostEffect") or v:IsA("Atmosphere") then
             v.Enabled = false
         end
     end
 
+    -- 2. Safely wipe laggy emitters and textures (Destroying is better than Transparency!)
     for _, v in pairs(workspace:GetDescendants()) do
-        if v:IsA("BasePart") then
-            v.Material = Enum.Material.SmoothPlastic
-            v.CastShadow = false
-        elseif v:IsA("PointLight") or v:IsA("SpotLight") or v:IsA("SurfaceLight") then
+        if v:IsA("PointLight") or v:IsA("SpotLight") or v:IsA("SurfaceLight") then
             v.Enabled = false
-        elseif v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") or v:IsA("Trail") or v:IsA("Beam") then
+        elseif v:IsA("ParticleEmitter") or v:IsA("Smoke") or v:IsA("Fire") then
             v.Enabled = false
-        elseif v:IsA("Texture") or v:IsA("Decal") then
-            v.Transparency = 1
+        elseif v:IsA("Decal") or v:IsA("Texture") then
+            v:Destroy() 
         end
     end
+    print("FPS Booster Applied: Shadows, Effects, and Textures Nuked.")
 end)
 
 -- 3. Smart ESP Render Distance
@@ -2480,4 +2498,4 @@ creditMain.TextSize = 14
 creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
 
-print("FTF admin Panel v0.7.55 • Update Log Added")
+print("FTF admin Panel v0.7.57 • Update Log Added")
