@@ -479,7 +479,7 @@ TPIcon.BackgroundTransparency = 1
 TPIcon.AnchorPoint = Vector2.new(0.5, 0)
 TPIcon.Position = UDim2.new(0.5, 0, 0, 0)
 TPIcon.Size = UDim2.new(0.800000012, 0, 0.800000012, 0)
-TPIcon.Image = "rbxassetid://2249604078"
+TPIcon.Image = "rbxthumb://type=Asset&id=2249604078&w=150&h=150"
 TPIcon.ImageColor3 = Color3.fromRGB(255, 100, 100)
 TPIcon.ScaleType = Enum.ScaleType.Fit
 TPIcon.ZIndex = 11
@@ -564,7 +564,7 @@ RiskIcon.BackgroundTransparency = 1
 RiskIcon.AnchorPoint = Vector2.new(0.5, 0)
 RiskIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
 RiskIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
-RiskIcon.Image = "rbxassetid://6031268673" 
+RiskIcon.Image = "rbxthumb://type=Asset&id=6031268673&w=150&h=150"
 RiskIcon.ScaleType = Enum.ScaleType.Fit
 RiskIcon.ZIndex = 11
 
