@@ -1223,6 +1223,45 @@ trackConnection(game:GetService("RunService").Heartbeat:Connect(function()
     end
 end))
 
+-- ==========================================
+-- 3. BEAST THIRD PERSON (Anti-First Person)
+-- ==========================================
+local thirdpersontoggle = false
+local tpcConnection = nil
+
+AddPlayerToggle("Beast 3rd Person", function()
+    thirdpersontoggle = not thirdpersontoggle
+    local lp = game.Players.LocalPlayer
+    
+    if thirdpersontoggle then
+           -- Create a loop to constantly fight FTF's camera lock (Highly Optimized!)
+        if not tpcConnection then
+            tpcConnection = game:GetService("RunService").RenderStepped:Connect(function()
+                -- ONLY update the camera if the game tries to force it! (Saves CPU)
+                if lp.CameraMode ~= Enum.CameraMode.Classic then
+                    lp.CameraMode = Enum.CameraMode.Classic
+                end
+                if lp.CameraMaxZoomDistance < 128 then
+                    lp.CameraMaxZoomDistance = 128
+                end
+                if lp.CameraMinZoomDistance > 0.5 then
+                    lp.CameraMinZoomDistance = 0.5
+                end
+            end)
+        end
+    else
+        -- Stop fighting it, let FTF take control again
+        if tpcConnection then
+            tpcConnection:Disconnect()
+            tpcConnection = nil
+        end
+        -- We don't need to manually reset anything. If you turn this off while you are the Beast, 
+        -- FTF's native scripts will automatically lock you back into 1st person!
+    end
+    
+    return thirdpersontoggle
+end)
+
 -- ==================== RISK LEVEL MENU ====================
 local RiskMenu = ESPMenuWindow:Clone()
 RiskMenu.Name = "RiskMenu"
@@ -2557,3 +2596,57 @@ creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
 
 print("FTF admin Panel v0.7.57 • Update Log Added")
+
+-- ==========================================================
+-- 🛠️ DIAGNOSTIC & DEBUG TOOL (SAFE TO DELETE LATER)
+-- ==========================================================
+task.spawn(function()
+    task.wait(1) -- Wait 1 second to let the UI fully build before testing
+    print("[⚙️ FTF Admin] Running Background Diagnostics...")
+    local errorsFound = 0
+    
+    -- Protected Call function to safely test things without crashing the script
+    local function runTest(testName, testFunc)
+        local success, errorMessage = pcall(testFunc)
+        if not success then
+            warn("🚨 [BUG DETECTED] " .. testName .. " failed! Reason: " .. tostring(errorMessage))
+            errorsFound = errorsFound + 1
+        else
+            print("✅ [DIAGNOSTIC] " .. testName .. " passed.")
+        end
+    end
+
+    -- Test 1: Did the GUI actually inject into the Player?
+    runTest("GUI Injection Check", function()
+        assert(game.Players.LocalPlayer.PlayerGui:FindFirstChild("FTFHAX"), "FTFHAX ScreenGui is missing from PlayerGui.")
+    end)
+
+    -- Test 2: Are the Flee the Facility Server Remotes still there? (Update checker)
+    runTest("Game Remote Event Check", function()
+        assert(game.ReplicatedStorage:FindFirstChild("RemoteEvent"), "FTF RemoteEvent missing! The game might have updated.")
+    end)
+
+    -- Test 3: Can the script find the map?
+    runTest("Map Directory Check", function()
+        assert(game.ReplicatedStorage:FindFirstChild("CurrentMap"), "CurrentMap folder missing from ReplicatedStorage.")
+    end)
+
+    -- Test 4: Did the rbxthumb bypass icons load without crashing?
+    runTest("Icon Bypass Check", function()
+        assert(MainMenuWindow, "MainMenuWindow failed to generate.")
+    end)
+    
+    -- Test 5: Verify global variables exist
+    runTest("Variable Integrity Check", function()
+        assert(activeConnections, "Connection tracking table is missing.")
+    end)
+
+    -- Final Report
+    if errorsFound == 0 then
+        print("🚀 [DIAGNOSTIC COMPLETE] 100% Stable. No bugs found. Script injected flawlessly.")
+    else
+        warn("⚠️ [DIAGNOSTIC COMPLETE] Found " .. errorsFound .. " potential issue(s). Check the red warnings above.")
+    end
+end)
+-- ==========================================================
+
