@@ -1243,7 +1243,7 @@ trackConnection(game:GetService("RunService").Heartbeat:Connect(function()
 end))
 
 -- ==========================================
--- 3. BEAST THIRD PERSON (Anti-First Person)
+-- 3. BEAST THIRD PERSON (Anti-First Person FIX)
 -- ==========================================
 local thirdpersontoggle = false
 local tpcConnection = nil
@@ -1253,10 +1253,10 @@ AddPlayerToggle("Beast 3rd Person", function()
     local lp = game.Players.LocalPlayer
     
     if thirdpersontoggle then
-           -- Create a loop to constantly fight FTF's camera lock (Highly Optimized!)
+        -- Create a loop to constantly fight FTF's camera lock
         if not tpcConnection then
             tpcConnection = game:GetService("RunService").RenderStepped:Connect(function()
-                -- ONLY update the camera if the game tries to force it! (Saves CPU)
+                -- Give Beast the standard Survivor zoom (Max 128, Min 0.5)
                 if lp.CameraMode ~= Enum.CameraMode.Classic then
                     lp.CameraMode = Enum.CameraMode.Classic
                 end
@@ -1269,16 +1269,65 @@ AddPlayerToggle("Beast 3rd Person", function()
             end)
         end
     else
-        -- Stop fighting it, let FTF take control again
+        -- Stop fighting the camera
         if tpcConnection then
             tpcConnection:Disconnect()
             tpcConnection = nil
         end
-        -- We don't need to manually reset anything. If you turn this off while you are the Beast, 
-        -- FTF's native scripts will automatically lock you back into 1st person!
+        
+        -- THE FIX: Check identity and restore proper zoom levels instantly!
+        local currentBeast = getBeast()
+        if currentBeast == lp then
+            -- If you are the Beast, snap back to standard FTF 1st Person
+            lp.CameraMode = Enum.CameraMode.LockFirstPerson
+            lp.CameraMaxZoomDistance = 0.5
+            lp.CameraMinZoomDistance = 0.5
+        else
+            -- If you are a Survivor, ensure you have standard 3rd person
+            lp.CameraMode = Enum.CameraMode.Classic
+            lp.CameraMaxZoomDistance = 128
+            lp.CameraMinZoomDistance = 0.5
+        end
     end
     
     return thirdpersontoggle
+end)
+
+-- ==========================================
+-- 4. CUSTOM MOBILE CROSSHAIR (Perfect Aim)
+-- ==========================================
+local crosshairtoggle = false
+local crosshairUI = nil
+
+AddPlayerToggle("Custom Crosshair", function()
+    crosshairtoggle = not crosshairtoggle
+    
+    if crosshairtoggle then
+        -- Create a crisp, perfectly centered neon dot
+        crosshairUI = Instance.new("Frame")
+        crosshairUI.Name = "CenterCrosshair"
+        crosshairUI.Size = UDim2.new(0, 6, 0, 6) -- 6x6 pixels is the sweet spot
+        crosshairUI.Position = UDim2.new(0.5, 0, 0.5, 0) -- Absolute dead center
+        crosshairUI.AnchorPoint = Vector2.new(0.5, 0.5) -- Locks the exact middle of the dot to the center
+        crosshairUI.BackgroundColor3 = Color3.fromRGB(0, 255, 255) -- High-contrast Neon Cyan
+        crosshairUI.BorderSizePixel = 0
+        crosshairUI.ZIndex = 999999 -- Keeps it above ALL other UI elements
+        
+        -- Make it a perfect circle instead of a square
+        local corner = Instance.new("UICorner")
+        corner.CornerRadius = UDim.new(1, 0)
+        corner.Parent = crosshairUI
+        
+        crosshairUI.Parent = FTFHAX
+    else
+        -- Clean up instantly when toggled off
+        if crosshairUI then
+            crosshairUI:Destroy()
+            crosshairUI = nil
+        end
+    end
+    
+    return crosshairtoggle
 end)
 
 -- ==================== RISK LEVEL MENU ====================
@@ -2561,6 +2610,46 @@ AddMiscToggle("Low Gravity", function()
         workspace.Gravity = 196.2
     end
     return lowgravtoggle
+end)
+
+-- 11. Anti-Blindness (Nuke Screen Filters)
+local antiblindnesstoggle = false
+local antiblindnessConnection = nil
+
+AddMiscToggle("Anti-Blindness", function()
+    antiblindnesstoggle = not antiblindnesstoggle
+    
+    if antiblindnesstoggle then
+        if not antiblindnessConnection then
+            -- Run a fast, lightweight loop to constantly nuke incoming status effects
+            antiblindnessConnection = game:GetService("RunService").RenderStepped:Connect(function()
+                local lighting = game:GetService("Lighting")
+                local cam = workspace.CurrentCamera
+                
+                -- Nuke any Blur or Color filters in the Lighting service
+                for _, effect in pairs(lighting:GetChildren()) do
+                    if effect:IsA("BlurEffect") or effect:IsA("ColorCorrectionEffect") or effect:IsA("DepthOfFieldEffect") then
+                        effect.Enabled = false
+                    end
+                end
+                
+                -- Nuke any filters parented directly to your Camera (FTF does this sometimes)
+                for _, effect in pairs(cam:GetChildren()) do
+                    if effect:IsA("BlurEffect") or effect:IsA("ColorCorrectionEffect") or effect:IsA("DepthOfFieldEffect") then
+                        effect.Enabled = false
+                    end
+                end
+            end)
+        end
+    else
+        -- Disconnect the loop so the game can apply filters normally again
+        if antiblindnessConnection then
+            antiblindnessConnection:Disconnect()
+            antiblindnessConnection = nil
+        end
+    end
+    
+    return antiblindnesstoggle
 end)
 
 -- 10. Beast Proximity Alert
