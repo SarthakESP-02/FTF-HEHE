@@ -26,7 +26,7 @@ end)
 -- ==========================================================
 
 -- ==========================================================
--- 📡 ADMIN HANDSHAKE (Invisible Server Ping)
+--  ADMIN HANDSHAKE (Invisible Server Ping)
 -- ==========================================================
 local ActiveScriptUsers = {}
 
@@ -1432,9 +1432,9 @@ local function AddRiskItem(title, desc, color)
     descLbl.Parent = frame
 end
 
-AddRiskItem("🟢 SAFE (Client-Side)", "Live Radar, ESPs, Custom Crosshair, Anti-Blindness, Mobile Shift-Lock, Beast 3rd Person, No Fog, Fullbright.", Color3.fromRGB(100, 255, 100))
-AddRiskItem("🟡 MODERATE (Use Caution)", "Auto-Struggle, Hitbox Expander, Ghost Drone, Speed 24, Low Gravity, Jump 50.", Color3.fromRGB(255, 255, 100))
-AddRiskItem("🔴 HIGH RISK (Ban Chance)", "Noclip, Fixed Teleports, Auto-Play V1, Auto-Interact (Flags anti-cheat easily).", Color3.fromRGB(255, 100, 100))
+AddRiskItem(" SAFE (Client-Side)", "Live Radar, ESPs, Custom Crosshair, Anti-Blindness, Mobile Shift-Lock, Beast 3rd Person, No Fog, Fullbright.", Color3.fromRGB(100, 255, 100))
+AddRiskItem(" MODERATE (Use Caution)", "Auto-Struggle, Hitbox Expander, Ghost Drone, Speed 24, Low Gravity, Jump 50.", Color3.fromRGB(255, 255, 100))
+AddRiskItem(" HIGH RISK (Ban Chance)", "Noclip, Fixed Teleports, Auto-Play V1, Auto-Interact (Flags anti-cheat easily).", Color3.fromRGB(255, 100, 100))
 
 -- ==================== UNFAIR MENU ====================
 local UnfairMenu = ESPMenuWindow:Clone()
@@ -1928,16 +1928,22 @@ AdminText.Font = Enum.Font.SourceSansBold
 AdminText.TextSize = 24
 AdminText.Parent = AdminTabButton
 
--- Logout Button (Spawns in Main Menu)
+-- Logout Button (Pinned to Bottom Left of Main Menu)
 local LogoutButton = Instance.new("TextButton")
-LogoutButton.Size = UDim2.new(0, 132, 0, 132)
-LogoutButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+LogoutButton.Name = "LogoutButton"
+LogoutButton.Size = UDim2.new(0, 80, 0, 25) -- Small, sleek, minimalist
+LogoutButton.Position = UDim2.new(0, 10, 1, -35) -- Locked to bottom-left corner
+LogoutButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Dark Apple-style aesthetic
+LogoutButton.BorderSizePixel = 0
 LogoutButton.Text = "LOGOUT"
-LogoutButton.TextColor3 = Color3.fromRGB(150, 150, 150)
-LogoutButton.Font = Enum.Font.SourceSans
-LogoutButton.TextSize = 20
-Instance.new("UICorner", LogoutButton).CornerRadius = UDim.new(0, 12)
-LogoutButton.Parent = Body_2
+LogoutButton.TextColor3 = Color3.fromRGB(200, 50, 50) -- Subtle high-contrast red text
+LogoutButton.Font = Enum.Font.SourceSansBold
+LogoutButton.TextSize = 14
+LogoutButton.ZIndex = 10
+Instance.new("UICorner", LogoutButton).CornerRadius = UDim.new(0, 4)
+
+-- CRUCIAL: Parented directly to the Main Window, NOT the grid!
+LogoutButton.Parent = MainMenuWindow 
 
 -- ==================== THE GATEKEEPER (LOGIN UI) ====================
 local lastUsedPassword = ""
@@ -3053,21 +3059,21 @@ creditMain.Parent = MainMenuWindow
 print("FTF admin Panel v0.7.57 â€¢ Update Log Added")
 
 -- ==========================================================
--- 🛠️ DIAGNOSTIC & DEBUG TOOL (SAFE TO DELETE LATER)
+--  DIAGNOSTIC & DEBUG TOOL (SAFE TO DELETE LATER)
 -- ==========================================================
 task.spawn(function()
     task.wait(1) -- Wait 1 second to let the UI fully build before testing
-    print("[⚙️ FTF Admin] Running Background Diagnostics...")
+    print("[ FTF Admin] Running Background Diagnostics...")
     local errorsFound = 0
     
     -- Protected Call function to safely test things without crashing the script
     local function runTest(testName, testFunc)
         local success, errorMessage = pcall(testFunc)
         if not success then
-            warn("🚨 [BUG DETECTED] " .. testName .. " failed! Reason: " .. tostring(errorMessage))
+            warn(" [BUG DETECTED] " .. testName .. " failed! Reason: " .. tostring(errorMessage))
             errorsFound = errorsFound + 1
         else
-            print("✅ [DIAGNOSTIC] " .. testName .. " passed.")
+            print(" [DIAGNOSTIC] " .. testName .. " passed.")
         end
     end
 
@@ -3098,9 +3104,9 @@ task.spawn(function()
 
     -- Final Report
     if errorsFound == 0 then
-        print("🚀 [DIAGNOSTIC COMPLETE] 100% Stable. No bugs found. Script injected flawlessly.")
+        print(" [DIAGNOSTIC COMPLETE] 100% Stable. No bugs found. Script injected flawlessly.")
     else
-        warn("⚠️ [DIAGNOSTIC COMPLETE] Found " .. errorsFound .. " potential issue(s). Check the red warnings above.")
+        warn(" [DIAGNOSTIC COMPLETE] Found " .. errorsFound .. " potential issue(s). Check the red warnings above.")
     end
 end)
 -- ==========================================================
