@@ -14,7 +14,7 @@ task.spawn(function()
     local assetsToLoad = {
         "rbxthumb://type=Asset&id=2249604078&w=150&h=150", -- TP Icon
         "rbxthumb://type=Asset&id=12400908609&w=150&h=150", -- Risk Icon
-        "rbxthumb://type=Asset&id=82242368931718&w=150&h=150", -- Unfair Icon
+        "rbxthumb://type=Asset&id=73375957637397&w=150&h=150", -- Unfair Icon
         "rbxthumb://type=Asset&id=83349936062601&w=150&h=150", -- Shift-Lock White
         "rbxthumb://type=Asset&id=72173899346121&w=150&h=150"  -- Shift-Lock Blue
     }
@@ -639,7 +639,7 @@ UnfairIcon.BackgroundTransparency = 1
 UnfairIcon.AnchorPoint = Vector2.new(0.5, 0)
 UnfairIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
 UnfairIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
-UnfairIcon.Image = "rbxassetid://82242368931718" -- Verified Fire Icon
+UnfairIcon.Image = "rbxassetid://73375957637397" -- Verified Fire Icon
 UnfairIcon.ScaleType = Enum.ScaleType.Fit
 UnfairIcon.ZIndex = 11
 
@@ -1915,7 +1915,7 @@ AdminIcon.BackgroundTransparency = 1
 AdminIcon.AnchorPoint = Vector2.new(0.5, 0)
 AdminIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
 AdminIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
-AdminIcon.Image = "rbxthumb://type=Asset&id=10057356262&w=150&h=150"
+AdminIcon.Image = "rbxthumb://type=Asset&id=1177220578&w=150&h=150"
 AdminIcon.Parent = AdminTabButton
 
 local AdminText = Instance.new("TextLabel")
