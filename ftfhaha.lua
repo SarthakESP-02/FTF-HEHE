@@ -1896,7 +1896,7 @@ local LoginScreen = Instance.new("Frame")
 LoginScreen.Name = "LoginGate"
 LoginScreen.Size = UDim2.new(1, 0, 1, 0)
 LoginScreen.BackgroundColor3 = Color3.fromRGB(15, 15, 15) -- Deep minimalist dark mode
-LoginScreen.ZIndex = 9999999 -- Absolutely covers everything
+LoginScreen.ZIndex = 100000 -- Base Layer
 LoginScreen.Parent = FTFHAX
 
 local LoginBox = Instance.new("Frame")
@@ -1904,6 +1904,7 @@ LoginBox.Size = UDim2.new(0, 350, 0, 200)
 LoginBox.Position = UDim2.new(0.5, -175, 0.5, -100)
 LoginBox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 LoginBox.BorderSizePixel = 0
+LoginBox.ZIndex = 100001 -- Pops it ABOVE the black background!
 Instance.new("UICorner", LoginBox).CornerRadius = UDim.new(0, 12)
 LoginBox.Parent = LoginScreen
 
@@ -1914,6 +1915,7 @@ LoginTitle.Text = "FTF PANEL AUTHENTICATION"
 LoginTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 LoginTitle.Font = Enum.Font.SourceSansBold
 LoginTitle.TextSize = 22
+LoginTitle.ZIndex = 100002 -- Top Layer Text
 LoginTitle.Parent = LoginBox
 
 local PasswordInput = Instance.new("TextBox")
@@ -1925,6 +1927,7 @@ PasswordInput.PlaceholderText = "Enter Password..."
 PasswordInput.Font = Enum.Font.Code
 PasswordInput.TextSize = 18
 PasswordInput.Text = ""
+PasswordInput.ZIndex = 100002 -- Top Layer Input
 Instance.new("UICorner", PasswordInput).CornerRadius = UDim.new(0, 6)
 PasswordInput.Parent = LoginBox
 
@@ -1936,6 +1939,7 @@ SubmitButton.Text = "VERIFY"
 SubmitButton.TextColor3 = Color3.fromRGB(0, 0, 0)
 SubmitButton.Font = Enum.Font.SourceSansBold
 SubmitButton.TextSize = 18
+SubmitButton.ZIndex = 100002 -- Top Layer Button
 Instance.new("UICorner", SubmitButton).CornerRadius = UDim.new(0, 6)
 SubmitButton.Parent = LoginBox
 
