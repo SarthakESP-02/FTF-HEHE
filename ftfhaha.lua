@@ -1432,10 +1432,9 @@ local function AddRiskItem(title, desc, color)
     descLbl.Parent = frame
 end
 
-AddRiskItem("ðŸŸ¢ SAFE (Undetectable)", "Ghost Drone, Live Radar, All ESPs, No Fog, Fullbright, Beast Cam, Custom FOV, Delete Doors, Invis Walls.", Color3.fromRGB(100, 255, 100))
-AddRiskItem("ðŸŸ¡ MODERATE (Use Caution)", "Auto-Struggle (Remote spam), Smart ESP, WalkSpeed 24, Low Gravity, Jump Power 50, Anti-AFK.", Color3.fromRGB(255, 255, 100))
-AddRiskItem("ðŸ”´ HIGH RISK (Ban Chance)", "Noclip (flags part-clipping), Fixed TP (Anti-cheat trigger), Auto-Play, Auto-Interact.", Color3.fromRGB(255, 100, 100))
-
+AddRiskItem("🟢 SAFE (Client-Side)", "Live Radar, ESPs, Custom Crosshair, Anti-Blindness, Mobile Shift-Lock, Beast 3rd Person, No Fog, Fullbright.", Color3.fromRGB(100, 255, 100))
+AddRiskItem("🟡 MODERATE (Use Caution)", "Auto-Struggle, Hitbox Expander, Ghost Drone, Speed 24, Low Gravity, Jump 50.", Color3.fromRGB(255, 255, 100))
+AddRiskItem("🔴 HIGH RISK (Ban Chance)", "Noclip, Fixed Teleports, Auto-Play V1, Auto-Interact (Flags anti-cheat easily).", Color3.fromRGB(255, 100, 100))
 
 -- ==================== UNFAIR MENU ====================
 local UnfairMenu = ESPMenuWindow:Clone()
@@ -1818,16 +1817,16 @@ AdminListLayout.Padding = UDim.new(0, 10)
 AdminListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
 local AdminInfoLabel = Instance.new("TextLabel")
-AdminInfoLabel.Size = UDim2.new(1, -20, 0, 60)
+AdminInfoLabel.Size = UDim2.new(1, -20, 0, 50)
 AdminInfoLabel.BackgroundTransparency = 1
-AdminInfoLabel.Text = "Welcome to Developer Access.\nScanning local server for other injected users..."
+AdminInfoLabel.Text = "Scanning local server for injected users..."
 AdminInfoLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
 AdminInfoLabel.Font = Enum.Font.SourceSans
 AdminInfoLabel.TextSize = 16
 AdminInfoLabel.Parent = AdminScroll
 
 local ActiveUsersLabel = Instance.new("TextLabel")
-ActiveUsersLabel.Size = UDim2.new(1, -20, 0, 100)
+ActiveUsersLabel.Size = UDim2.new(1, -20, 0, 70)
 ActiveUsersLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 ActiveUsersLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
 ActiveUsersLabel.Font = Enum.Font.Code
@@ -1852,12 +1851,63 @@ task.spawn(function()
     end
 end)
 
+-- DEVELOPER OVERRIDES
+local AdminToolsLabel = Instance.new("TextLabel")
+AdminToolsLabel.Size = UDim2.new(1, -20, 0, 30)
+AdminToolsLabel.BackgroundTransparency = 1
+AdminToolsLabel.Text = "DEVELOPER OVERRIDES:"
+AdminToolsLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
+AdminToolsLabel.Font = Enum.Font.SourceSansBold
+AdminToolsLabel.TextSize = 18
+AdminToolsLabel.TextXAlignment = Enum.TextXAlignment.Left
+AdminToolsLabel.Parent = AdminScroll
+
+local function AddAdminOverride(text, func)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(1, -20, 0, 40)
+    btn.BackgroundColor3 = Color3.fromRGB(50, 0, 0)
+    btn.BorderColor3 = Color3.fromRGB(255, 0, 0)
+    btn.BorderSizePixel = 1
+    btn.Text = text
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.Code
+    btn.TextSize = 16
+    btn.Parent = AdminScroll
+    trackConnection(btn.MouseButton1Click:Connect(function()
+        pcall(func)
+    end))
+end
+
+AddAdminOverride("[>] REJOIN CURRENT SERVER", function()
+    game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, game.Players.LocalPlayer)
+end)
+
+AddAdminOverride("[>] COPY SERVER JOB-ID", function()
+    print("FTF SERVER JOB-ID: " .. tostring(game.JobId))
+    if setclipboard then setclipboard(game.JobId) end
+end)
+
+AddAdminOverride("[>] X-RAY MAP (NUKE VISUALS)", function()
+    local map = game.ReplicatedStorage:FindFirstChild("CurrentMap")
+    if map and map.Value then
+        for _, v in pairs(map.Value:GetDescendants()) do
+            if v:IsA("BasePart") then v.Transparency = 0.75 end
+        end
+    end
+end)
+
+AddAdminOverride("[>] MUTE ALL GAME SOUNDS", function()
+    for _, v in pairs(workspace:GetDescendants()) do
+        if v:IsA("Sound") then v.Volume = 0 end
+    end
+end)
+
 -- Hidden Admin Tab Button (Spawns in Main Menu)
 local AdminTabButton = Instance.new("ImageButton")
 AdminTabButton.Name = "AdminTabButton"
-AdminTabButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Darker aesthetic
+AdminTabButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
 AdminTabButton.BorderSizePixel = 0
-AdminTabButton.Visible = false -- HIDDEN BY DEFAULT!
+AdminTabButton.Visible = false
 AdminTabButton.Parent = Body_2
 
 local AdminIcon = Instance.new("ImageLabel", AdminTabButton)
@@ -1865,7 +1915,7 @@ AdminIcon.BackgroundTransparency = 1
 AdminIcon.AnchorPoint = Vector2.new(0.5, 0)
 AdminIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
 AdminIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
-AdminIcon.Image = "rbxthumb://type=Asset&id=1158779258&w=150&h=150" -- Shield/Terminal Icon
+AdminIcon.Image = "rbxthumb://type=Asset&id=10057356262&w=150&h=150"
 AdminIcon.Parent = AdminTabButton
 
 local AdminText = Instance.new("TextLabel")
@@ -1873,7 +1923,7 @@ AdminText.BackgroundTransparency = 1
 AdminText.Position = UDim2.new(0, 0, 0.8, 0)
 AdminText.Size = UDim2.new(1, 0, 0.2, 0)
 AdminText.Text = "Admin"
-AdminText.TextColor3 = Color3.fromRGB(0, 255, 255) -- Neon Blue Accent
+AdminText.TextColor3 = Color3.fromRGB(0, 255, 255)
 AdminText.Font = Enum.Font.SourceSansBold
 AdminText.TextSize = 24
 AdminText.Parent = AdminTabButton
@@ -1892,56 +1942,73 @@ LogoutButton.Parent = Body_2
 -- ==================== THE GATEKEEPER (LOGIN UI) ====================
 local lastUsedPassword = ""
 
+-- The new floating 420x360 Login Panel matching the main UI
 local LoginScreen = Instance.new("Frame")
 LoginScreen.Name = "LoginGate"
-LoginScreen.Size = UDim2.new(1, 0, 1, 0)
-LoginScreen.BackgroundColor3 = Color3.fromRGB(15, 15, 15) -- Deep minimalist dark mode
-LoginScreen.ZIndex = 100000 -- Base Layer
+LoginScreen.AnchorPoint = Vector2.new(0.5, 0.5)
+LoginScreen.Position = UDim2.new(0.5, 0, 0.5, -18)
+LoginScreen.Size = UDim2.new(0, 420, 0, 360)
+LoginScreen.BackgroundColor3 = Color3.fromRGB(47, 47, 47) -- Matches main hub color
+LoginScreen.BorderColor3 = Color3.fromRGB(0, 0, 0)
+LoginScreen.BorderSizePixel = 2
+LoginScreen.ZIndex = 100000
 LoginScreen.Parent = FTFHAX
 
-local LoginBox = Instance.new("Frame")
-LoginBox.Size = UDim2.new(0, 350, 0, 200)
-LoginBox.Position = UDim2.new(0.5, -175, 0.5, -100)
-LoginBox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-LoginBox.BorderSizePixel = 0
-LoginBox.ZIndex = 100001 -- Pops it ABOVE the black background!
-Instance.new("UICorner", LoginBox).CornerRadius = UDim.new(0, 12)
-LoginBox.Parent = LoginScreen
+local LoginTopBar = Instance.new("Frame")
+LoginTopBar.Size = UDim2.new(1, 0, 0, 40)
+LoginTopBar.BackgroundColor3 = Color3.fromRGB(31, 31, 31)
+LoginTopBar.BorderSizePixel = 0
+LoginTopBar.ZIndex = 100001
+LoginTopBar.Parent = LoginScreen
 
 local LoginTitle = Instance.new("TextLabel")
-LoginTitle.Size = UDim2.new(1, 0, 0, 50)
+LoginTitle.Size = UDim2.new(1, 0, 1, 0)
+LoginTitle.Position = UDim2.new(0, 10, 0, 0)
 LoginTitle.BackgroundTransparency = 1
-LoginTitle.Text = "FTF PANEL AUTHENTICATION"
+LoginTitle.Text = "AUTHENTICATION REQUIRED"
 LoginTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
 LoginTitle.Font = Enum.Font.SourceSansBold
-LoginTitle.TextSize = 22
-LoginTitle.ZIndex = 100002 -- Top Layer Text
-LoginTitle.Parent = LoginBox
+LoginTitle.TextSize = 18
+LoginTitle.TextXAlignment = Enum.TextXAlignment.Left
+LoginTitle.ZIndex = 100002
+LoginTitle.Parent = LoginTopBar
+
+local InfoText = Instance.new("TextLabel")
+InfoText.Size = UDim2.new(1, -20, 0, 100)
+InfoText.Position = UDim2.new(0, 10, 0, 60)
+InfoText.BackgroundTransparency = 1
+InfoText.Text = "To access this panel, please get the permanent password from the developer link below:\n\nhttps://pastebin.com/cyFWmFkG"
+InfoText.TextColor3 = Color3.fromRGB(220, 220, 220)
+InfoText.Font = Enum.Font.SourceSans
+InfoText.TextSize = 18
+InfoText.TextWrapped = true
+InfoText.ZIndex = 100001
+InfoText.Parent = LoginScreen
 
 local PasswordInput = Instance.new("TextBox")
 PasswordInput.Size = UDim2.new(0.8, 0, 0, 45)
-PasswordInput.Position = UDim2.new(0.1, 0, 0.35, 0)
-PasswordInput.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+PasswordInput.Position = UDim2.new(0.1, 0, 0.55, 0)
+PasswordInput.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 PasswordInput.TextColor3 = Color3.fromRGB(255, 255, 255)
 PasswordInput.PlaceholderText = "Enter Password..."
 PasswordInput.Font = Enum.Font.Code
 PasswordInput.TextSize = 18
 PasswordInput.Text = ""
-PasswordInput.ZIndex = 100002 -- Top Layer Input
+PasswordInput.ZIndex = 100001
 Instance.new("UICorner", PasswordInput).CornerRadius = UDim.new(0, 6)
-PasswordInput.Parent = LoginBox
+PasswordInput.Parent = LoginScreen
 
 local SubmitButton = Instance.new("TextButton")
 SubmitButton.Size = UDim2.new(0.8, 0, 0, 45)
-SubmitButton.Position = UDim2.new(0.1, 0, 0.65, 0)
-SubmitButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SubmitButton.Position = UDim2.new(0.1, 0, 0.75, 0)
+SubmitButton.BackgroundColor3 = Color3.fromRGB(191, 0, 0)
 SubmitButton.Text = "VERIFY"
-SubmitButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+SubmitButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 SubmitButton.Font = Enum.Font.SourceSansBold
 SubmitButton.TextSize = 18
-SubmitButton.ZIndex = 100002 -- Top Layer Button
+SubmitButton.ZIndex = 100001
 Instance.new("UICorner", SubmitButton).CornerRadius = UDim.new(0, 6)
-SubmitButton.Parent = LoginBox
+SubmitButton.Parent = LoginScreen
 
 -- Hide Cheat Button until verified
 CheatButton.Visible = false
@@ -1961,7 +2028,6 @@ trackConnection(SubmitButton.MouseButton1Click:Connect(function()
         LoginScreen.Visible = false
         CheatButton.Visible = true
         MainMenuWindow.Visible = true
-        -- Fire the invisible handshake ping to the server
         pcall(function() game.Players.LocalPlayer:Chat("/e FTF_ADMIN_PING") end)
     else
         PasswordInput.Text = ""
@@ -1975,7 +2041,6 @@ end))
 
 -- Logout Logic
 trackConnection(LogoutButton.MouseButton1Click:Connect(function()
-    -- Hide all open menus
     MainMenuWindow.Visible = false
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
@@ -1988,7 +2053,6 @@ trackConnection(LogoutButton.MouseButton1Click:Connect(function()
     AdminMenu.Visible = false
     CheatButton.Visible = false
     
-    -- Show login gate and autofill remembered password
     PasswordInput.Text = lastUsedPassword
     LoginScreen.Visible = true
 end))
@@ -2989,21 +3053,21 @@ creditMain.Parent = MainMenuWindow
 print("FTF admin Panel v0.7.57 â€¢ Update Log Added")
 
 -- ==========================================================
--- ðŸ› ï¸ DIAGNOSTIC & DEBUG TOOL (SAFE TO DELETE LATER)
+-- 🛠️ DIAGNOSTIC & DEBUG TOOL (SAFE TO DELETE LATER)
 -- ==========================================================
 task.spawn(function()
     task.wait(1) -- Wait 1 second to let the UI fully build before testing
-    print("[âš™ï¸ FTF Admin] Running Background Diagnostics...")
+    print("[⚙️ FTF Admin] Running Background Diagnostics...")
     local errorsFound = 0
     
     -- Protected Call function to safely test things without crashing the script
     local function runTest(testName, testFunc)
         local success, errorMessage = pcall(testFunc)
         if not success then
-            warn("ðŸš¨ [BUG DETECTED] " .. testName .. " failed! Reason: " .. tostring(errorMessage))
+            warn("🚨 [BUG DETECTED] " .. testName .. " failed! Reason: " .. tostring(errorMessage))
             errorsFound = errorsFound + 1
         else
-            print("âœ… [DIAGNOSTIC] " .. testName .. " passed.")
+            print("✅ [DIAGNOSTIC] " .. testName .. " passed.")
         end
     end
 
@@ -3034,9 +3098,9 @@ task.spawn(function()
 
     -- Final Report
     if errorsFound == 0 then
-        print("ðŸš€ [DIAGNOSTIC COMPLETE] 100% Stable. No bugs found. Script injected flawlessly.")
+        print("🚀 [DIAGNOSTIC COMPLETE] 100% Stable. No bugs found. Script injected flawlessly.")
     else
-        warn("âš ï¸ [DIAGNOSTIC COMPLETE] Found " .. errorsFound .. " potential issue(s). Check the red warnings above.")
+        warn("⚠️ [DIAGNOSTIC COMPLETE] Found " .. errorsFound .. " potential issue(s). Check the red warnings above.")
     end
 end)
 -- ==========================================================
