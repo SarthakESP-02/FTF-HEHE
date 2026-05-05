@@ -6,6 +6,25 @@ local function trackConnection(conn)
     if conn then table.insert(activeConnections, conn) end
 end
 
+-- ==========================================================
+-- 🚀 ANTI-LAG ASSET PRELOADER (Fixes rbxthumb stutters)
+-- ==========================================================
+task.spawn(function()
+    local ContentProvider = game:GetService("ContentProvider")
+    local assetsToLoad = {
+        "rbxthumb://type=Asset&id=2249604078&w=150&h=150", -- TP Icon
+        "rbxthumb://type=Asset&id=12400908609&w=150&h=150", -- Risk Icon
+        "rbxthumb://type=Asset&id=6068827454&w=150&h=150", -- Unfair Icon
+        "rbxthumb://type=Asset&id=83349936062601&w=150&h=150", -- Shift-Lock White
+        "rbxthumb://type=Asset&id=72173899346121&w=150&h=150"  -- Shift-Lock Blue
+    }
+    -- Silently cache all images in the background so they don't lag the game
+    pcall(function()
+        ContentProvider:PreloadAsync(assetsToLoad)
+    end)
+end)
+-- ==========================================================
+
 -- ==================== TOGGLE VARIABLES ===================
 local podstoggle = false
 local pctoggle = false
@@ -564,7 +583,7 @@ RiskIcon.BackgroundTransparency = 1
 RiskIcon.AnchorPoint = Vector2.new(0.5, 0)
 RiskIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
 RiskIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
-RiskIcon.Image = "rbxthumb://type=Asset&id=6031268673&w=150&h=150"
+RiskIcon.Image = "rbxthumb://type=Asset&id=12400908609&w=150&h=150"
 RiskIcon.ScaleType = Enum.ScaleType.Fit
 RiskIcon.ZIndex = 11
 
@@ -592,7 +611,7 @@ UnfairIcon.BackgroundTransparency = 1
 UnfairIcon.AnchorPoint = Vector2.new(0.5, 0)
 UnfairIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
 UnfairIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
-UnfairIcon.Image = "rbxassetid://6031290369" -- Verified Fire Icon
+UnfairIcon.Image = "rbxassetid://6068827454" -- Verified Fire Icon
 UnfairIcon.ScaleType = Enum.ScaleType.Fit
 UnfairIcon.ZIndex = 11
 
@@ -2649,4 +2668,3 @@ task.spawn(function()
     end
 end)
 -- ==========================================================
-
