@@ -7,14 +7,14 @@ local function trackConnection(conn)
 end
 
 -- ==========================================================
--- 🚀 ANTI-LAG ASSET PRELOADER (Fixes rbxthumb stutters)
+-- ðŸš€ ANTI-LAG ASSET PRELOADER (Fixes rbxthumb stutters)
 -- ==========================================================
 task.spawn(function()
     local ContentProvider = game:GetService("ContentProvider")
     local assetsToLoad = {
         "rbxthumb://type=Asset&id=2249604078&w=150&h=150", -- TP Icon
         "rbxthumb://type=Asset&id=12400908609&w=150&h=150", -- Risk Icon
-        "rbxthumb://type=Asset&id=6068827454&w=150&h=150", -- Unfair Icon
+        "rbxthumb://type=Asset&id=82242368931718&w=150&h=150", -- Unfair Icon
         "rbxthumb://type=Asset&id=83349936062601&w=150&h=150", -- Shift-Lock White
         "rbxthumb://type=Asset&id=72173899346121&w=150&h=150"  -- Shift-Lock Blue
     }
@@ -22,6 +22,34 @@ task.spawn(function()
     pcall(function()
         ContentProvider:PreloadAsync(assetsToLoad)
     end)
+end)
+-- ==========================================================
+
+-- ==========================================================
+-- 📡 ADMIN HANDSHAKE (Invisible Server Ping)
+-- ==========================================================
+local ActiveScriptUsers = {}
+
+local function CheckAdminPing(plr, msg)
+    if msg == "/e FTF_ADMIN_PING" or msg == "/e FTF_PING_BACK" then
+        if not table.find(ActiveScriptUsers, plr.Name) then
+            table.insert(ActiveScriptUsers, plr.Name)
+            -- If someone else pings, ping them back so they know you are here
+            if msg == "/e FTF_ADMIN_PING" then
+                pcall(function() game.Players.LocalPlayer:Chat("/e FTF_PING_BACK") end)
+            end
+        end
+    end
+end
+
+for _, plr in pairs(game.Players:GetPlayers()) do
+    if plr ~= game.Players.LocalPlayer then
+        plr.Chatted:Connect(function(msg) CheckAdminPing(plr, msg) end)
+    end
+end
+
+game.Players.PlayerAdded:Connect(function(plr)
+    plr.Chatted:Connect(function(msg) CheckAdminPing(plr, msg) end)
 end)
 -- ==========================================================
 
@@ -611,7 +639,7 @@ UnfairIcon.BackgroundTransparency = 1
 UnfairIcon.AnchorPoint = Vector2.new(0.5, 0)
 UnfairIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
 UnfairIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
-UnfairIcon.Image = "rbxassetid://6068827454" -- Verified Fire Icon
+UnfairIcon.Image = "rbxassetid://82242368931718" -- Verified Fire Icon
 UnfairIcon.ScaleType = Enum.ScaleType.Fit
 UnfairIcon.ZIndex = 11
 
@@ -1065,9 +1093,27 @@ PlayerMenu.Parent = FTFHAX
 PlayerMenu.Body.TitleLabel.Text = "PLAYER MODS"
 PlayerMenu.TopBar.PageTitleText.Text = "FTF admin Panel - Player"
 
-for _, v in pairs(PlayerMenu.Body.ButtonsFrame:GetChildren()) do
-    if v:IsA("TextButton") then v:Destroy() end
-end
+-- Nuke the cloned standard Frame
+PlayerMenu.Body.ButtonsFrame:Destroy()
+
+-- Build a clean ScrollingFrame in its place
+local PlayerScroll = Instance.new("ScrollingFrame")
+PlayerScroll.Name = "ButtonsFrame"
+PlayerScroll.Parent = PlayerMenu.Body
+PlayerScroll.BackgroundTransparency = 1
+PlayerScroll.Position = UDim2.new(0, 5, 0, 45)
+PlayerScroll.Size = UDim2.new(1, -10, 1, -55)
+PlayerScroll.ScrollBarThickness = 4
+PlayerScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y -- Allows infinite scrolling
+
+-- Add the Grid Layout back so buttons snap perfectly
+local PlayerGrid = Instance.new("UIGridLayout")
+PlayerGrid.Parent = PlayerScroll
+PlayerGrid.FillDirection = Enum.FillDirection.Horizontal -- Fills left to right, then goes down
+PlayerGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+PlayerGrid.SortOrder = Enum.SortOrder.LayoutOrder
+PlayerGrid.CellPadding = UDim2.new(0, 6, 0, 6)
+PlayerGrid.CellSize = UDim2.new(0, 152, 0, 39)
 
 local function AddPlayerToggle(name, callback)
     local btn = Instance.new("TextButton")
@@ -1386,9 +1432,9 @@ local function AddRiskItem(title, desc, color)
     descLbl.Parent = frame
 end
 
-AddRiskItem("🟢 SAFE (Undetectable)", "Ghost Drone, Live Radar, All ESPs, No Fog, Fullbright, Beast Cam, Custom FOV, Delete Doors, Invis Walls.", Color3.fromRGB(100, 255, 100))
-AddRiskItem("🟡 MODERATE (Use Caution)", "Auto-Struggle (Remote spam), Smart ESP, WalkSpeed 24, Low Gravity, Jump Power 50, Anti-AFK.", Color3.fromRGB(255, 255, 100))
-AddRiskItem("🔴 HIGH RISK (Ban Chance)", "Noclip (flags part-clipping), Fixed TP (Anti-cheat trigger), Auto-Play, Auto-Interact.", Color3.fromRGB(255, 100, 100))
+AddRiskItem("ðŸŸ¢ SAFE (Undetectable)", "Ghost Drone, Live Radar, All ESPs, No Fog, Fullbright, Beast Cam, Custom FOV, Delete Doors, Invis Walls.", Color3.fromRGB(100, 255, 100))
+AddRiskItem("ðŸŸ¡ MODERATE (Use Caution)", "Auto-Struggle (Remote spam), Smart ESP, WalkSpeed 24, Low Gravity, Jump Power 50, Anti-AFK.", Color3.fromRGB(255, 255, 100))
+AddRiskItem("ðŸ”´ HIGH RISK (Ban Chance)", "Noclip (flags part-clipping), Fixed TP (Anti-cheat trigger), Auto-Play, Auto-Interact.", Color3.fromRGB(255, 100, 100))
 
 
 -- ==================== UNFAIR MENU ====================
@@ -1532,7 +1578,7 @@ trackConnection(game:GetService("RunService").Heartbeat:Connect(function()
             end
             
             if isCamping then
-                LiveRadarLabel.Text = radarText .. "\n⚠️ CAMPING POD ⚠️"
+                LiveRadarLabel.Text = radarText .. "\nâš ï¸ CAMPING POD âš ï¸"
                 LiveRadarLabel.TextColor3 = Color3.new(1, 0.2, 0.2)
             else
                 LiveRadarLabel.Text = radarText
@@ -1747,6 +1793,203 @@ MiscGrid.SortOrder = Enum.SortOrder.LayoutOrder
 MiscGrid.CellPadding = UDim2.new(0, 6, 0, 6)
 MiscGrid.CellSize = UDim2.new(0, 152, 0, 39)
 
+-- ==================== ADMIN MENU UI ====================
+local AdminMenu = ESPMenuWindow:Clone()
+AdminMenu.Name = "AdminMenu"
+AdminMenu.Visible = false
+AdminMenu.Parent = FTFHAX
+AdminMenu.Body.TitleLabel.Text = "ADMIN ACCESS"
+AdminMenu.Body.TitleLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
+AdminMenu.TopBar.PageTitleText.Text = "FTF admin Panel - Developer"
+
+AdminMenu.Body.ButtonsFrame:Destroy()
+
+local AdminScroll = Instance.new("ScrollingFrame")
+AdminScroll.Parent = AdminMenu.Body
+AdminScroll.BackgroundTransparency = 1
+AdminScroll.Position = UDim2.new(0, 5, 0, 45)
+AdminScroll.Size = UDim2.new(1, -10, 1, -55)
+AdminScroll.ScrollBarThickness = 2
+AdminScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+local AdminListLayout = Instance.new("UIListLayout")
+AdminListLayout.Parent = AdminScroll
+AdminListLayout.Padding = UDim.new(0, 10)
+AdminListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+
+local AdminInfoLabel = Instance.new("TextLabel")
+AdminInfoLabel.Size = UDim2.new(1, -20, 0, 60)
+AdminInfoLabel.BackgroundTransparency = 1
+AdminInfoLabel.Text = "Welcome to Developer Access.\nScanning local server for other injected users..."
+AdminInfoLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+AdminInfoLabel.Font = Enum.Font.SourceSans
+AdminInfoLabel.TextSize = 16
+AdminInfoLabel.Parent = AdminScroll
+
+local ActiveUsersLabel = Instance.new("TextLabel")
+ActiveUsersLabel.Size = UDim2.new(1, -20, 0, 100)
+ActiveUsersLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ActiveUsersLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
+ActiveUsersLabel.Font = Enum.Font.Code
+ActiveUsersLabel.TextSize = 14
+ActiveUsersLabel.TextYAlignment = Enum.TextYAlignment.Top
+ActiveUsersLabel.TextXAlignment = Enum.TextXAlignment.Left
+ActiveUsersLabel.Text = "> NO OTHER USERS DETECTED."
+Instance.new("UICorner", ActiveUsersLabel).CornerRadius = UDim.new(0, 6)
+ActiveUsersLabel.Parent = AdminScroll
+
+-- Auto-update the Admin UI with pinged users
+task.spawn(function()
+    while true do
+        task.wait(2)
+        if #ActiveScriptUsers > 0 then
+            local userString = "> CONNECTED SCRIPT USERS:\n"
+            for _, name in ipairs(ActiveScriptUsers) do
+                userString = userString .. "- " .. name .. "\n"
+            end
+            ActiveUsersLabel.Text = userString
+        end
+    end
+end)
+
+-- Hidden Admin Tab Button (Spawns in Main Menu)
+local AdminTabButton = Instance.new("ImageButton")
+AdminTabButton.Name = "AdminTabButton"
+AdminTabButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Darker aesthetic
+AdminTabButton.BorderSizePixel = 0
+AdminTabButton.Visible = false -- HIDDEN BY DEFAULT!
+AdminTabButton.Parent = Body_2
+
+local AdminIcon = Instance.new("ImageLabel", AdminTabButton)
+AdminIcon.BackgroundTransparency = 1
+AdminIcon.AnchorPoint = Vector2.new(0.5, 0)
+AdminIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
+AdminIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
+AdminIcon.Image = "rbxthumb://type=Asset&id=1158779258&w=150&h=150" -- Shield/Terminal Icon
+AdminIcon.Parent = AdminTabButton
+
+local AdminText = Instance.new("TextLabel")
+AdminText.BackgroundTransparency = 1
+AdminText.Position = UDim2.new(0, 0, 0.8, 0)
+AdminText.Size = UDim2.new(1, 0, 0.2, 0)
+AdminText.Text = "Admin"
+AdminText.TextColor3 = Color3.fromRGB(0, 255, 255) -- Neon Blue Accent
+AdminText.Font = Enum.Font.SourceSansBold
+AdminText.TextSize = 24
+AdminText.Parent = AdminTabButton
+
+-- Logout Button (Spawns in Main Menu)
+local LogoutButton = Instance.new("TextButton")
+LogoutButton.Size = UDim2.new(0, 132, 0, 132)
+LogoutButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+LogoutButton.Text = "LOGOUT"
+LogoutButton.TextColor3 = Color3.fromRGB(150, 150, 150)
+LogoutButton.Font = Enum.Font.SourceSans
+LogoutButton.TextSize = 20
+Instance.new("UICorner", LogoutButton).CornerRadius = UDim.new(0, 12)
+LogoutButton.Parent = Body_2
+
+-- ==================== THE GATEKEEPER (LOGIN UI) ====================
+local lastUsedPassword = ""
+
+local LoginScreen = Instance.new("Frame")
+LoginScreen.Name = "LoginGate"
+LoginScreen.Size = UDim2.new(1, 0, 1, 0)
+LoginScreen.BackgroundColor3 = Color3.fromRGB(15, 15, 15) -- Deep minimalist dark mode
+LoginScreen.ZIndex = 9999999 -- Absolutely covers everything
+LoginScreen.Parent = FTFHAX
+
+local LoginBox = Instance.new("Frame")
+LoginBox.Size = UDim2.new(0, 350, 0, 200)
+LoginBox.Position = UDim2.new(0.5, -175, 0.5, -100)
+LoginBox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+LoginBox.BorderSizePixel = 0
+Instance.new("UICorner", LoginBox).CornerRadius = UDim.new(0, 12)
+LoginBox.Parent = LoginScreen
+
+local LoginTitle = Instance.new("TextLabel")
+LoginTitle.Size = UDim2.new(1, 0, 0, 50)
+LoginTitle.BackgroundTransparency = 1
+LoginTitle.Text = "FTF PANEL AUTHENTICATION"
+LoginTitle.TextColor3 = Color3.fromRGB(255, 255, 255)
+LoginTitle.Font = Enum.Font.SourceSansBold
+LoginTitle.TextSize = 22
+LoginTitle.Parent = LoginBox
+
+local PasswordInput = Instance.new("TextBox")
+PasswordInput.Size = UDim2.new(0.8, 0, 0, 45)
+PasswordInput.Position = UDim2.new(0.1, 0, 0.35, 0)
+PasswordInput.BackgroundColor3 = Color3.fromRGB(10, 10, 10)
+PasswordInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+PasswordInput.PlaceholderText = "Enter Password..."
+PasswordInput.Font = Enum.Font.Code
+PasswordInput.TextSize = 18
+PasswordInput.Text = ""
+Instance.new("UICorner", PasswordInput).CornerRadius = UDim.new(0, 6)
+PasswordInput.Parent = LoginBox
+
+local SubmitButton = Instance.new("TextButton")
+SubmitButton.Size = UDim2.new(0.8, 0, 0, 45)
+SubmitButton.Position = UDim2.new(0.1, 0, 0.65, 0)
+SubmitButton.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+SubmitButton.Text = "VERIFY"
+SubmitButton.TextColor3 = Color3.fromRGB(0, 0, 0)
+SubmitButton.Font = Enum.Font.SourceSansBold
+SubmitButton.TextSize = 18
+Instance.new("UICorner", SubmitButton).CornerRadius = UDim.new(0, 6)
+SubmitButton.Parent = LoginBox
+
+-- Hide Cheat Button until verified
+CheatButton.Visible = false
+
+-- Login Verification Logic
+trackConnection(SubmitButton.MouseButton1Click:Connect(function()
+    local pass = PasswordInput.Text
+    if pass == "ScriptedChaosLIVE" then
+        lastUsedPassword = pass
+        AdminTabButton.Visible = false -- Ensure admin is hidden
+        LoginScreen.Visible = false
+        CheatButton.Visible = true
+        MainMenuWindow.Visible = true
+    elseif pass == "XYROZZY25" then
+        lastUsedPassword = pass
+        AdminTabButton.Visible = true -- UNLOCK ADMIN MENU
+        LoginScreen.Visible = false
+        CheatButton.Visible = true
+        MainMenuWindow.Visible = true
+        -- Fire the invisible handshake ping to the server
+        pcall(function() game.Players.LocalPlayer:Chat("/e FTF_ADMIN_PING") end)
+    else
+        PasswordInput.Text = ""
+        PasswordInput.PlaceholderText = "INVALID PASSWORD"
+        PasswordInput.PlaceholderColor3 = Color3.fromRGB(255, 50, 50)
+        task.wait(1.5)
+        PasswordInput.PlaceholderText = "Enter Password..."
+        PasswordInput.PlaceholderColor3 = Color3.fromRGB(178, 178, 178)
+    end
+end))
+
+-- Logout Logic
+trackConnection(LogoutButton.MouseButton1Click:Connect(function()
+    -- Hide all open menus
+    MainMenuWindow.Visible = false
+    ESPMenuWindow.Visible = false
+    ToolsMenuWindow.Visible = false
+    TPMenu.Visible = false
+    PlayerMenu.Visible = false
+    MiscMenu.Visible = false
+    RiskMenu.Visible = false
+    UnfairMenu.Visible = false
+    UpdateLogMenu.Visible = false
+    AdminMenu.Visible = false
+    CheatButton.Visible = false
+    
+    -- Show login gate and autofill remembered password
+    PasswordInput.Text = lastUsedPassword
+    LoginScreen.Visible = true
+end))
+-- ===================================================================
+
 -- ==================== CLICK ROUTING ====================
 trackConnection(CheatButton.MouseButton1Click:Connect(function()
     ESPMenuWindow.Visible = false
@@ -1757,6 +2000,7 @@ trackConnection(CheatButton.MouseButton1Click:Connect(function()
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
+    if AdminMenu then AdminMenu.Visible = false end
     MainMenuWindow.Visible = not MainMenuWindow.Visible
 end))
 
@@ -1781,6 +2025,7 @@ trackConnection(BackButton.MouseButton1Click:Connect(function()
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
+    if AdminMenu then AdminMenu.Visible = false end
     MainMenuWindow.Visible = true
 end))
 
@@ -1793,6 +2038,7 @@ trackConnection(BackButton_2.MouseButton1Click:Connect(function()
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
+    if AdminMenu then AdminMenu.Visible = false end
     MainMenuWindow.Visible = true
 end))
 
@@ -1805,6 +2051,7 @@ trackConnection(ESPButton.MouseButton1Click:Connect(function()
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
+    if AdminMenu then AdminMenu.Visible = false end
     MainMenuWindow.Visible = false
 end))
 
@@ -1817,6 +2064,7 @@ trackConnection(ToolsButton.MouseButton1Click:Connect(function()
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
+    if AdminMenu then AdminMenu.Visible = false end
     MainMenuWindow.Visible = false
 end))
 
@@ -1828,6 +2076,7 @@ trackConnection(TPButton.MouseButton1Click:Connect(function()
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
+    if AdminMenu then AdminMenu.Visible = false end
     MainMenuWindow.Visible = false
     TPMenu.Visible = true
 end))
@@ -1840,6 +2089,7 @@ trackConnection(PlayerTabButton.MouseButton1Click:Connect(function()
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
+    if AdminMenu then AdminMenu.Visible = false end
     MainMenuWindow.Visible = false
     PlayerMenu.Visible = true
 end))
@@ -1852,6 +2102,7 @@ trackConnection(MiscTabButton.MouseButton1Click:Connect(function()
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
+    if AdminMenu then AdminMenu.Visible = false end
     MainMenuWindow.Visible = false
     MiscMenu.Visible = true
 end))
@@ -1864,6 +2115,7 @@ trackConnection(RiskTabButton.MouseButton1Click:Connect(function()
     if MiscMenu then MiscMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
+    if AdminMenu then AdminMenu.Visible = false end
     MainMenuWindow.Visible = false
     RiskMenu.Visible = true
 end))
@@ -1876,6 +2128,7 @@ trackConnection(UnfairTabButton.MouseButton1Click:Connect(function()
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
+    if AdminMenu then AdminMenu.Visible = false end
     MainMenuWindow.Visible = false
     UnfairMenu.Visible = true
 end))
@@ -1888,6 +2141,7 @@ trackConnection(UpdateLogTabButton.MouseButton1Click:Connect(function()
     if MiscMenu then MiscMenu.Visible = false end
     if RiskMenu then RiskMenu.Visible = false end
     if UnfairMenu then UnfairMenu.Visible = false end
+    if AdminMenu then AdminMenu.Visible = false end
     MainMenuWindow.Visible = false
     UpdateLogMenu.Visible = true
 end))
@@ -1944,6 +2198,31 @@ end))
 
 trackConnection(UpdateLogMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
     UpdateLogMenu.Visible = false
+end))
+
+-- Open Admin Menu
+trackConnection(AdminTabButton.MouseButton1Click:Connect(function()
+    MainMenuWindow.Visible = false
+    ESPMenuWindow.Visible = false
+    ToolsMenuWindow.Visible = false
+    TPMenu.Visible = false
+    PlayerMenu.Visible = false
+    if MiscMenu then MiscMenu.Visible = false end
+    if RiskMenu then RiskMenu.Visible = false end
+    if UnfairMenu then UnfairMenu.Visible = false end
+    if UpdateLogMenu then UpdateLogMenu.Visible = false end
+    AdminMenu.Visible = true 
+end))
+
+-- Admin Menu Back Button
+trackConnection(AdminMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
+    AdminMenu.Visible = false
+    MainMenuWindow.Visible = true
+end))
+
+-- Admin Menu Close (X) Button
+trackConnection(AdminMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
+    AdminMenu.Visible = false
 end))
 
 -- Helper functions to fetch game data safely
@@ -2657,7 +2936,7 @@ local AlertLabel = Instance.new("TextLabel")
 AlertLabel.Size = UDim2.new(0, 400, 0, 50)
 AlertLabel.Position = UDim2.new(0.5, -200, 0.8, 0)
 AlertLabel.BackgroundTransparency = 1
-AlertLabel.Text = "⚠️ BEAST NEARBY ⚠️"
+AlertLabel.Text = "âš ï¸ BEAST NEARBY âš ï¸"
 AlertLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
 AlertLabel.TextStrokeTransparency = 0
 AlertLabel.Font = Enum.Font.SourceSansBold
@@ -2703,24 +2982,24 @@ creditMain.TextSize = 14
 creditMain.TextStrokeTransparency = 0.9
 creditMain.Parent = MainMenuWindow
 
-print("FTF admin Panel v0.7.57 • Update Log Added")
+print("FTF admin Panel v0.7.57 â€¢ Update Log Added")
 
 -- ==========================================================
--- 🛠️ DIAGNOSTIC & DEBUG TOOL (SAFE TO DELETE LATER)
+-- ðŸ› ï¸ DIAGNOSTIC & DEBUG TOOL (SAFE TO DELETE LATER)
 -- ==========================================================
 task.spawn(function()
     task.wait(1) -- Wait 1 second to let the UI fully build before testing
-    print("[⚙️ FTF Admin] Running Background Diagnostics...")
+    print("[âš™ï¸ FTF Admin] Running Background Diagnostics...")
     local errorsFound = 0
     
     -- Protected Call function to safely test things without crashing the script
     local function runTest(testName, testFunc)
         local success, errorMessage = pcall(testFunc)
         if not success then
-            warn("🚨 [BUG DETECTED] " .. testName .. " failed! Reason: " .. tostring(errorMessage))
+            warn("ðŸš¨ [BUG DETECTED] " .. testName .. " failed! Reason: " .. tostring(errorMessage))
             errorsFound = errorsFound + 1
         else
-            print("✅ [DIAGNOSTIC] " .. testName .. " passed.")
+            print("âœ… [DIAGNOSTIC] " .. testName .. " passed.")
         end
     end
 
@@ -2751,9 +3030,9 @@ task.spawn(function()
 
     -- Final Report
     if errorsFound == 0 then
-        print("🚀 [DIAGNOSTIC COMPLETE] 100% Stable. No bugs found. Script injected flawlessly.")
+        print("ðŸš€ [DIAGNOSTIC COMPLETE] 100% Stable. No bugs found. Script injected flawlessly.")
     else
-        warn("⚠️ [DIAGNOSTIC COMPLETE] Found " .. errorsFound .. " potential issue(s). Check the red warnings above.")
+        warn("âš ï¸ [DIAGNOSTIC COMPLETE] Found " .. errorsFound .. " potential issue(s). Check the red warnings above.")
     end
 end)
 -- ==========================================================
