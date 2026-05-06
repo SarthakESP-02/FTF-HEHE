@@ -1827,7 +1827,7 @@ AdminInfoLabel.Parent = AdminScroll
 
 local ActiveUsersLabel = Instance.new("TextLabel")
 ActiveUsersLabel.Size = UDim2.new(1, -20, 0, 70)
-ActiveUsersLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+ActiveUsersLabel.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
 ActiveUsersLabel.TextColor3 = Color3.fromRGB(0, 255, 255)
 ActiveUsersLabel.Font = Enum.Font.Code
 ActiveUsersLabel.TextSize = 14
@@ -1835,6 +1835,10 @@ ActiveUsersLabel.TextYAlignment = Enum.TextYAlignment.Top
 ActiveUsersLabel.TextXAlignment = Enum.TextXAlignment.Left
 ActiveUsersLabel.Text = "> NO OTHER USERS DETECTED."
 Instance.new("UICorner", ActiveUsersLabel).CornerRadius = UDim.new(0, 6)
+
+local ActivePadding = Instance.new("UIPadding", ActiveUsersLabel)
+ActivePadding.PaddingTop = UDim.new(0, 5)
+ActivePadding.PaddingLeft = UDim.new(0, 5)
 ActiveUsersLabel.Parent = AdminScroll
 
 -- Auto-update the Admin UI with pinged users
@@ -1862,16 +1866,25 @@ AdminToolsLabel.TextSize = 18
 AdminToolsLabel.TextXAlignment = Enum.TextXAlignment.Left
 AdminToolsLabel.Parent = AdminScroll
 
+-- New Sleek Apple-Style Button Design
 local function AddAdminOverride(text, func)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(1, -20, 0, 40)
-    btn.BackgroundColor3 = Color3.fromRGB(50, 0, 0)
-    btn.BorderColor3 = Color3.fromRGB(255, 0, 0)
-    btn.BorderSizePixel = 1
+    btn.Size = UDim2.new(1, -20, 0, 45)
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Clean dark mode
+    btn.BorderSizePixel = 0
     btn.Text = text
-    btn.TextColor3 = Color3.new(1,1,1)
-    btn.Font = Enum.Font.Code
+    btn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    btn.Font = Enum.Font.SourceSansBold
     btn.TextSize = 16
+    btn.AutoButtonColor = true
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 8) -- Rounded modern corners
+    
+    -- Subtle Neon Blue Outline
+    local stroke = Instance.new("UIStroke", btn)
+    stroke.Color = Color3.fromRGB(0, 255, 255)
+    stroke.Thickness = 1
+    stroke.Transparency = 0.5
+    
     btn.Parent = AdminScroll
     trackConnection(btn.MouseButton1Click:Connect(function()
         pcall(func)
@@ -1896,11 +1909,56 @@ AddAdminOverride("[>] X-RAY MAP (NUKE VISUALS)", function()
     end
 end)
 
+-- Upgraded Mute function that forces every sound in the entire game engine to 0
 AddAdminOverride("[>] MUTE ALL GAME SOUNDS", function()
-    for _, v in pairs(workspace:GetDescendants()) do
-        if v:IsA("Sound") then v.Volume = 0 end
+    for _, v in pairs(game:GetDescendants()) do
+        if v:IsA("Sound") then 
+            v.Volume = 0 
+            v.Playing = false
+        end
     end
 end)
+
+-- CUSTOM JOIN SERVER UI (TextBox + Button)
+local JoinServerFrame = Instance.new("Frame")
+JoinServerFrame.Size = UDim2.new(1, -20, 0, 45)
+JoinServerFrame.BackgroundTransparency = 1
+JoinServerFrame.Parent = AdminScroll
+
+local JobIdInput = Instance.new("TextBox")
+JobIdInput.Size = UDim2.new(0.68, 0, 1, 0)
+JobIdInput.Position = UDim2.new(0, 0, 0, 0)
+JobIdInput.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
+JobIdInput.TextColor3 = Color3.fromRGB(255, 255, 255)
+JobIdInput.PlaceholderText = "Paste Job-ID Here..."
+JobIdInput.Font = Enum.Font.Code
+JobIdInput.TextSize = 14
+JobIdInput.ClearTextOnFocus = false
+Instance.new("UICorner", JobIdInput).CornerRadius = UDim.new(0, 8)
+
+local inputStroke = Instance.new("UIStroke", JobIdInput)
+inputStroke.Color = Color3.fromRGB(0, 255, 255)
+inputStroke.Thickness = 1
+inputStroke.Transparency = 0.5
+JobIdInput.Parent = JoinServerFrame
+
+local JoinButton = Instance.new("TextButton")
+JoinButton.Size = UDim2.new(0.28, 0, 1, 0)
+JoinButton.Position = UDim2.new(0.72, 0, 0, 0)
+JoinButton.BackgroundColor3 = Color3.fromRGB(0, 150, 255) -- Bright blue accent
+JoinButton.Text = "JOIN"
+JoinButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+JoinButton.Font = Enum.Font.SourceSansBold
+JoinButton.TextSize = 16
+Instance.new("UICorner", JoinButton).CornerRadius = UDim.new(0, 8)
+JoinButton.Parent = JoinServerFrame
+
+trackConnection(JoinButton.MouseButton1Click:Connect(function()
+    local targetJobId = JobIdInput.Text
+    if targetJobId and targetJobId ~= "" then
+        game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, targetJobId, game.Players.LocalPlayer)
+    end
+end))
 
 -- Hidden Admin Tab Button (Spawns in Main Menu)
 local AdminTabButton = Instance.new("ImageButton")
@@ -1931,19 +1989,17 @@ AdminText.Parent = AdminTabButton
 -- Logout Button (Pinned to Bottom Left of Main Menu)
 local LogoutButton = Instance.new("TextButton")
 LogoutButton.Name = "LogoutButton"
-LogoutButton.Size = UDim2.new(0, 80, 0, 25) -- Small, sleek, minimalist
-LogoutButton.Position = UDim2.new(0, 10, 1, -35) -- Locked to bottom-left corner
-LogoutButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Dark Apple-style aesthetic
+LogoutButton.Size = UDim2.new(0, 80, 0, 25) 
+LogoutButton.Position = UDim2.new(0, 10, 1, -35) 
+LogoutButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30) 
 LogoutButton.BorderSizePixel = 0
 LogoutButton.Text = "LOGOUT"
-LogoutButton.TextColor3 = Color3.fromRGB(200, 50, 50) -- Subtle high-contrast red text
+LogoutButton.TextColor3 = Color3.fromRGB(200, 50, 50) 
 LogoutButton.Font = Enum.Font.SourceSansBold
 LogoutButton.TextSize = 14
 LogoutButton.ZIndex = 10
 Instance.new("UICorner", LogoutButton).CornerRadius = UDim.new(0, 4)
-
--- CRUCIAL: Parented directly to the Main Window, NOT the grid!
-LogoutButton.Parent = MainMenuWindow 
+LogoutButton.Parent = MainMenuWindow
 
 -- ==================== THE GATEKEEPER (LOGIN UI) ====================
 local lastUsedPassword = ""
