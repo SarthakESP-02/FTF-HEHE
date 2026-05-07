@@ -1,3 +1,21 @@
+--[[
+=============================================================================
+    FTF ADMIN PANEL & HUB | PROPRIETARY SOFTWARE
+    © 2026 ScriptedChaosLIVE / Xyrozzy. All Rights Reserved.
+    
+    WARNING: This script is protected by intellectual property laws.
+    Unauthorized distribution, modification, or removal of these credits 
+    is strictly prohibited. 
+    
+    Any attempt to bypass the authentication gatekeeper, reverse-engineer 
+    the UI, or claim this source code as your own will result in a permanent 
+    blacklist from all future ScriptedChaosLIVE releases.
+    
+    Version: 0.7.57 (Stable)
+    Developer: ScriptedChaosLIVE / Xyrozzy
+=============================================================================
+]]--
+
 local ver = "v0.7.57" -- FTF admin Panel by Xyrozzy
 
 -- Global Connection Tracker for Clean UI Destruction
@@ -444,6 +462,73 @@ Body_2.Position = UDim2.new(0.5, 0, 0, 45)
 Body_2.Size = UDim2.new(1, -10, 1, -75)
 Body_2.ScrollBarThickness = 0
 Body_2.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+-- ==================== SECTION SWITCHERS ====================
+local SwitcherFrame = Instance.new("Frame")
+SwitcherFrame.Name = "SwitcherFrame"
+SwitcherFrame.Parent = MainMenuWindow
+SwitcherFrame.BackgroundColor3 = Color3.fromRGB(47, 47, 47) 
+SwitcherFrame.BorderSizePixel = 0
+SwitcherFrame.Position = UDim2.new(0, 0, 0, 40) -- Fits exactly below TopBar_2
+SwitcherFrame.Size = UDim2.new(1, 0, 0, 35)
+SwitcherFrame.ZIndex = 5
+
+-- The line below the switcher sections
+local SwitcherBottomLine = Instance.new("Frame")
+SwitcherBottomLine.Parent = SwitcherFrame
+SwitcherBottomLine.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+SwitcherBottomLine.BorderSizePixel = 0
+SwitcherBottomLine.Position = UDim2.new(0, 0, 1, -2)
+SwitcherBottomLine.Size = UDim2.new(1, 0, 0, 2)
+SwitcherBottomLine.ZIndex = 6
+
+local MainTabBtn = Instance.new("TextButton")
+MainTabBtn.Parent = SwitcherFrame
+MainTabBtn.Size = UDim2.new(0.5, -1, 1, -2)
+MainTabBtn.Position = UDim2.new(0, 0, 0, 0)
+MainTabBtn.BackgroundTransparency = 1
+MainTabBtn.Text = "Main"
+MainTabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+MainTabBtn.Font = Enum.Font.SourceSansBold
+MainTabBtn.TextSize = 16
+
+-- The middle divider line between sections
+local Divider = Instance.new("Frame")
+Divider.Parent = SwitcherFrame
+Divider.Size = UDim2.new(0, 2, 0.6, 0)
+Divider.Position = UDim2.new(0.5, -1, 0.2, 0)
+Divider.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+Divider.BorderSizePixel = 0
+
+local AdminAccessBtn = Instance.new("TextButton")
+AdminAccessBtn.Parent = SwitcherFrame
+AdminAccessBtn.Size = UDim2.new(0.5, -1, 1, -2)
+AdminAccessBtn.Position = UDim2.new(0.5, 1, 0, 0)
+AdminAccessBtn.BackgroundTransparency = 1
+AdminAccessBtn.Text = "Admin Access"
+AdminAccessBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+AdminAccessBtn.Font = Enum.Font.SourceSansBold
+AdminAccessBtn.TextSize = 16
+AdminAccessBtn.Visible = false -- Hidden by default
+
+-- Push the main scrolling frame down to make room for the switchers
+Body_2.Position = UDim2.new(0.5, 0, 0, 75)
+Body_2.Size = UDim2.new(1, -10, 1, -105)
+
+-- Switcher Logic
+trackConnection(MainTabBtn.MouseButton1Click:Connect(function()
+    Body_2.Visible = true 
+    if AdminMenu then AdminMenu.Visible = false end 
+end))
+
+trackConnection(AdminAccessBtn.MouseButton1Click:Connect(function()
+    Body_2.Visible = false 
+    if AdminMenu then 
+        AdminMenu.Visible = true 
+        AdminMenu.Position = UDim2.new(0.5, 0, 0.5, -18) 
+    end 
+end))
+-- ==========================================================
 
 UIGridLayout_2.Parent = Body_2
 UIGridLayout_2.HorizontalAlignment = Enum.HorizontalAlignment.Center
@@ -1986,31 +2071,34 @@ AdminText.Font = Enum.Font.SourceSansBold
 AdminText.TextSize = 24
 AdminText.Parent = AdminTabButton
 
--- Logout Button (Pinned to Bottom Left of Main Menu)
+-- Logout Button (Pinned to Bottom Right of Main Menu)
 local LogoutButton = Instance.new("TextButton")
 LogoutButton.Name = "LogoutButton"
 LogoutButton.Size = UDim2.new(0, 80, 0, 25) 
-LogoutButton.Position = UDim2.new(0, 10, 1, -35) 
 LogoutButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30) 
 LogoutButton.BorderSizePixel = 0
 LogoutButton.Text = "LOGOUT"
 LogoutButton.TextColor3 = Color3.fromRGB(200, 50, 50) 
 LogoutButton.Font = Enum.Font.SourceSansBold
 LogoutButton.TextSize = 14
-LogoutButton.ZIndex = 10
 Instance.new("UICorner", LogoutButton).CornerRadius = UDim.new(0, 4)
-LogoutButton.Parent = MainMenuWindow
+
+-- Fixed Positioning
+LogoutButton.Parent = MainMenuWindow 
+LogoutButton.AnchorPoint = Vector2.new(1, 1)
+LogoutButton.Position = UDim2.new(1, -10, 1, -10)
+LogoutButton.ZIndex = 50
 
 -- ==================== THE GATEKEEPER (LOGIN UI) ====================
+local SaveFileName = "FTF_Auth_State.txt"
 local lastUsedPassword = ""
 
--- The new floating 420x360 Login Panel matching the main UI
 local LoginScreen = Instance.new("Frame")
 LoginScreen.Name = "LoginGate"
 LoginScreen.AnchorPoint = Vector2.new(0.5, 0.5)
 LoginScreen.Position = UDim2.new(0.5, 0, 0.5, -18)
 LoginScreen.Size = UDim2.new(0, 420, 0, 360)
-LoginScreen.BackgroundColor3 = Color3.fromRGB(47, 47, 47) -- Matches main hub color
+LoginScreen.BackgroundColor3 = Color3.fromRGB(47, 47, 47) 
 LoginScreen.BorderColor3 = Color3.fromRGB(0, 0, 0)
 LoginScreen.BorderSizePixel = 2
 LoginScreen.ZIndex = 100000
@@ -2072,25 +2160,47 @@ SubmitButton.ZIndex = 100001
 Instance.new("UICorner", SubmitButton).CornerRadius = UDim.new(0, 6)
 SubmitButton.Parent = LoginScreen
 
--- Hide Cheat Button until verified
 CheatButton.Visible = false
 
--- Login Verification Logic
+local function GrantAccess(isAdmin)
+    LoginScreen.Visible = false 
+    CheatButton.Visible = true 
+    MainMenuWindow.Visible = true 
+    if isAdmin then
+        AdminAccessBtn.Visible = true 
+    else
+        AdminAccessBtn.Visible = false
+    end
+end
+
+-- Remember Me Auto-Login Check
+if isfile and isfile(SaveFileName) then
+    local savedPass = readfile(SaveFileName)
+    if savedPass == string.char(44*2, 178/2, 100-18, 70+9, 45*2, 180/2, 80+9, 100/2, 106/2) then
+        lastUsedPassword = savedPass
+        GrantAccess(true)
+        pcall(function() game.Players.LocalPlayer:Chat("/e FTF_ADMIN_PING") end)
+    elseif savedPass == string.char(100-17, 33*3, 228/2, 50+55, 56*2, 120-4, 202/2, 50*2, 70-3, 52*2, 100-3, 222/2, 120-5, 38*2, 100-27, 43*2, 138/2) then
+        lastUsedPassword = savedPass
+        GrantAccess(false)
+    end
+end
+
+-- Manual Submit Verification
 trackConnection(SubmitButton.MouseButton1Click:Connect(function()
     local pass = PasswordInput.Text
-    if pass == "ScriptedChaosLIVE" then
+    
+    if pass == string.char(100-17, 33*3, 228/2, 50+55, 56*2, 120-4, 202/2, 50*2, 70-3, 52*2, 100-3, 222/2, 120-5, 38*2, 100-27, 43*2, 138/2) then
         lastUsedPassword = pass
-        AdminTabButton.Visible = false -- Ensure admin is hidden
-        LoginScreen.Visible = false
-        CheatButton.Visible = true
-        MainMenuWindow.Visible = true
-    elseif pass == "XYROZZY25" then
+        if writefile then pcall(function() writefile(SaveFileName, pass) end) end
+        GrantAccess(false)
+        
+    elseif pass == string.char(44*2, 178/2, 100-18, 70+9, 45*2, 180/2, 80+9, 100/2, 106/2) then
         lastUsedPassword = pass
-        AdminTabButton.Visible = true -- UNLOCK ADMIN MENU
-        LoginScreen.Visible = false
-        CheatButton.Visible = true
-        MainMenuWindow.Visible = true
+        if writefile then pcall(function() writefile(SaveFileName, pass) end) end
+        GrantAccess(true)
         pcall(function() game.Players.LocalPlayer:Chat("/e FTF_ADMIN_PING") end)
+        
     else
         PasswordInput.Text = ""
         PasswordInput.PlaceholderText = "INVALID PASSWORD"
@@ -2099,24 +2209,6 @@ trackConnection(SubmitButton.MouseButton1Click:Connect(function()
         PasswordInput.PlaceholderText = "Enter Password..."
         PasswordInput.PlaceholderColor3 = Color3.fromRGB(178, 178, 178)
     end
-end))
-
--- Logout Logic
-trackConnection(LogoutButton.MouseButton1Click:Connect(function()
-    MainMenuWindow.Visible = false
-    ESPMenuWindow.Visible = false
-    ToolsMenuWindow.Visible = false
-    TPMenu.Visible = false
-    PlayerMenu.Visible = false
-    MiscMenu.Visible = false
-    RiskMenu.Visible = false
-    UnfairMenu.Visible = false
-    UpdateLogMenu.Visible = false
-    AdminMenu.Visible = false
-    CheatButton.Visible = false
-    
-    PasswordInput.Text = lastUsedPassword
-    LoginScreen.Visible = true
 end))
 -- ===================================================================
 
