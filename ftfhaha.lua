@@ -458,8 +458,8 @@ Body_2.AnchorPoint = Vector2.new(0.5, 0)
 Body_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Body_2.BackgroundTransparency = 1.000
 Body_2.BorderSizePixel = 0
-Body_2.Position = UDim2.new(0.5, 0, 0, 45)
-Body_2.Size = UDim2.new(1, -10, 1, -75)
+Body_2.Position = UDim2.new(0.5, 0, 0, 75)
+Body_2.Size = UDim2.new(1, -10, 1, -105)
 Body_2.ScrollBarThickness = 0
 Body_2.AutomaticCanvasSize = Enum.AutomaticSize.Y
 
@@ -2045,32 +2045,6 @@ trackConnection(JoinButton.MouseButton1Click:Connect(function()
     end
 end))
 
--- Hidden Admin Tab Button (Spawns in Main Menu)
-local AdminTabButton = Instance.new("ImageButton")
-AdminTabButton.Name = "AdminTabButton"
-AdminTabButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-AdminTabButton.BorderSizePixel = 0
-AdminTabButton.Visible = false
-AdminTabButton.Parent = Body_2
-
-local AdminIcon = Instance.new("ImageLabel", AdminTabButton)
-AdminIcon.BackgroundTransparency = 1
-AdminIcon.AnchorPoint = Vector2.new(0.5, 0)
-AdminIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
-AdminIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
-AdminIcon.Image = "rbxthumb://type=Asset&id=1177220578&w=150&h=150"
-AdminIcon.Parent = AdminTabButton
-
-local AdminText = Instance.new("TextLabel")
-AdminText.BackgroundTransparency = 1
-AdminText.Position = UDim2.new(0, 0, 0.8, 0)
-AdminText.Size = UDim2.new(1, 0, 0.2, 0)
-AdminText.Text = "Admin"
-AdminText.TextColor3 = Color3.fromRGB(0, 255, 255)
-AdminText.Font = Enum.Font.SourceSansBold
-AdminText.TextSize = 24
-AdminText.Parent = AdminTabButton
-
 -- Logout Button (Pinned to Bottom Right of Main Menu)
 local LogoutButton = Instance.new("TextButton")
 LogoutButton.Name = "LogoutButton"
@@ -2086,8 +2060,8 @@ Instance.new("UICorner", LogoutButton).CornerRadius = UDim.new(0, 4)
 -- Fixed Positioning
 LogoutButton.Parent = MainMenuWindow 
 LogoutButton.AnchorPoint = Vector2.new(1, 1)
-LogoutButton.Position = UDim2.new(1, -10, 1, -10)
-LogoutButton.ZIndex = 50
+LogoutButton.Position = UDim2.new(1, -10, 1, -10) 
+LogoutButton.ZIndex = 10
 
 -- ==================== THE GATEKEEPER (LOGIN UI) ====================
 local SaveFileName = "FTF_Auth_State.txt"
@@ -2210,6 +2184,30 @@ trackConnection(SubmitButton.MouseButton1Click:Connect(function()
         PasswordInput.PlaceholderColor3 = Color3.fromRGB(178, 178, 178)
     end
 end))
+
+-- Logout Logic (Wipes Saved Password & Hides Menus)
+trackConnection(LogoutButton.MouseButton1Click:Connect(function()
+    if writefile then pcall(function() writefile(SaveFileName, "") end) end 
+    lastUsedPassword = ""
+    
+    MainMenuWindow.Visible = false
+    ESPMenuWindow.Visible = false
+    ToolsMenuWindow.Visible = false
+    TPMenu.Visible = false
+    PlayerMenu.Visible = false
+    if MiscMenu then MiscMenu.Visible = false end
+    if RiskMenu then RiskMenu.Visible = false end
+    if UnfairMenu then UnfairMenu.Visible = false end
+    if UpdateLogMenu then UpdateLogMenu.Visible = false end
+    if AdminMenu then AdminMenu.Visible = false end
+    CheatButton.Visible = false
+    
+    if AdminAccessBtn then AdminAccessBtn.Visible = false end
+    
+    PasswordInput.Text = ""
+    LoginScreen.Visible = true
+end))
+
 -- ===================================================================
 
 -- ==================== CLICK ROUTING ====================
@@ -2249,6 +2247,8 @@ trackConnection(BackButton.MouseButton1Click:Connect(function()
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
     if AdminMenu then AdminMenu.Visible = false end
     MainMenuWindow.Visible = true
+    Body_2.Visible = true
+    if AdminMenu then AdminMenu.Visible = false end
 end))
 
 trackConnection(BackButton_2.MouseButton1Click:Connect(function()
@@ -2262,6 +2262,8 @@ trackConnection(BackButton_2.MouseButton1Click:Connect(function()
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
     if AdminMenu then AdminMenu.Visible = false end
     MainMenuWindow.Visible = true
+    Body_2.Visible = true
+    if AdminMenu then AdminMenu.Visible = false end
 end))
 
 trackConnection(ESPButton.MouseButton1Click:Connect(function()
@@ -2371,31 +2373,43 @@ end))
 trackConnection(TPMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     TPMenu.Visible = false
     MainMenuWindow.Visible = true
+    Body_2.Visible = true
+    if AdminMenu then AdminMenu.Visible = false end
 end))
 
 trackConnection(PlayerMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     PlayerMenu.Visible = false
     MainMenuWindow.Visible = true
+    Body_2.Visible = true
+    if AdminMenu then AdminMenu.Visible = false end
 end))
 
 trackConnection(MiscMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     MiscMenu.Visible = false
     MainMenuWindow.Visible = true
+    Body_2.Visible = true
+    if AdminMenu then AdminMenu.Visible = false end
 end))
 
 trackConnection(RiskMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     RiskMenu.Visible = false
     MainMenuWindow.Visible = true
+    Body_2.Visible = true
+    if AdminMenu then AdminMenu.Visible = false end
 end))
 
 trackConnection(UnfairMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     UnfairMenu.Visible = false
     MainMenuWindow.Visible = true
+    Body_2.Visible = true
+    if AdminMenu then AdminMenu.Visible = false end
 end))
 
 trackConnection(UpdateLogMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     UpdateLogMenu.Visible = false
     MainMenuWindow.Visible = true
+    Body_2.Visible = true
+    if AdminMenu then AdminMenu.Visible = false end
 end))
 
 trackConnection(TPMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
@@ -2422,24 +2436,11 @@ trackConnection(UpdateLogMenu.TopBar.CloseButton.MouseButton1Click:Connect(funct
     UpdateLogMenu.Visible = false
 end))
 
--- Open Admin Menu
-trackConnection(AdminTabButton.MouseButton1Click:Connect(function()
-    MainMenuWindow.Visible = false
-    ESPMenuWindow.Visible = false
-    ToolsMenuWindow.Visible = false
-    TPMenu.Visible = false
-    PlayerMenu.Visible = false
-    if MiscMenu then MiscMenu.Visible = false end
-    if RiskMenu then RiskMenu.Visible = false end
-    if UnfairMenu then UnfairMenu.Visible = false end
-    if UpdateLogMenu then UpdateLogMenu.Visible = false end
-    AdminMenu.Visible = true 
-end))
-
 -- Admin Menu Back Button
 trackConnection(AdminMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
     AdminMenu.Visible = false
     MainMenuWindow.Visible = true
+    Body_2.Visible = true
 end))
 
 -- Admin Menu Close (X) Button
