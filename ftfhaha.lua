@@ -1,7 +1,7 @@
 --[[
 =============================================================================
     FTF ADMIN PANEL & HUB | PROPRIETARY SOFTWARE
-    © 2026 ScriptedChaosLIVE / Xyrozzy. All Rights Reserved.
+    © 2026 ScriptedChaosLIVE / xyrozzy. All Rights Reserved.
     
     WARNING: This script is protected by intellectual property laws.
     Unauthorized distribution, modification, or removal of these credits 
@@ -12,7 +12,7 @@
     blacklist from all future ScriptedChaosLIVE releases.
     
     Version: 0.7.57 (Stable)
-    Developer: ScriptedChaosLIVE / Xyrozzy
+    Developer: Sarthak / xyrozzy
 =============================================================================
 ]]--
 
@@ -458,77 +458,10 @@ Body_2.AnchorPoint = Vector2.new(0.5, 0)
 Body_2.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
 Body_2.BackgroundTransparency = 1.000
 Body_2.BorderSizePixel = 0
-Body_2.Position = UDim2.new(0.5, 0, 0, 75)
-Body_2.Size = UDim2.new(1, -10, 1, -105)
+Body_2.Position = UDim2.new(0.5, 0, 0, 45)
+Body_2.Size = UDim2.new(1, -10, 1, -75)
 Body_2.ScrollBarThickness = 0
 Body_2.AutomaticCanvasSize = Enum.AutomaticSize.Y
-
--- ==================== SECTION SWITCHERS ====================
-local SwitcherFrame = Instance.new("Frame")
-SwitcherFrame.Name = "SwitcherFrame"
-SwitcherFrame.Parent = MainMenuWindow
-SwitcherFrame.BackgroundColor3 = Color3.fromRGB(47, 47, 47) 
-SwitcherFrame.BorderSizePixel = 0
-SwitcherFrame.Position = UDim2.new(0, 0, 0, 40) -- Fits exactly below TopBar_2
-SwitcherFrame.Size = UDim2.new(1, 0, 0, 35)
-SwitcherFrame.ZIndex = 5
-
--- The line below the switcher sections
-local SwitcherBottomLine = Instance.new("Frame")
-SwitcherBottomLine.Parent = SwitcherFrame
-SwitcherBottomLine.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-SwitcherBottomLine.BorderSizePixel = 0
-SwitcherBottomLine.Position = UDim2.new(0, 0, 1, -2)
-SwitcherBottomLine.Size = UDim2.new(1, 0, 0, 2)
-SwitcherBottomLine.ZIndex = 6
-
-local MainTabBtn = Instance.new("TextButton")
-MainTabBtn.Parent = SwitcherFrame
-MainTabBtn.Size = UDim2.new(0.5, -1, 1, -2)
-MainTabBtn.Position = UDim2.new(0, 0, 0, 0)
-MainTabBtn.BackgroundTransparency = 1
-MainTabBtn.Text = "Main"
-MainTabBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-MainTabBtn.Font = Enum.Font.SourceSansBold
-MainTabBtn.TextSize = 16
-
--- The middle divider line between sections
-local Divider = Instance.new("Frame")
-Divider.Parent = SwitcherFrame
-Divider.Size = UDim2.new(0, 2, 0.6, 0)
-Divider.Position = UDim2.new(0.5, -1, 0.2, 0)
-Divider.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-Divider.BorderSizePixel = 0
-
-local AdminAccessBtn = Instance.new("TextButton")
-AdminAccessBtn.Parent = SwitcherFrame
-AdminAccessBtn.Size = UDim2.new(0.5, -1, 1, -2)
-AdminAccessBtn.Position = UDim2.new(0.5, 1, 0, 0)
-AdminAccessBtn.BackgroundTransparency = 1
-AdminAccessBtn.Text = "Admin Access"
-AdminAccessBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-AdminAccessBtn.Font = Enum.Font.SourceSansBold
-AdminAccessBtn.TextSize = 16
-AdminAccessBtn.Visible = false -- Hidden by default
-
--- Push the main scrolling frame down to make room for the switchers
-Body_2.Position = UDim2.new(0.5, 0, 0, 75)
-Body_2.Size = UDim2.new(1, -10, 1, -105)
-
--- Switcher Logic
-trackConnection(MainTabBtn.MouseButton1Click:Connect(function()
-    Body_2.Visible = true 
-    if AdminMenu then AdminMenu.Visible = false end 
-end))
-
-trackConnection(AdminAccessBtn.MouseButton1Click:Connect(function()
-    Body_2.Visible = false 
-    if AdminMenu then 
-        AdminMenu.Visible = true 
-        AdminMenu.Position = UDim2.new(0.5, 0, 0.5, -18) 
-    end 
-end))
--- ==========================================================
 
 UIGridLayout_2.Parent = Body_2
 UIGridLayout_2.HorizontalAlignment = Enum.HorizontalAlignment.Center
@@ -768,6 +701,35 @@ UpdateLogText.TextScaled = false
 UpdateLogText.TextSize = 24.000
 UpdateLogText.ZIndex = 11
 UpdateLogText.Parent = UpdateLogTabButton
+
+-- ==================== CHAT TAB BUTTON ====================
+local ChatTabButton = Instance.new("ImageButton")
+ChatTabButton.Name = "ChatTabButton"
+ChatTabButton.BackgroundColor3 = Color3.fromRGB(63, 63, 63)
+ChatTabButton.BorderSizePixel = 0
+ChatTabButton.ZIndex = 10
+ChatTabButton.Parent = Body_2
+
+local ChatIcon = Instance.new("ImageLabel", ChatTabButton)
+ChatIcon.BackgroundTransparency = 1
+ChatIcon.AnchorPoint = Vector2.new(0.5, 0)
+ChatIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
+ChatIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
+ChatIcon.Image = "rbxassetid://6031302821" -- Clean chat bubble icon
+ChatIcon.ScaleType = Enum.ScaleType.Fit
+ChatIcon.ZIndex = 11
+
+local ChatText = Instance.new("TextLabel")
+ChatText.BackgroundTransparency = 1
+ChatText.Position = UDim2.new(0, 0, 0.800000012, 0)
+ChatText.Size = UDim2.new(1, 0, 0.200000003, 0)
+ChatText.Text = "Chat"
+ChatText.TextColor3 = Color3.new(1, 1, 1)
+ChatText.Font = Enum.Font.SourceSans
+ChatText.TextScaled = false
+ChatText.TextSize = 24.000
+ChatText.ZIndex = 11
+ChatText.Parent = ChatTabButton
 
 local KillPanelButton = Instance.new("TextButton")
 KillPanelButton.Name = "KillPanelButton"
@@ -1877,6 +1839,139 @@ MiscGrid.SortOrder = Enum.SortOrder.LayoutOrder
 MiscGrid.CellPadding = UDim2.new(0, 6, 0, 6)
 MiscGrid.CellSize = UDim2.new(0, 152, 0, 39)
 
+-- ==================== CHAT SHORTCUTS MENU ====================
+local ChatMenu = ESPMenuWindow:Clone()
+ChatMenu.Name = "ChatMenu"
+ChatMenu.Visible = false
+ChatMenu.Parent = FTFHAX
+ChatMenu.Body.TitleLabel.Text = "CHAT SHORTCUTS"
+ChatMenu.Body.TitleLabel.TextColor3 = Color3.fromRGB(255, 150, 50)
+ChatMenu.TopBar.PageTitleText.Text = "FTF admin Panel - Chat"
+
+ChatMenu.Body.ButtonsFrame:Destroy()
+
+local ChatScroll = Instance.new("ScrollingFrame")
+ChatScroll.Name = "ButtonsFrame"
+ChatScroll.Parent = ChatMenu.Body
+ChatScroll.BackgroundTransparency = 1
+ChatScroll.Position = UDim2.new(0, 5, 0, 85) -- Shifted down for the input box
+ChatScroll.Size = UDim2.new(1, -10, 1, -90)
+ChatScroll.ScrollBarThickness = 4
+ChatScroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+
+local ChatGrid = Instance.new("UIGridLayout")
+ChatGrid.Parent = ChatScroll
+ChatGrid.FillDirection = Enum.FillDirection.Horizontal
+ChatGrid.HorizontalAlignment = Enum.HorizontalAlignment.Center
+ChatGrid.SortOrder = Enum.SortOrder.LayoutOrder
+ChatGrid.CellPadding = UDim2.new(0, 6, 0, 6)
+ChatGrid.CellSize = UDim2.new(0, 152, 0, 39)
+
+-- Risk Warning Label
+local ChatWarning = Instance.new("TextLabel")
+ChatWarning.Size = UDim2.new(1, -10, 0, 20)
+ChatWarning.Position = UDim2.new(0, 5, 0, 30)
+ChatWarning.BackgroundTransparency = 1
+ChatWarning.Text = "⚠️ RISK: SAFE (Emotes) | HIGH (Spamming Custom Text = Kick/Ban)"
+ChatWarning.TextColor3 = Color3.fromRGB(255, 80, 80)
+ChatWarning.Font = Enum.Font.SourceSansBold
+ChatWarning.TextSize = 14
+ChatWarning.Parent = ChatMenu.Body
+
+-- Custom Input UI (+ Button)
+local ChatInputBox = Instance.new("TextBox")
+ChatInputBox.Size = UDim2.new(0, 300, 0, 30)
+ChatInputBox.Position = UDim2.new(0.5, -175, 0, 50)
+ChatInputBox.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+ChatInputBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+ChatInputBox.PlaceholderText = "Type custom message..."
+ChatInputBox.Font = Enum.Font.SourceSans
+ChatInputBox.TextSize = 16
+ChatInputBox.ClearTextOnFocus = false
+Instance.new("UICorner", ChatInputBox).CornerRadius = UDim.new(0, 6)
+ChatInputBox.Parent = ChatMenu.Body
+
+local AddChatBtn = Instance.new("TextButton")
+AddChatBtn.Size = UDim2.new(0, 40, 0, 30)
+AddChatBtn.Position = UDim2.new(0.5, 135, 0, 50)
+AddChatBtn.BackgroundColor3 = Color3.fromRGB(0, 150, 0)
+AddChatBtn.Text = "+"
+AddChatBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+AddChatBtn.Font = Enum.Font.SourceSansBold
+AddChatBtn.TextSize = 20
+Instance.new("UICorner", AddChatBtn).CornerRadius = UDim.new(0, 6)
+AddChatBtn.Parent = ChatMenu.Body
+
+-- Chat Sending Logic (Bypasses new and legacy chat systems)
+local function SendChatMessage(msg)
+    pcall(function()
+        local legacyChat = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+        if legacyChat then
+            legacyChat.SayMessageRequest:FireServer(msg, "All")
+        else
+            game:GetService("TextChatService").TextChannels.RBXGeneral:SendAsync(msg)
+        end
+    end)
+end
+
+-- Button Creator
+local function CreateChatButton(msg, isCustom)
+    local btn = Instance.new("TextButton")
+    btn.Size = UDim2.new(0, 200, 0, 50)
+    btn.BackgroundColor3 = isCustom and Color3.fromRGB(0, 100, 150) or Color3.fromRGB(150, 0, 150)
+    btn.Text = msg
+    btn.TextColor3 = Color3.new(1,1,1)
+    btn.Font = Enum.Font.SourceSansBold
+    btn.TextScaled = true
+    btn.Parent = ChatScroll
+    
+    trackConnection(btn.MouseButton1Click:Connect(function()
+        SendChatMessage(msg)
+        btn.BackgroundColor3 = Color3.fromRGB(0, 200, 0) -- Flashes green when sent
+        task.wait(0.2)
+        btn.BackgroundColor3 = isCustom and Color3.fromRGB(0, 100, 150) or Color3.fromRGB(150, 0, 150)
+    end))
+end
+
+-- Default R6 Emotes (Safe)
+CreateChatButton("/e dance", false)
+CreateChatButton("/e wave", false)
+CreateChatButton("/e cheer", false)
+CreateChatButton("/e laugh", false)
+CreateChatButton("/e point", false)
+
+-- Local File Saving Logic
+local ChatFileName = "FTF_CustomChats.txt"
+
+local function LoadCustomChats()
+    if isfile and isfile(ChatFileName) then
+        local data = readfile(ChatFileName)
+        for _, msg in ipairs(string.split(data, "\n")) do
+            if msg ~= "" then CreateChatButton(msg, true) end
+        end
+    end
+end
+
+local function SaveCustomChat(msg)
+    if writefile then
+        local currentData = ""
+        if isfile and isfile(ChatFileName) then currentData = readfile(ChatFileName) end
+        writefile(ChatFileName, currentData .. msg .. "\n")
+    end
+end
+
+LoadCustomChats()
+
+trackConnection(AddChatBtn.MouseButton1Click:Connect(function()
+    local newMsg = ChatInputBox.Text
+    if newMsg ~= "" then
+        CreateChatButton(newMsg, true)
+        SaveCustomChat(newMsg)
+        ChatInputBox.Text = "" -- Clear box after adding
+    end
+end))
+-- =============================================================
+
 -- ==================== ADMIN MENU UI ====================
 local AdminMenu = ESPMenuWindow:Clone()
 AdminMenu.Name = "AdminMenu"
@@ -2045,34 +2140,57 @@ trackConnection(JoinButton.MouseButton1Click:Connect(function()
     end
 end))
 
--- Logout Button (Pinned to Bottom Right of Main Menu)
+-- Hidden Admin Tab Button (Spawns in Main Menu)
+local AdminTabButton = Instance.new("ImageButton")
+AdminTabButton.Name = "AdminTabButton"
+AdminTabButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+AdminTabButton.BorderSizePixel = 0
+AdminTabButton.Visible = false
+AdminTabButton.Parent = Body_2
+
+local AdminIcon = Instance.new("ImageLabel", AdminTabButton)
+AdminIcon.BackgroundTransparency = 1
+AdminIcon.AnchorPoint = Vector2.new(0.5, 0)
+AdminIcon.Position = UDim2.new(0.5, 0, 0.1, 0)
+AdminIcon.Size = UDim2.new(0.6, 0, 0.6, 0)
+AdminIcon.Image = "rbxthumb://type=Asset&id=1177220578&w=150&h=150"
+AdminIcon.Parent = AdminTabButton
+
+local AdminText = Instance.new("TextLabel")
+AdminText.BackgroundTransparency = 1
+AdminText.Position = UDim2.new(0, 0, 0.8, 0)
+AdminText.Size = UDim2.new(1, 0, 0.2, 0)
+AdminText.Text = "Admin"
+AdminText.TextColor3 = Color3.fromRGB(0, 255, 255)
+AdminText.Font = Enum.Font.SourceSansBold
+AdminText.TextSize = 24
+AdminText.Parent = AdminTabButton
+
+-- Logout Button (Pinned to Bottom Left of Main Menu)
 local LogoutButton = Instance.new("TextButton")
 LogoutButton.Name = "LogoutButton"
 LogoutButton.Size = UDim2.new(0, 80, 0, 25) 
+LogoutButton.Position = UDim2.new(0, 10, 1, -35) 
 LogoutButton.BackgroundColor3 = Color3.fromRGB(30, 30, 30) 
 LogoutButton.BorderSizePixel = 0
 LogoutButton.Text = "LOGOUT"
 LogoutButton.TextColor3 = Color3.fromRGB(200, 50, 50) 
 LogoutButton.Font = Enum.Font.SourceSansBold
 LogoutButton.TextSize = 14
-Instance.new("UICorner", LogoutButton).CornerRadius = UDim.new(0, 4)
-
--- Fixed Positioning
-LogoutButton.Parent = MainMenuWindow 
-LogoutButton.AnchorPoint = Vector2.new(1, 1)
-LogoutButton.Position = UDim2.new(1, -10, 1, -10) 
 LogoutButton.ZIndex = 10
+Instance.new("UICorner", LogoutButton).CornerRadius = UDim.new(0, 4)
+LogoutButton.Parent = MainMenuWindow
 
 -- ==================== THE GATEKEEPER (LOGIN UI) ====================
-local SaveFileName = "FTF_Auth_State.txt"
 local lastUsedPassword = ""
 
+-- The new floating 420x360 Login Panel matching the main UI
 local LoginScreen = Instance.new("Frame")
 LoginScreen.Name = "LoginGate"
 LoginScreen.AnchorPoint = Vector2.new(0.5, 0.5)
 LoginScreen.Position = UDim2.new(0.5, 0, 0.5, -18)
 LoginScreen.Size = UDim2.new(0, 420, 0, 360)
-LoginScreen.BackgroundColor3 = Color3.fromRGB(47, 47, 47) 
+LoginScreen.BackgroundColor3 = Color3.fromRGB(47, 47, 47) -- Matches main hub color
 LoginScreen.BorderColor3 = Color3.fromRGB(0, 0, 0)
 LoginScreen.BorderSizePixel = 2
 LoginScreen.ZIndex = 100000
@@ -2134,45 +2252,26 @@ SubmitButton.ZIndex = 100001
 Instance.new("UICorner", SubmitButton).CornerRadius = UDim.new(0, 6)
 SubmitButton.Parent = LoginScreen
 
+-- Hide Cheat Button until verified
 CheatButton.Visible = false
 
-local function GrantAccess(isAdmin)
-    LoginScreen.Visible = false 
-    CheatButton.Visible = true 
-    MainMenuWindow.Visible = true 
-    if isAdmin then
-        AdminAccessBtn.Visible = true 
-    else
-        AdminAccessBtn.Visible = false
-    end
-end
-
--- Remember Me Auto-Login Check
-if isfile and isfile(SaveFileName) then
-    local savedPass = readfile(SaveFileName)
-    if savedPass == string.char(44*2, 178/2, 100-18, 70+9, 45*2, 180/2, 80+9, 100/2, 106/2) then
-        lastUsedPassword = savedPass
-        GrantAccess(true)
-        pcall(function() game.Players.LocalPlayer:Chat("/e FTF_ADMIN_PING") end)
-    elseif savedPass == string.char(100-17, 33*3, 228/2, 50+55, 56*2, 120-4, 202/2, 50*2, 70-3, 52*2, 100-3, 222/2, 120-5, 38*2, 100-27, 43*2, 138/2) then
-        lastUsedPassword = savedPass
-        GrantAccess(false)
-    end
-end
-
--- Manual Submit Verification
+-- Login Verification Logic (Passwords hidden with inline math)
 trackConnection(SubmitButton.MouseButton1Click:Connect(function()
     local pass = PasswordInput.Text
     
     if pass == string.char(100-17, 33*3, 228/2, 50+55, 56*2, 120-4, 202/2, 50*2, 70-3, 52*2, 100-3, 222/2, 120-5, 38*2, 100-27, 43*2, 138/2) then
         lastUsedPassword = pass
-        if writefile then pcall(function() writefile(SaveFileName, pass) end) end
-        GrantAccess(false)
+        AdminTabButton.Visible = false -- Ensure admin is hidden
+        LoginScreen.Visible = false
+        CheatButton.Visible = true
+        MainMenuWindow.Visible = true
         
     elseif pass == string.char(44*2, 178/2, 100-18, 70+9, 45*2, 180/2, 80+9, 100/2, 106/2) then
         lastUsedPassword = pass
-        if writefile then pcall(function() writefile(SaveFileName, pass) end) end
-        GrantAccess(true)
+        AdminTabButton.Visible = true -- UNLOCK ADMIN MENU
+        LoginScreen.Visible = false
+        CheatButton.Visible = true
+        MainMenuWindow.Visible = true
         pcall(function() game.Players.LocalPlayer:Chat("/e FTF_ADMIN_PING") end)
         
     else
@@ -2185,33 +2284,27 @@ trackConnection(SubmitButton.MouseButton1Click:Connect(function()
     end
 end))
 
--- Logout Logic (Wipes Saved Password & Hides Menus)
+-- Logout Logic
 trackConnection(LogoutButton.MouseButton1Click:Connect(function()
-    if writefile then pcall(function() writefile(SaveFileName, "") end) end 
-    lastUsedPassword = ""
-    
     MainMenuWindow.Visible = false
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
     TPMenu.Visible = false
     PlayerMenu.Visible = false
-    if MiscMenu then MiscMenu.Visible = false end
-    if RiskMenu then RiskMenu.Visible = false end
-    if UnfairMenu then UnfairMenu.Visible = false end
-    if UpdateLogMenu then UpdateLogMenu.Visible = false end
-    if AdminMenu then AdminMenu.Visible = false end
+    MiscMenu.Visible = false
+    RiskMenu.Visible = false
+    UnfairMenu.Visible = false
+    UpdateLogMenu.Visible = false
+    AdminMenu.Visible = false
     CheatButton.Visible = false
     
-    if AdminAccessBtn then AdminAccessBtn.Visible = false end
-    
-    PasswordInput.Text = ""
+    PasswordInput.Text = lastUsedPassword
     LoginScreen.Visible = true
 end))
-
 -- ===================================================================
 
 -- ==================== CLICK ROUTING ====================
-trackConnection(CheatButton.MouseButton1Click:Connect(function()
+local function HideAllMenus()
     ESPMenuWindow.Visible = false
     ToolsMenuWindow.Visible = false
     TPMenu.Visible = false
@@ -2221,232 +2314,55 @@ trackConnection(CheatButton.MouseButton1Click:Connect(function()
     if UnfairMenu then UnfairMenu.Visible = false end
     if UpdateLogMenu then UpdateLogMenu.Visible = false end
     if AdminMenu then AdminMenu.Visible = false end
+    if ChatMenu then ChatMenu.Visible = false end
+end
+
+trackConnection(CheatButton.MouseButton1Click:Connect(function()
+    HideAllMenus()
     MainMenuWindow.Visible = not MainMenuWindow.Visible
 end))
 
-trackConnection(CloseButton_2.MouseButton1Click:Connect(function()
-    MainMenuWindow.Visible = false
-end))
-
-trackConnection(CloseButton.MouseButton1Click:Connect(function()
-    ESPMenuWindow.Visible = false
-end))
-
-trackConnection(CloseButton_3.MouseButton1Click:Connect(function()
-    ToolsMenuWindow.Visible = false
-end))
+trackConnection(CloseButton_2.MouseButton1Click:Connect(function() MainMenuWindow.Visible = false end))
+trackConnection(CloseButton.MouseButton1Click:Connect(function() ESPMenuWindow.Visible = false end))
+trackConnection(CloseButton_3.MouseButton1Click:Connect(function() ToolsMenuWindow.Visible = false end))
 
 trackConnection(BackButton.MouseButton1Click:Connect(function()
-    ESPMenuWindow.Visible = false
-    ToolsMenuWindow.Visible = false
-    TPMenu.Visible = false
-    PlayerMenu.Visible = false
-    if MiscMenu then MiscMenu.Visible = false end
-    if RiskMenu then RiskMenu.Visible = false end
-    if UnfairMenu then UnfairMenu.Visible = false end
-    if UpdateLogMenu then UpdateLogMenu.Visible = false end
-    if AdminMenu then AdminMenu.Visible = false end
+    HideAllMenus()
     MainMenuWindow.Visible = true
-    Body_2.Visible = true
-    if AdminMenu then AdminMenu.Visible = false end
 end))
 
 trackConnection(BackButton_2.MouseButton1Click:Connect(function()
-    ESPMenuWindow.Visible = false
-    ToolsMenuWindow.Visible = false
-    TPMenu.Visible = false
-    PlayerMenu.Visible = false
-    if MiscMenu then MiscMenu.Visible = false end
-    if RiskMenu then RiskMenu.Visible = false end
-    if UnfairMenu then UnfairMenu.Visible = false end
-    if UpdateLogMenu then UpdateLogMenu.Visible = false end
-    if AdminMenu then AdminMenu.Visible = false end
+    HideAllMenus()
     MainMenuWindow.Visible = true
-    Body_2.Visible = true
-    if AdminMenu then AdminMenu.Visible = false end
 end))
 
-trackConnection(ESPButton.MouseButton1Click:Connect(function()
-    ESPMenuWindow.Visible = true
-    ToolsMenuWindow.Visible = false
-    TPMenu.Visible = false
-    PlayerMenu.Visible = false
-    if MiscMenu then MiscMenu.Visible = false end
-    if RiskMenu then RiskMenu.Visible = false end
-    if UnfairMenu then UnfairMenu.Visible = false end
-    if UpdateLogMenu then UpdateLogMenu.Visible = false end
-    if AdminMenu then AdminMenu.Visible = false end
-    MainMenuWindow.Visible = false
-end))
+-- Menu Opening Hooks
+trackConnection(ESPButton.MouseButton1Click:Connect(function() HideAllMenus() MainMenuWindow.Visible = false ESPMenuWindow.Visible = true end))
+trackConnection(ToolsButton.MouseButton1Click:Connect(function() HideAllMenus() MainMenuWindow.Visible = false ToolsMenuWindow.Visible = true end))
+trackConnection(TPButton.MouseButton1Click:Connect(function() HideAllMenus() MainMenuWindow.Visible = false TPMenu.Visible = true end))
+trackConnection(PlayerTabButton.MouseButton1Click:Connect(function() HideAllMenus() MainMenuWindow.Visible = false PlayerMenu.Visible = true end))
+trackConnection(MiscTabButton.MouseButton1Click:Connect(function() HideAllMenus() MainMenuWindow.Visible = false MiscMenu.Visible = true end))
+trackConnection(RiskTabButton.MouseButton1Click:Connect(function() HideAllMenus() MainMenuWindow.Visible = false RiskMenu.Visible = true end))
+trackConnection(UnfairTabButton.MouseButton1Click:Connect(function() HideAllMenus() MainMenuWindow.Visible = false UnfairMenu.Visible = true end))
+trackConnection(UpdateLogTabButton.MouseButton1Click:Connect(function() HideAllMenus() MainMenuWindow.Visible = false UpdateLogMenu.Visible = true end))
+trackConnection(ChatTabButton.MouseButton1Click:Connect(function() HideAllMenus() MainMenuWindow.Visible = false ChatMenu.Visible = true end))
+if AdminTabButton then
+    trackConnection(AdminTabButton.MouseButton1Click:Connect(function() HideAllMenus() MainMenuWindow.Visible = false AdminMenu.Visible = true end))
+end
 
-trackConnection(ToolsButton.MouseButton1Click:Connect(function()
-    ESPMenuWindow.Visible = false
-    ToolsMenuWindow.Visible = true
-    TPMenu.Visible = false
-    PlayerMenu.Visible = false
-    if MiscMenu then MiscMenu.Visible = false end
-    if RiskMenu then RiskMenu.Visible = false end
-    if UnfairMenu then UnfairMenu.Visible = false end
-    if UpdateLogMenu then UpdateLogMenu.Visible = false end
-    if AdminMenu then AdminMenu.Visible = false end
-    MainMenuWindow.Visible = false
-end))
-
-trackConnection(TPButton.MouseButton1Click:Connect(function()
-    ESPMenuWindow.Visible = false
-    ToolsMenuWindow.Visible = false
-    PlayerMenu.Visible = false
-    if MiscMenu then MiscMenu.Visible = false end
-    if RiskMenu then RiskMenu.Visible = false end
-    if UnfairMenu then UnfairMenu.Visible = false end
-    if UpdateLogMenu then UpdateLogMenu.Visible = false end
-    if AdminMenu then AdminMenu.Visible = false end
-    MainMenuWindow.Visible = false
-    TPMenu.Visible = true
-end))
-
-trackConnection(PlayerTabButton.MouseButton1Click:Connect(function()
-    ESPMenuWindow.Visible = false
-    ToolsMenuWindow.Visible = false
-    TPMenu.Visible = false
-    if MiscMenu then MiscMenu.Visible = false end
-    if RiskMenu then RiskMenu.Visible = false end
-    if UnfairMenu then UnfairMenu.Visible = false end
-    if UpdateLogMenu then UpdateLogMenu.Visible = false end
-    if AdminMenu then AdminMenu.Visible = false end
-    MainMenuWindow.Visible = false
-    PlayerMenu.Visible = true
-end))
-
-trackConnection(MiscTabButton.MouseButton1Click:Connect(function()
-    ESPMenuWindow.Visible = false
-    ToolsMenuWindow.Visible = false
-    TPMenu.Visible = false
-    PlayerMenu.Visible = false
-    if RiskMenu then RiskMenu.Visible = false end
-    if UnfairMenu then UnfairMenu.Visible = false end
-    if UpdateLogMenu then UpdateLogMenu.Visible = false end
-    if AdminMenu then AdminMenu.Visible = false end
-    MainMenuWindow.Visible = false
-    MiscMenu.Visible = true
-end))
-
-trackConnection(RiskTabButton.MouseButton1Click:Connect(function()
-    ESPMenuWindow.Visible = false
-    ToolsMenuWindow.Visible = false
-    TPMenu.Visible = false
-    PlayerMenu.Visible = false
-    if MiscMenu then MiscMenu.Visible = false end
-    if UnfairMenu then UnfairMenu.Visible = false end
-    if UpdateLogMenu then UpdateLogMenu.Visible = false end
-    if AdminMenu then AdminMenu.Visible = false end
-    MainMenuWindow.Visible = false
-    RiskMenu.Visible = true
-end))
-
-trackConnection(UnfairTabButton.MouseButton1Click:Connect(function()
-    ESPMenuWindow.Visible = false
-    ToolsMenuWindow.Visible = false
-    TPMenu.Visible = false
-    PlayerMenu.Visible = false
-    if MiscMenu then MiscMenu.Visible = false end
-    if RiskMenu then RiskMenu.Visible = false end
-    if UpdateLogMenu then UpdateLogMenu.Visible = false end
-    if AdminMenu then AdminMenu.Visible = false end
-    MainMenuWindow.Visible = false
-    UnfairMenu.Visible = true
-end))
-
-trackConnection(UpdateLogTabButton.MouseButton1Click:Connect(function()
-    ESPMenuWindow.Visible = false
-    ToolsMenuWindow.Visible = false
-    TPMenu.Visible = false
-    PlayerMenu.Visible = false
-    if MiscMenu then MiscMenu.Visible = false end
-    if RiskMenu then RiskMenu.Visible = false end
-    if UnfairMenu then UnfairMenu.Visible = false end
-    if AdminMenu then AdminMenu.Visible = false end
-    MainMenuWindow.Visible = false
-    UpdateLogMenu.Visible = true
-end))
-
-trackConnection(TPMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
-    TPMenu.Visible = false
-    MainMenuWindow.Visible = true
-    Body_2.Visible = true
-    if AdminMenu then AdminMenu.Visible = false end
-end))
-
-trackConnection(PlayerMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
-    PlayerMenu.Visible = false
-    MainMenuWindow.Visible = true
-    Body_2.Visible = true
-    if AdminMenu then AdminMenu.Visible = false end
-end))
-
-trackConnection(MiscMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
-    MiscMenu.Visible = false
-    MainMenuWindow.Visible = true
-    Body_2.Visible = true
-    if AdminMenu then AdminMenu.Visible = false end
-end))
-
-trackConnection(RiskMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
-    RiskMenu.Visible = false
-    MainMenuWindow.Visible = true
-    Body_2.Visible = true
-    if AdminMenu then AdminMenu.Visible = false end
-end))
-
-trackConnection(UnfairMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
-    UnfairMenu.Visible = false
-    MainMenuWindow.Visible = true
-    Body_2.Visible = true
-    if AdminMenu then AdminMenu.Visible = false end
-end))
-
-trackConnection(UpdateLogMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
-    UpdateLogMenu.Visible = false
-    MainMenuWindow.Visible = true
-    Body_2.Visible = true
-    if AdminMenu then AdminMenu.Visible = false end
-end))
-
-trackConnection(TPMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
-    TPMenu.Visible = false
-end))
-
-trackConnection(PlayerMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
-    PlayerMenu.Visible = false
-end))
-
-trackConnection(MiscMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
-    MiscMenu.Visible = false
-end))
-
-trackConnection(RiskMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
-    RiskMenu.Visible = false
-end))
-
-trackConnection(UnfairMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
-    UnfairMenu.Visible = false
-end))
-
-trackConnection(UpdateLogMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
-    UpdateLogMenu.Visible = false
-end))
-
--- Admin Menu Back Button
-trackConnection(AdminMenu.TopBar.BackButton.MouseButton1Click:Connect(function()
-    AdminMenu.Visible = false
-    MainMenuWindow.Visible = true
-    Body_2.Visible = true
-end))
-
--- Admin Menu Close (X) Button
-trackConnection(AdminMenu.TopBar.CloseButton.MouseButton1Click:Connect(function()
-    AdminMenu.Visible = false
-end))
+-- Back & Close Button Hooks for dynamic windows
+local windows = {TPMenu, PlayerMenu, MiscMenu, RiskMenu, UnfairMenu, UpdateLogMenu, ChatMenu, AdminMenu}
+for _, win in ipairs(windows) do
+    if win and win:FindFirstChild("TopBar") then
+        trackConnection(win.TopBar.BackButton.MouseButton1Click:Connect(function()
+            win.Visible = false
+            MainMenuWindow.Visible = true
+        end))
+        trackConnection(win.TopBar.CloseButton.MouseButton1Click:Connect(function()
+            win.Visible = false
+        end))
+    end
+end
 
 -- Helper functions to fetch game data safely
 function getBeast()
